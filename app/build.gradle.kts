@@ -1,6 +1,7 @@
 plugins {
     id("template.android.application")
     id("template.android.application.compose")
+    id("template.android.hilt")
 }
 
 android {
@@ -45,6 +46,9 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+
+    implementation(libs.androidx.lifecycle.compose)
+    implementation(libs.androidx.hilt.navigation.compose)
 
     
     testImplementation(libs.junit)
