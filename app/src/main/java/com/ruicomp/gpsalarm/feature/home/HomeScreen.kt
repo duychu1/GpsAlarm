@@ -21,6 +21,9 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,6 +41,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
+    snackbarHost: SnackbarHostState,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle()
@@ -55,7 +59,18 @@ fun HomeScreen(
 
                 is HomeEffect.ShowToats -> Toast.makeText(context, "Fetch false", Toast.LENGTH_SHORT).show()
                 is HomeEffect.NavigateToScreen -> TODO()
-                is HomeEffect.ShowSnackbar -> TODO()
+                is HomeEffect.ShowSnackbar -> {
+                    val result = snackbarHost.showSnackbar(
+                        message = action.message,
+                        actionLabel = "Undo",
+                        withDismissAction = true,
+                        duration = SnackbarDuration.Short
+                    )
+                    if (result == SnackbarResult.ActionPerformed) {
+                        // Restore the deleted item if "Undo" was clicked
+
+                    }
+                }
             }
         }
     }
@@ -74,7 +89,7 @@ fun HomeScreen(
             )
         },
         onDeleteGpsAlarm = {
-            viewModel.sendEvent(
+            viewModel.sendEventForEffect(
                 HomeEvent.DeleteAlarm(it)
             )
         }
