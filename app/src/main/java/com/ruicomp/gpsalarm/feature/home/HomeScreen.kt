@@ -1,8 +1,8 @@
 package com.ruicomp.gpsalarm.feature.home
 
-import android.net.Uri
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -33,14 +33,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.ruicomp.gpsalarm.data.GpsAlarmRepoImpl
 import com.ruicomp.gpsalarm.model.GpsAlarm
 import com.ruicomp.gpsalarm.utils.rememberFlowWithLifecycle
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
+import com.ruicomp.gpsalarm.navigation.NavRoutes
 
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
+    navController: NavHostController,
     snackbarHost: SnackbarHostState,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
@@ -51,10 +53,8 @@ fun HomeScreen(
     LaunchedEffect(effect) {
         effect.collect { action ->
             when (action) {
-                is HomeEffect.NavigateToTopic -> {
-                    // This effect would result in a navigation to another screen of the application
-                    // with the topicId as a parameter.
-                    Log.d("HomeScreen", "Navigate to topic with id: ")
+                is HomeEffect.NavigateToDetail -> {
+                    navController.navigate(route = NavRoutes.Detail(action.gpsAlarm))
                 }
 
                 is HomeEffect.ShowToats -> Toast.makeText(context, "Fetch false", Toast.LENGTH_SHORT).show()
@@ -83,6 +83,7 @@ fun HomeScreen(
         modifier = modifier,
         isLoading = state.value.isLoading,
         listGpsAlarms = state.value.gpsAlarms,
+        onItemClick = viewModel::onAlarmClick,
         onActiveChange = { id, isActive ->
             viewModel.sendEvent(
                 HomeEvent.UpdateAlarmActive(id, isActive)
@@ -100,6 +101,7 @@ fun HomeScreen(
 fun HomeScreenContent(
     isLoading: Boolean,
     listGpsAlarms: List<GpsAlarm>,
+    onItemClick: (GpsAlarm) -> Unit,
     onActiveChange: (Int, Boolean) -> Unit,
     onDeleteGpsAlarm: (Int) -> Unit,
     modifier: Modifier = Modifier
@@ -114,6 +116,7 @@ fun HomeScreenContent(
                 items(items = listGpsAlarms, key = { it.id }) { gpsAlarm ->
                     GpsAlarmItem(
                         gpsAlarm = gpsAlarm,
+                        onClick = { onItemClick(gpsAlarm) },
                         onActiveChange = onActiveChange,
                         onDelete = { onDeleteGpsAlarm(gpsAlarm.id) }
                     )
@@ -126,12 +129,14 @@ fun HomeScreenContent(
 @Composable
 fun GpsAlarmItem(
     gpsAlarm: GpsAlarm,
+    onClick: () -> Unit,
     onActiveChange: (Int, Boolean) -> Unit,
     onDelete: () -> Unit,
 ) {
     Card(
         modifier = Modifier
             .padding(horizontal = 16.dp, vertical = 8.dp)
+            .clickable(onClick = onClick)
             .fillMaxWidth(),
     ) {
         Column(modifier = Modifier.padding(16.dp)) {

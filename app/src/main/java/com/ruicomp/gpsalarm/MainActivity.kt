@@ -19,6 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.ruicomp.gpsalarm.feature.home.HomeScreen
+import com.ruicomp.gpsalarm.navigation.MyNavHost
 import com.ruicomp.gpsalarm.ui.theme.TemplateTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -39,9 +40,9 @@ class MainActivity : ComponentActivity() {
                         }
                     },
                 ) { innerPadding ->
-                    HomeScreen(
+                    MyNavHost(
                         modifier = Modifier.padding(innerPadding),
-                        snackbarHost = snackbarHostState,
+                        snackbarHost = snackbarHostState
                     )
                 }
             }

@@ -2,6 +2,8 @@ plugins {
     id("template.android.application")
     id("template.android.application.compose")
     id("template.android.hilt")
+    alias(libs.plugins.jetbrains.kotlin.serialization)
+    id("kotlin-parcelize")
 }
 
 android {
@@ -50,6 +52,8 @@ dependencies {
     implementation(libs.androidx.lifecycle.compose)
     implementation(libs.androidx.hilt.navigation.compose)
 
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.kotlinx.serialization.json)
     
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
