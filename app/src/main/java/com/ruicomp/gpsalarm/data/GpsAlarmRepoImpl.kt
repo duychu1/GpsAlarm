@@ -8,6 +8,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 
 class GpsAlarmRepoImpl {
     fun getAllGpsAlarms(): Flow<Result<List<GpsAlarm>>> = flow {
@@ -15,4 +16,7 @@ class GpsAlarmRepoImpl {
         delay(1000)
         emit(Result.Success(GpsAlarmFakeRepo.fakeListGpsAlarms()))
     }
+
+    fun getGpsAlarmById(id: Int): GpsAlarm? = GpsAlarmFakeRepo.fakeListGpsAlarms().firstOrNull { it.id == id }
+
 }

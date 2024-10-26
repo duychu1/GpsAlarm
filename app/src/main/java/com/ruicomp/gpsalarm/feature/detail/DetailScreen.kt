@@ -35,7 +35,6 @@ import androidx.navigation.NavHostController
 @Composable
 fun DetailScreen(
     modifier: Modifier = Modifier,
-    navController: NavHostController,
     viewModel: DetailViewModel = hiltViewModel()
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle()
@@ -64,7 +63,7 @@ fun DetailScreen(
     DetailScreenContent(
         modifier = modifier,
         isLoading = state.value.isLoading,
-        gpsAlarm = state.value.gpsAlarm!!,
+        gpsAlarm = state.value.gpsAlarm,
         onActiveChange = { id, isActive ->
             viewModel.sendEvent(
                 DetailEvent.UpdateAlarmActive(id, isActive)
@@ -81,7 +80,7 @@ fun DetailScreen(
 @Composable
 fun DetailScreenContent(
     isLoading: Boolean,
-    gpsAlarm: GpsAlarm,
+    gpsAlarm: GpsAlarm?,
     onActiveChange: (Int, Boolean) -> Unit,
     onDeleteGpsAlarm: (Int) -> Unit,
     modifier: Modifier = Modifier
@@ -92,6 +91,10 @@ fun DetailScreenContent(
                 .size(64.dp)
                 .align(Alignment.Center))
         } else {
+            if (gpsAlarm == null) {
+                Text("Cannot find reminder, try again")
+                return@Box
+            }
             GpsAlarmItem(
                 gpsAlarm = gpsAlarm,
                 onActiveChange = onActiveChange,
@@ -115,7 +118,7 @@ fun GpsAlarmItem(
         Column(modifier = Modifier.padding(16.dp)) {
             Log.d("dddd", "GpsAlarmItem: compose")
             Text(text = gpsAlarm.name, style = MaterialTheme.typography.titleLarge)
-            Text(text = "Location: ${gpsAlarm.location.first}, ${gpsAlarm.location.second}", style = MaterialTheme.typography.bodyMedium)
+            Text(text = "Location: ${gpsAlarm.location.x}, ${gpsAlarm.location.y}", style = MaterialTheme.typography.bodyMedium)
             Text(text = "Reminder: ${gpsAlarm.reminder}", style = MaterialTheme.typography.bodyMedium)
             // Add more details as needed (e.g., active days, duration, sound)
             Row(modifier = Modifier.fillMaxWidth()) {

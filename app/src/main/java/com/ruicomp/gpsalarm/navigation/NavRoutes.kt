@@ -10,6 +10,6 @@ sealed class NavRoutes {
     data object Home: NavRoutes()
 
     @Serializable
-    data class Detail(val gpsAlarm: GpsAlarm): NavRoutes()
+    data class Detail(val id: Int): NavRoutes()
 
 }

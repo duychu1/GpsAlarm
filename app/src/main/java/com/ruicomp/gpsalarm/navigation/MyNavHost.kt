@@ -28,14 +28,16 @@ fun MyNavHost(
         composable<NavRoutes.Home> {
             HomeScreen(
                 modifier = modifier,
-                navController = navController,
-                snackbarHost = snackbarHost
+                snackbarHost = snackbarHost,
+                onNavigateToScreen = {
+                    navController.navigate(it)
+                }
             )
         }
         composable<NavRoutes.Detail>(
-            typeMap = mapOf(typeOf<GpsAlarm>() to parcelableType<GpsAlarm>())
+//            typeMap = mapOf(typeOf<GpsAlarm>() to parcelableType<GpsAlarm>())
         ) {
-            DetailScreen(modifier = modifier, navController = navController)
+            DetailScreen(modifier = modifier)
         }
     }
 }

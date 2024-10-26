@@ -42,8 +42,8 @@ import com.ruicomp.gpsalarm.navigation.NavRoutes
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    navController: NavHostController,
     snackbarHost: SnackbarHostState,
+    onNavigateToScreen: (Any) -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle()
@@ -54,7 +54,8 @@ fun HomeScreen(
         effect.collect { action ->
             when (action) {
                 is HomeEffect.NavigateToDetail -> {
-                    navController.navigate(route = NavRoutes.Detail(action.gpsAlarm))
+                    onNavigateToScreen(NavRoutes.Detail(action.id))
+//                    navController.navigate(route = NavRoutes.DetailTest(action.gpsAlarm.id, action.gpsAlarm.location, action.gpsAlarm.activeDays))
                 }
 
                 is HomeEffect.ShowToats -> Toast.makeText(context, "Fetch false", Toast.LENGTH_SHORT).show()
@@ -75,9 +76,9 @@ fun HomeScreen(
         }
     }
 
-    LaunchedEffect(Unit) {
-        viewModel.getData()
-    }
+//    LaunchedEffect(Unit) {
+//        viewModel.getData()
+//    }
 
     HomeScreenContent(
         modifier = modifier,
@@ -142,7 +143,7 @@ fun GpsAlarmItem(
         Column(modifier = Modifier.padding(16.dp)) {
             Log.d("dddd", "GpsAlarmItem: compose")
             Text(text = gpsAlarm.name, style = MaterialTheme.typography.titleLarge)
-            Text(text = "Location: ${gpsAlarm.location.first}, ${gpsAlarm.location.second}", style = MaterialTheme.typography.bodyMedium)
+            Text(text = "Location: ${gpsAlarm.location.x}, ${gpsAlarm.location.y}", style = MaterialTheme.typography.bodyMedium)
             Text(text = "Reminder: ${gpsAlarm.reminder}", style = MaterialTheme.typography.bodyMedium)
             // Add more details as needed (e.g., active days, duration, sound)
             Row(modifier = Modifier.fillMaxWidth()) {

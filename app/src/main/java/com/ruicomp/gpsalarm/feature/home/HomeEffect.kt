@@ -6,7 +6,7 @@ import com.ruicomp.gpsalarm.model.GpsAlarm
 
 @Immutable
 sealed class HomeEffect : Reducer.ViewEffect {
-    data class NavigateToDetail(val gpsAlarm: GpsAlarm) : HomeEffect()
+    data class NavigateToDetail(val id: Int) : HomeEffect()
     data class ShowSnackbar(val message: String) : HomeEffect()
     data class NavigateToScreen(val screen: String) : HomeEffect()
     data class ShowToats(val msg: String): HomeEffect()

@@ -1,13 +1,14 @@
 package com.ruicomp.gpsalarm.data.fake
 
 import com.ruicomp.gpsalarm.model.GpsAlarm
+import com.ruicomp.gpsalarm.model.GpsLocation
 
 object GpsAlarmFakeRepo {
     fun fakeListGpsAlarms(): List<GpsAlarm> {
         return listOf(
             GpsAlarm(
                 id = 0,
-                location = Pair(37.7749, -122.4194), // San Francisco
+                location = GpsLocation(37.7749, -122.4194), // San Francisco
                 name = "Morning Alarm",
                 reminder = "Wake up for work",
                 isActive = true,
@@ -19,7 +20,7 @@ object GpsAlarmFakeRepo {
             ),
             GpsAlarm(
                 id = 1,
-                location = Pair(34.0522, -118.2437), // Los Angeles
+                location = GpsLocation(34.0522, -118.2437), // Los Angeles
                 name = "Evening Alarm",
                 reminder = "Time to wrap up work",
                 isActive = false,
@@ -31,7 +32,7 @@ object GpsAlarmFakeRepo {
             ),
             GpsAlarm(
                 id = 2,
-                location = Pair(40.7128, -74.0060), // New York
+                location = GpsLocation(40.7128, -74.0060), // New York
                 name = "Weekend Alarm",
                 reminder = "Get ready for brunch",
                 isActive = true,
@@ -43,7 +44,7 @@ object GpsAlarmFakeRepo {
             ),
             GpsAlarm(
                 id = 3,
-                location = Pair(51.5074, -0.1278), // London
+                location = GpsLocation(51.5074, -0.1278), // London
                 name = "Workout Alarm",
                 reminder = "Time to hit the gym",
                 isActive = true,

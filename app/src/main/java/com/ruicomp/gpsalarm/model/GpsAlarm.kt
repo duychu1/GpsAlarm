@@ -8,7 +8,7 @@ import kotlinx.serialization.Serializable
 @Parcelize
 data class GpsAlarm(
     val id: Int,
-    val location: Pair<Double, Double>, // A data class to hold GPS coordinates
+    val location: GpsLocation, // A data class to hold GPS coordinates
     val name: String,
     val reminder: String,
     val isActive: Boolean,

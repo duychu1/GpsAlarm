@@ -16,6 +16,10 @@ class HomeViewModel @Inject constructor(
     initialState = HomeState.initial(),
     reducer = HomeScreenReducer()
 ) {
+    init {
+        getData()
+    }
+
     fun getData() {
         viewModelScope.launch {
             gpsAlarmRepo.getAllGpsAlarms().collect { result ->
@@ -42,7 +46,7 @@ class HomeViewModel @Inject constructor(
 
     fun onAlarmClick(gpsAlarm: GpsAlarm) {
         sendEffect(
-            HomeEffect.NavigateToDetail(gpsAlarm)
+            HomeEffect.NavigateToDetail(gpsAlarm.id)
         )
     }
 }
