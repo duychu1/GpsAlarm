@@ -12,4 +12,7 @@ sealed class NavRoutes {
     @Serializable
     data class Detail(val id: Int): NavRoutes()
 
+    @Serializable
+    data class Maps(val lat: Double?, val lng: Double?, val radius: Float): NavRoutes()
+
 }

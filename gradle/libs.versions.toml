@@ -1,5 +1,5 @@
 [versions]
-androidGradlePlugin = "8.5.0"
+androidGradlePlugin = "8.7.1"
 kotlin = "2.0.20"
 ksp = "2.0.20-1.0.25"
 coreKtx = "1.13.1"
@@ -7,14 +7,17 @@ junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 lifecycleRuntimeKtx = "2.8.6"
-activityCompose = "1.9.2"
-composeBom = "2024.09.03"
+activityCompose = "1.9.3"
+composeBom = "2024.10.00"
+places = "4.0.0"
 room = "2.6.1"
 hilt = "2.52"
 androidxHiltNavigationCompose = "1.2.0"
 kotlinxSerializationJson = "1.7.1"
-kotlinxSerialization = "2.0.20"
 navigationCompose = "2.8.3"
+servicesMaps = "19.0.0"
+mapsCompose = "6.1.2"
+googleAccompanist = "0.34.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -41,6 +44,13 @@ room-compiler = { group = "androidx.room", name = "room-compiler", version.ref =
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 
+services-maps = { group = "com.google.android.gms", name = "play-services-maps", version.ref = "servicesMaps" }
+maps-compose = { group = "com.google.maps.android", name = "maps-compose", version.ref = "mapsCompose" }
+places-maps = { module = "com.google.android.libraries.places:places", version.ref = "places" }
+
+accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "googleAccompanist" }
+accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "googleAccompanist" }
+
 
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-android-testing = { group = "com.google.dagger", name = "hilt-android-testing", version.ref = "hilt" }
@@ -62,4 +72,4 @@ compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 room = { id = "androidx.room", version.ref = "room" }
-jetbrains-kotlin-serialization = { id ="org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinxSerialization"}
+kotlin-serialization = { id ="org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin"}
