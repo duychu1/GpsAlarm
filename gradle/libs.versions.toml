@@ -50,6 +50,7 @@ places-maps = { module = "com.google.android.libraries.places:places", version.r
 
 accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "googleAccompanist" }
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "googleAccompanist" }
+accompanist-flowlayout = { module = "com.google.accompanist:accompanist-flowlayout", version.ref = "googleAccompanist" }
 
 
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }

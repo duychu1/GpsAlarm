@@ -26,7 +26,7 @@ object GpsAlarmFakeRepo {
                 isActive = false,
                 radius = 50,
                 isRepeating = false,
-                durationAlarm = 15, // 15 minutes
+                durationAlarm = 20, // 15 minutes
                 activeDays = listOf(1, 3, 5), // Monday, Wednesday, Friday
                 alarmSound = "sounds/evening_alarm.mp3"
             ),
@@ -36,9 +36,9 @@ object GpsAlarmFakeRepo {
                 name = "Weekend Alarm",
                 reminder = "Get ready for brunch",
                 isActive = true,
-                radius = 200,
+                radius = 250,
                 isRepeating = true,
-                durationAlarm = 45, // 45 minutes
+                durationAlarm = 30, // 45 minutes
                 activeDays = listOf(0, 6), // Sunday and Saturday
                 alarmSound = "sounds/weekend_alarm.mp3"
             ),

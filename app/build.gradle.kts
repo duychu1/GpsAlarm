@@ -77,7 +77,7 @@ dependencies {
 
 
     implementation(libs.places.maps)
-
+    implementation(libs.accompanist.flowlayout)
 
 
     testImplementation(libs.junit)

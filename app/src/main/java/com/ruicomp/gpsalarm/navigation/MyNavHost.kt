@@ -18,7 +18,7 @@ fun MyNavHost(
     navController: NavHostController = rememberNavController()
 
 ) {
-    NavHost(navController = navController, startDestination = NavRoutes.Maps(null, null, 100f)) {
+    NavHost(navController = navController, startDestination = NavRoutes.Detail(2)) {
         composable<NavRoutes.Home> {
             HomeScreen(
                 modifier = modifier,
