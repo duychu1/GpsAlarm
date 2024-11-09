@@ -144,27 +144,6 @@ class MapsViewModel @Inject constructor(
             _mapUiState.value =
                 _mapUiState.value.copy(listPlaces = SearchedPlacesFakeRepo.getSearchedPlaces())
             Log.d("dddd", "onSearchPlaces: ${mapUiState.value.listPlaces!!.size}")
-//            val request = FindAutocompletePredictionsRequest
-//                .builder()
-//                .setQuery(query)
-//                .build()
-//
-//            placesClient
-//                .findAutocompletePredictions(request)
-//                .addOnSuccessListener { response ->
-//                    _mapUiState.value.copy(listPlaces = response.autocompletePredictions.map {
-//                        PlaceAutoComplete(
-//                            it.getPrimaryText(null).toString(),
-//                            it.getSecondaryText(null).toString(),
-//                            it.placeId,
-//                        )
-//                    })
-//                }
-//                .addOnFailureListener {
-//                    it.printStackTrace()
-//                    println(it.cause)
-//                    println(it.message)
-//                }
         }
     }
 

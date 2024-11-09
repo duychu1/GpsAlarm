@@ -67,6 +67,7 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import com.ruicomp.gpsalarm.model.PlaceAutoComplete
 import com.ruicomp.gpsalarm.ui.theme.TemplateTheme
 import com.ruicomp.gpsalarm.utils.RequestPermissions
+import com.ruicomp.gpsalarm.utils.dlog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -116,7 +117,8 @@ fun MapsScreen(
         permissions = listOf(
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION,
-        )
+        ),
+        permissionNameDisplay = "Location"
     )
 }
 
@@ -171,22 +173,11 @@ fun MapsScreenContent(
             cameraPositionState = cameraPositionState,
             onMapClick = onMapClicked
         ) {
-            selectedLatLng?.let {
-                Marker(
-                    state = rememberUpdatedMarkerState(it),
-                )
-                Circle(
-                    center = it,
-                    radius = radius.toDouble(),
-                    strokeWidth = 2f,
-                    strokeColor = Color.Red,
-                    fillColor = Color.Red.copy(alpha = 0.2f)
-                )
-            }
 
-            currentLocation?.let {
-                MarkerMyLocation(currentLocation)
-            }
+            MarkerCircleLocation(selectedLatLng, radius)
+
+
+            MarkerMyLocation(currentLocation)
         }
 
 //        SearchAddress(
@@ -233,6 +224,23 @@ fun MapsScreenContent(
 //            )
 //        }
     }
+}
+
+@Composable
+private fun MarkerCircleLocation(lng: LatLng?, radius: Int) {
+    if (lng == null) return
+    Marker(
+        state = rememberUpdatedMarkerState(lng),
+    )
+    Circle(
+        center = lng,
+        radius = radius.toDouble(),
+        strokeWidth = 2f,
+        strokeColor = Color.Red,
+        fillColor = Color.Red.copy(alpha = 0.2f)
+    )
+    dlog("MarkerCircleLocation: recompose check")
+
 }
 
 @Composable
@@ -411,51 +419,6 @@ fun SearchBarAddress(
                             .padding(horizontal = 16.dp, vertical = 4.dp))
                 }
             }
-
-//            Column(Modifier.verticalScroll(rememberScrollState())) {
-//                repeat(4) { idx ->
-//                    val resultText = "Suggestion $idx"
-//                    ListItem(
-//                        headlineContent = { Text(resultText) },
-//                        supportingContent = { Text("Additional info") },
-//                        leadingContent = {
-//                            Icon(
-//                                Icons.Filled.Star,
-//                                contentDescription = null
-//                            )
-//                        },
-//                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-//                        modifier = Modifier
-//                            .clickable {
-//                                text.value = resultText
-//                                expanded.value = false
-//                            }
-//                            .fillMaxWidth()
-//                            .padding(horizontal = 16.dp, vertical = 4.dp))
-//                }
-//            }
-//            LazyColumn(
-//                contentPadding = PaddingValues(
-//                    start = 16.dp,
-//                    top = 72.dp,
-//                    end = 16.dp,
-//                    bottom = 16.dp
-//                ),
-//                verticalArrangement = Arrangement.spacedBy(8.dp),
-//                modifier = Modifier.semantics {
-//                    traversalIndex = 1f
-//                },
-//            ) {
-//                val list = List(100) { "Text $it" }
-//                items(count = list.size) {
-//                    Text(
-//                        text = list[it],
-//                        modifier = Modifier
-//                            .fillMaxWidth()
-//                            .padding(horizontal = 16.dp),
-//                    )
-//                }
-//            }
         }
 
 
@@ -463,7 +426,8 @@ fun SearchBarAddress(
 }
 
 @Composable
-fun MarkerMyLocation(position: LatLng) {
+fun MarkerMyLocation(position: LatLng?) {
+    if (position == null) return
     val state = rememberUpdatedMarkerState(position)
     MarkerComposable(
         state = state,
@@ -475,6 +439,7 @@ fun MarkerMyLocation(position: LatLng) {
             modifier = Modifier.size(30.dp)
         )
     }
+    dlog("MarkerMyLocation: recompose check")
 }
 
 @Composable

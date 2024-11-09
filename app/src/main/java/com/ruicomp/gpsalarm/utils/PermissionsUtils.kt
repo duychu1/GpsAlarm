@@ -1,30 +1,29 @@
 package com.ruicomp.gpsalarm.utils
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.provider.Settings
 import android.util.Log
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Shapes
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocal
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.DisposableEffectScope
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.MultiplePermissionsState
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.accompanist.permissions.shouldShowRationale
@@ -33,12 +32,14 @@ import kotlin.collections.forEach
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun RequestPermissions (
-    permissions: List<String>, //Manifest.permission.READ_EXTERNAL_STORAGE
+    permissions: List<String>,
+    permissionNameDisplay: String,
 ) {
     val permissionStates = rememberMultiplePermissionsState(
         permissions = permissions
     )
 
+    val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
 
     DisposableEffect(key1 = lifecycleOwner, effect = {
@@ -64,15 +65,23 @@ fun RequestPermissions (
         when {
             it.status.isGranted -> {
                 Log.d("RequestPermissions","write: granted")
-
+                if (!arePermissionsGranted(context, permissions)) {
+                    RequestPermissionDialog(
+                        context = context,
+                        permissionNameDisplay = permissionNameDisplay
+                    ) { }
+                }
             }
             it.status.shouldShowRationale -> {
                 Log.d("RequestPermissions","write: status.shouldShowRationale")
 
             }
             !it.status.isGranted && !it.status.shouldShowRationale -> {
-                Log.d("RequestPermissions","write: 3")
-//                RequestPermissionDialog() { }
+                Log.d("RequestPermissions","write: deny or something else")
+                RequestPermissionDialog(
+                    context = context,
+                    permissionNameDisplay = permissionNameDisplay
+                ) { }
             }
         }
     }
@@ -105,13 +114,13 @@ fun DialogWarnPermission() {
 @Composable
 fun RequestPermissionDialog(
     context: Context,
-    permission: String,
+    permissionNameDisplay: String,
     onPermissionGranted: () -> Unit
 ) {
     AlertDialog(
         onDismissRequest = {},
         title = { Text("Permission Required") },
-        text = { Text("This app needs the $permission permission to function properly.") },
+        text = { Text("This app needs access $permissionNameDisplay to work properly.") },
         confirmButton = {
             Button(
                 onClick = {
@@ -121,8 +130,14 @@ fun RequestPermissionDialog(
                     context.startActivity(intent)
                 }
             ) {
-                Text("Open Settings")
+                Text("OK")
             }
         }
     )
+}
+
+fun arePermissionsGranted(context: Context, permissions: List<String>): Boolean {
+    return permissions.all { permission ->
+        ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED
+    }
 }
