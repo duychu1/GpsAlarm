@@ -39,6 +39,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -110,7 +111,9 @@ fun MapsScreen(
         onCameraPositionChanged = viewModel::onCameraPositionChanged,
         listAddress = state.value.listPlaces,
         onSearchPlace = viewModel::onSearchPlaces,
-        onSelectPlace = viewModel::onSelectedPlace
+        onSelectPlace = viewModel::onSelectedPlace,
+        onFocusedMyLocation = viewModel::onFocusMyLocation
+
     )
 
     RequestPermissions(
@@ -129,6 +132,7 @@ fun MapsScreenContent(
     selectedLatLng: LatLng?,
     firstCameraPosition: LatLng,
     zoom: Float,
+    onFocusedMyLocation: () -> Unit,
     firstLatLngBounds: LatLngBounds,
     radius: Int,
     isMarkerVisible: Boolean,
@@ -196,17 +200,19 @@ fun MapsScreenContent(
             onSelectPlace = onSelectPlace,
         )
 
+        val currentLocation = rememberUpdatedState(newValue = currentLocation)
         MyLocationIcon {
             CoroutineScope(Dispatchers.Unconfined).launch {
                 try {
                     cameraPositionState.animate(
-                        update = CameraUpdateFactory.newLatLngZoom(currentLocation!!, 15f),
+                        update = CameraUpdateFactory.newLatLngZoom(currentLocation.value!!, 15f),
                         durationMs = 1000
                     )
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
             }
+//            onFocusedMyLocation()
         }
 
         CircularButtonWithDropdown(
@@ -304,10 +310,13 @@ fun BoxWithConstraintsScope.CircularButtonWithDropdown(
             listRadius.forEach { item ->
                 Box(
                     contentAlignment = Alignment.Center,
-                    modifier = Modifier.fillMaxWidth().padding(4.dp).clickable(onClick = {
-                        expanded.value = false
-                        onRadiusChanged(item)
-                    })
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(4.dp)
+                        .clickable(onClick = {
+                            expanded.value = false
+                            onRadiusChanged(item)
+                        })
                 ) {
                     Text(text = "${item}m")
                 }
