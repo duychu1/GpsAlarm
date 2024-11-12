@@ -6,4 +6,4 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 @Parcelize
-data class GpsLocation(val x: Double, val y: Double): Parcelable
+data class GpsLocation(val x: Double, val y: Double, val addressLine: String? = null): Parcelable

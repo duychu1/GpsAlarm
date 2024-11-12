@@ -2,6 +2,8 @@ package com.ruicomp.gpsalarm.feature.maps
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.location.Address
+import android.location.Geocoder
 import android.location.LocationManager
 import android.util.Log
 import androidx.lifecycle.SavedStateHandle
@@ -24,16 +26,19 @@ import com.ruicomp.gpsalarm.navigation.NavRoutes
 import com.ruicomp.gpsalarm.utils.dlog
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
 class MapsViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
+    private val savedStateHandle: SavedStateHandle,
     @ApplicationContext appContext: Context,
 ) : ViewModel() {
 
@@ -43,15 +48,23 @@ class MapsViewModel @Inject constructor(
     private var placesClient: PlacesClient
     private var fusedLocationClient: FusedLocationProviderClient
     private var locationManager: LocationManager
+    private var geocoder: Geocoder
 
     init {
         val (lat, lng, radius) = savedStateHandle.toRoute<NavRoutes.Maps>()
+        _mapUiState.value = _mapUiState.value.copy(
+            defaultCamPos = LatLng(lat!!, lng!!),
+            selectedLatLng = LatLng(lat, lng),
+            radius = radius.toInt(),
+            zoom = 15f,
+        )
 
 
         Places.initialize(appContext, BuildConfig.mapk)
         placesClient = Places.createClient(appContext)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(appContext)
         locationManager = appContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        geocoder = Geocoder(appContext, Locale.getDefault())
 
         getLastKnownLocation()
         viewModelScope.launch {
@@ -75,6 +88,19 @@ class MapsViewModel @Inject constructor(
             selectedLatLng = latLng,
             isMarkerVisible = true
         )
+        viewModelScope.launch(Dispatchers.IO) {
+            val address = getAddressFromLocation(
+                latitude = latLng.latitude,
+                longitude = latLng.longitude,
+            )
+
+            _mapUiState.value = _mapUiState.value.copy(
+                selectedAddressLine = address
+            )
+
+            dlog("onMapClicked: address: $address")
+            dlog("onMapClicked: thread: ${Thread.currentThread().name}")
+        }
     }
 
     fun onRadiusChanged(radius: Int) {
@@ -89,6 +115,10 @@ class MapsViewModel @Inject constructor(
 
     fun onCameraPositionChanged(latLng: LatLng, zoom: Float) {
         Log.d("dddd", "onCameraPositionChanged: pos=($latLng) zoom=($zoom)")
+    }
+
+    fun onClickSave() {
+        Log.d("dddd", "onClickSave: ")
     }
 
     fun onFocusMyLocation() {
@@ -134,6 +164,30 @@ class MapsViewModel @Inject constructor(
         } catch (ex: Exception) {
             // Handle other exceptions
             dlog("listenLocationChange Exception")
+        }
+    }
+
+    fun getAddressFromLocation(latitude: Double, longitude: Double): String? {
+        return try {
+            // Perform geocoding on the background thread to avoid blocking the UI
+            val addresses: List<Address>? = geocoder.getFromLocation(latitude, longitude, 1)
+            addresses?.firstOrNull()?.let {
+                dlog("getAddressFromLocation: addressLine: ${it.getAddressLine(0)}")
+                dlog("getAddressFromLocation: subThoroughfare: ${it.subThoroughfare}")
+                dlog("getAddressFromLocation: thoroughfare: ${it.thoroughfare}")
+                dlog("getAddressFromLocation: subAdminArea: ${it.subAdminArea}")
+                dlog("getAddressFromLocation: adminArea: ${it.adminArea}")
+                dlog("getAddressFromLocation: countryName: ${it.countryName}")
+                dlog("getAddressFromLocation: subLocality: ${it.subLocality}")
+                dlog("getAddressFromLocation: locality: ${it.locality}")
+            }
+            // Check if addresses are found and return the first one
+            addresses?.firstOrNull()?.getAddressLine(0)
+
+        } catch (e: Exception) {
+            // Log specific exceptions or handle them accordingly
+            e.printStackTrace()
+            null
         }
     }
 
@@ -209,6 +263,7 @@ class MapsViewModel @Inject constructor(
         val currentLocation: LatLng? = null,
         val listPlaces: List<PlaceAutoComplete>? = emptyList<PlaceAutoComplete>(),
         val selectedLatLng: LatLng? = null,
+        val selectedAddressLine: String? = null,
         val defaultCamPos: LatLng = LatLng(15.62533352908947, 104.02983404695988),
         val zoom: Float = 5.8f,
         val defaultLatLngBounds: LatLngBounds = LatLngBounds(

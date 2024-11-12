@@ -30,4 +30,16 @@ class DetailViewModel @Inject constructor(
             DetailEvent.UpdateData(gpsAlarm)
         )
     }
+
+    fun onNavigateToMaps() {
+        state.value.gpsAlarm?.let {
+            sendEffect(
+                DetailEffect.NavigateToMaps(
+                    lat = it.location.x,
+                    lng = it.location.y,
+                    radius = it.radius.toFloat()
+                )
+            )
+        }
+    }
 }

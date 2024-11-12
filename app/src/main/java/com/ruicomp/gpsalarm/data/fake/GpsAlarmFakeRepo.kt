@@ -53,6 +53,19 @@ object GpsAlarmFakeRepo {
                 durationAlarm = 60, // 60 minutes
                 activeDays = listOf(1, 2, 3, 4, 5, 6), // Monday to Saturday
                 alarmSound = "sounds/workout_alarm.mp3"
+            ),
+            GpsAlarm(
+                id = 4,
+                location = GpsLocation(20.99026, 105.8487278, "123 Nguyen Hue, HCM City"),
+                name = "Workout Alarmdddd",
+                reminder = "Time to hit the gymasdfaf",
+                isActive = true,
+                radius = 250,
+                isRepeating = true,
+                durationAlarm = 60, // 60 minutes
+                activeDays = listOf(1, 2, 3, 4, 5, 6), // Monday to Saturday
+                alarmSound = "sounds/workout_alarm.mp3"
+
             )
         )
     }

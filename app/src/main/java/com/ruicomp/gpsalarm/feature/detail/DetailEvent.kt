@@ -3,12 +3,14 @@ package com.ruicomp.gpsalarm.feature.detail
 import androidx.compose.runtime.Immutable
 import com.ruicomp.gpsalarm.base_mvi.Reducer
 import com.ruicomp.gpsalarm.model.GpsAlarm
+import com.ruicomp.gpsalarm.model.GpsLocation
 
 @Immutable
 sealed class DetailEvent : Reducer.ViewEvent {
     data class UpdateLoading(val isLoading: Boolean) : DetailEvent()
     data class UpdateData(val gpsAlarm: GpsAlarm?) : DetailEvent()
     data class UpdateLocation(val location: Pair<Double, Double>) : DetailEvent()
+    data class UpdateFromMaps(val location: GpsLocation, val radius: Int) : DetailEvent()
     data class UpdateLocationName(val id: Int, val name: String) : DetailEvent()
     data class UpdateLocationRadius(val id: Int, val radius: Int) : DetailEvent()
     data class UpdateAlarmReminder(val id: Int, val reminder: String) : DetailEvent()

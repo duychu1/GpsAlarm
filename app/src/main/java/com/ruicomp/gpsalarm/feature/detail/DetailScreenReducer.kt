@@ -30,6 +30,11 @@ class DetailScreenReducer : Reducer<DetailState, DetailEvent, DetailEffect> {
             is DetailEvent.UpdateAlarmSound -> TODO()
             is DetailEvent.UpdateLocationName -> TODO()
             is DetailEvent.UpdateLocationRadius -> TODO()
+            is DetailEvent.UpdateFromMaps -> {
+                previousState.copy(
+                    gpsAlarm = previousState.gpsAlarm?.copy(location = event.location, radius = event.radius)
+                ) to null
+            }
         }
     }
 }

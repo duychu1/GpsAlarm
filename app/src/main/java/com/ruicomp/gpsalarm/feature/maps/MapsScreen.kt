@@ -3,6 +3,7 @@ package com.ruicomp.gpsalarm.feature.maps
 import com.ruicomp.gpsalarm.R
 import android.Manifest
 import android.annotation.SuppressLint
+import android.health.connect.datatypes.units.Volume
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -10,11 +11,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.BoxWithConstraintsScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -23,6 +28,7 @@ import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -48,6 +54,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.isTraversalGroup
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.traversalIndex
@@ -77,7 +84,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun MapsScreen(
     modifier: Modifier = Modifier,
-    viewModel: MapsViewModel = hiltViewModel()
+    onBackDetail: (Double, Double, Int, String?) -> Unit,
+    viewModel: MapsViewModel = hiltViewModel(),
 ) {
     val state = viewModel.mapUiState.collectAsStateWithLifecycle()
 //    val effect = rememberFlowWithLifecycle(viewModel.effect)
@@ -100,6 +108,7 @@ fun MapsScreen(
         modifier = modifier,
         currentLocation = state.value.currentLocation,
         selectedLatLng = state.value.selectedLatLng,
+        selectedAddressLine = state.value.selectedAddressLine,
         firstCameraPosition = state.value.defaultCamPos,
         zoom = state.value.zoom,
         firstLatLngBounds = state.value.defaultLatLngBounds,
@@ -112,7 +121,14 @@ fun MapsScreen(
         listAddress = state.value.listPlaces,
         onSearchPlace = viewModel::onSearchPlaces,
         onSelectPlace = viewModel::onSelectedPlace,
-        onFocusedMyLocation = viewModel::onFocusMyLocation
+        onClickSave = {
+            onBackDetail(
+                state.value.selectedLatLng!!.latitude,
+                state.value.selectedLatLng!!.longitude,
+                state.value.radius,
+                state.value.selectedAddressLine,
+            )
+        }
 
     )
 
@@ -130,9 +146,10 @@ fun MapsScreen(
 fun MapsScreenContent(
     currentLocation: LatLng?,
     selectedLatLng: LatLng?,
+    selectedAddressLine: String?,
     firstCameraPosition: LatLng,
     zoom: Float,
-    onFocusedMyLocation: () -> Unit,
+    onClickSave: () -> Unit,
     firstLatLngBounds: LatLngBounds,
     radius: Int,
     isMarkerVisible: Boolean,
@@ -143,11 +160,18 @@ fun MapsScreenContent(
     listAddress: List<PlaceAutoComplete>?,
     onSearchPlace: (String) -> Unit,
     onSelectPlace: (PlaceAutoComplete) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val cameraPositionState = rememberCameraPositionState()
+    val isFirstLaunch = rememberSaveable { mutableStateOf(true) }
 
     LaunchedEffect(firstCameraPosition) {
+        if (isFirstLaunch.value) {
+            cameraPositionState.move(CameraUpdateFactory.newLatLngZoom(firstCameraPosition, zoom))
+            isFirstLaunch.value = false
+            return@LaunchedEffect
+        }
+
         cameraPositionState.animate(
             update = CameraUpdateFactory.newLatLngZoom(firstCameraPosition, zoom),
             durationMs = 1000
@@ -193,12 +217,7 @@ fun MapsScreenContent(
 //            modifier = Modifier.statusBarsPadding()
 //        )
 
-        SearchBarAddress(
-            query = query.value,
-            listAddress = listAddress,
-            onExcSearch = onSearchPlace,
-            onSelectPlace = onSelectPlace,
-        )
+
 
         val currentLocation = rememberUpdatedState(newValue = currentLocation)
         MyLocationIcon {
@@ -220,15 +239,54 @@ fun MapsScreenContent(
             onRadiusChanged = onRadiusChanged
         )
 
-        // Add a bottom bar to adjust the radius
-//        BottomAppBar(modifier = Modifier.align(Alignment.BottomCenter)) {
-//            Slider(
-//                value = radius,
-//                onValueChange = { onRadiusChanged(it) },
-//                valueRange = 0f..1000f,
-//                steps = 10
-//            )
-//        }
+
+        BottomSaveAndAddress(
+            selectedLatLng = selectedLatLng,
+            selectedAddressLine = selectedAddressLine,
+            onClickSave = onClickSave
+        )
+
+        SearchBarAddress(
+            query = query.value,
+            listAddress = listAddress,
+            onExcSearch = onSearchPlace,
+            onSelectPlace = onSelectPlace,
+        )
+    }
+}
+
+@SuppressLint("DefaultLocale")
+@Composable
+private fun BoxWithConstraintsScope.BottomSaveAndAddress(
+    selectedLatLng: LatLng?,
+    selectedAddressLine: String? = null,
+    onClickSave: () -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .align(Alignment.BottomCenter)
+            .navigationBarsPadding()
+            .fillMaxWidth()
+            .padding(horizontal = 60.dp),
+    ) {
+        if (selectedAddressLine != null)
+            Text(
+                text = selectedAddressLine,
+                color = MaterialTheme.colorScheme.onPrimary
+            )
+        if (selectedLatLng != null)
+            Text(
+                text = String.format("%.5f, %.5f", selectedLatLng.latitude, selectedLatLng.longitude),
+                color = MaterialTheme.colorScheme.onPrimary
+            )
+        Spacer(Modifier.height(8.dp))
+        Button(
+            onClick = onClickSave,
+            modifier = Modifier
+                .fillMaxWidth(),
+        ) {
+            Text(text = stringResource(R.string.save))
+        }
     }
 }
 
@@ -276,7 +334,7 @@ private fun BoxWithConstraintsScope.MyLocationIcon(
 @Composable
 fun BoxWithConstraintsScope.CircularButtonWithDropdown(
     radius: Int,
-    onRadiusChanged: (Int) -> Unit
+    onRadiusChanged: (Int) -> Unit,
 ) {
     val expanded = remember { mutableStateOf(false) }
     val listRadius = listOf(50, 100, 250, 500, 750, 1000)
@@ -329,7 +387,7 @@ fun BoxWithConstraintsScope.CircularButtonWithDropdown(
 fun SearchAddress(
     query: String,
     onQueryChange: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     TextField(
         value = query,
@@ -356,7 +414,7 @@ fun SearchBarAddress(
     query: String,
     onSelectPlace: (PlaceAutoComplete) -> Unit,
     listAddress: List<PlaceAutoComplete>?,
-    onExcSearch: (String) -> Unit
+    onExcSearch: (String) -> Unit,
 ) {
     val text = rememberSaveable { mutableStateOf("") }
     val expanded = rememberSaveable { mutableStateOf(false) }

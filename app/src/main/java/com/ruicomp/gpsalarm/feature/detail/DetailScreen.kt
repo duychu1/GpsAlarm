@@ -1,11 +1,9 @@
 package com.ruicomp.gpsalarm.feature.detail
 
+import android.annotation.SuppressLint
 import android.util.Log
-import android.widget.Switch
 import android.widget.Toast
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.InteractionSource
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,34 +18,28 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
-import androidx.compose.material3.SliderState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpSize
@@ -56,15 +48,18 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ruicomp.gpsalarm.model.GpsAlarm
 import com.ruicomp.gpsalarm.utils.rememberFlowWithLifecycle
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
-import com.ruicomp.gpsalarm.data.GpsAlarmRepoImpl
 import com.ruicomp.gpsalarm.data.fake.GpsAlarmFakeRepo
+import com.ruicomp.gpsalarm.model.GpsLocation
+import com.ruicomp.gpsalarm.model.MapsToDetailResult
+import com.ruicomp.gpsalarm.navigation.NavRoutes
 import com.ruicomp.gpsalarm.ui.theme.TemplateTheme
 import com.ruicomp.gpsalarm.utils.dlog
 
 @Composable
 fun DetailScreen(
     modifier: Modifier = Modifier,
+    mapsResult: MapsToDetailResult?,
+    onNavigateToScreen: (Any) -> Unit,
     viewModel: DetailViewModel = hiltViewModel()
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle()
@@ -74,9 +69,8 @@ fun DetailScreen(
     LaunchedEffect(effect) {
         effect.collect { action ->
             when (action) {
-                is DetailEffect.NavigateToTopic -> {
-                    // This effect would result in a navigation to another screen of the application
-                    // with the topicId as a parameter.
+                is DetailEffect.NavigateToMaps -> {
+                    onNavigateToScreen(NavRoutes.Maps(action.lat, action.lng, action.radius))
                     Log.d("DetailScreen", "Navigate to topic with id: ")
                 }
 
@@ -91,9 +85,16 @@ fun DetailScreen(
         }
     }
 
-//    LaunchedEffect(Unit) {
-//        viewModel.initData(gpsAlarm)
-//    }
+    LaunchedEffect(mapsResult) {
+        if (mapsResult != null) {
+            viewModel.sendEvent(
+                DetailEvent.UpdateFromMaps(
+                    location = GpsLocation(mapsResult.lat, mapsResult.lng, addressLine = mapsResult.addressLine),
+                    radius = mapsResult.radius,
+                )
+            )
+        }
+    }
 
     DetailScreenContent(
         modifier = modifier,
@@ -108,6 +109,10 @@ fun DetailScreen(
             viewModel.sendEventForEffect(
                 DetailEvent.DeleteAlarm(it)
             )
+        },
+        onClickAddress = viewModel::onNavigateToMaps,
+        onSave = {
+
         }
     )
 }
@@ -118,6 +123,8 @@ fun DetailScreenContent(
     gpsAlarm: GpsAlarm?,
     onActiveChange: (Int, Boolean) -> Unit,
     onDeleteGpsAlarm: (Int) -> Unit,
+    onClickAddress: () -> Unit,
+    onSave: (GpsAlarm) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier.fillMaxSize()) {
@@ -136,18 +143,21 @@ fun DetailScreenContent(
                 gpsAlarm = gpsAlarm,
                 onActiveChange = onActiveChange,
                 onDelete = { onDeleteGpsAlarm(gpsAlarm.id) },
+                onClickAddress = onClickAddress,
                 onSave = { }
             )
         }
     }
 }
 
+@SuppressLint("DefaultLocale")
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun GpsAlarmItem(
     gpsAlarm: GpsAlarm,
     onActiveChange: (Int, Boolean) -> Unit,
     onDelete: () -> Unit,
+    onClickAddress: () -> Unit,
     onSave: (GpsAlarm) -> Unit,
 ) {
     val name = remember { mutableStateOf(gpsAlarm.name) }
@@ -161,7 +171,7 @@ fun GpsAlarmItem(
 
     // UI
     Column(
-        modifier = Modifier.padding(16.dp)
+        modifier = Modifier.padding(16.dp).verticalScroll(rememberScrollState())
     ) {
         Text("Edit GPS Alarm", style = MaterialTheme.typography.titleLarge)
 
@@ -186,6 +196,17 @@ fun GpsAlarmItem(
         )
 
         Spacer(modifier = Modifier.height(8.dp))
+
+        Text("Address")
+        Column(
+            Modifier.fillMaxWidth()
+                .clickable(onClick = onClickAddress)
+        ) {
+            gpsAlarm.location.addressLine?.let {
+                Text(text = it)
+            }
+            Text(text = String.format("%.5f, %.5f", gpsAlarm.location.x, gpsAlarm.location.y),)
+        }
 
         // Active (Checkbox)
         Row(
@@ -386,6 +407,7 @@ private fun PreviewDetailScreen() {
                 gpsAlarm = gpsAlarm,
                 onActiveChange = { _, _ -> },
                 onDelete = { },
+                onClickAddress = {},
                 onSave = { }
             )
         }
