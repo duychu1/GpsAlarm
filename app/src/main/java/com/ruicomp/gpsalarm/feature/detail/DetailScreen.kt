@@ -164,10 +164,10 @@ fun GpsAlarmItem(
     val reminder = remember { mutableStateOf(gpsAlarm.reminder) }
     val isActive = remember { mutableStateOf(gpsAlarm.isActive) }
     val radius = remember { mutableIntStateOf(gpsAlarm.radius) }
-    val isRepeating = remember { mutableStateOf(gpsAlarm.isRepeating) }
-    val durationAlarm = remember { mutableIntStateOf(gpsAlarm.durationAlarm) }
+    val isRepeating = remember { mutableStateOf(gpsAlarm.alarmSettings.isRepeating) }
+    val durationAlarm = remember { mutableIntStateOf(gpsAlarm.alarmSettings.duration) }
     val activeDays = remember { mutableStateOf(gpsAlarm.activeDays) }
-    val alarmSound = remember { mutableStateOf(gpsAlarm.alarmSound) }
+    val alarmSound = remember { mutableStateOf(gpsAlarm.alarmSettings.name) }
 
     // UI
     Column(
@@ -382,10 +382,12 @@ fun GpsAlarmItem(
                         reminder = reminder.value,
                         isActive = isActive.value,
                         radius = radius.value,
-                        isRepeating = isRepeating.value,
-                        durationAlarm = durationAlarm.value,
                         activeDays = activeDays.value,
-                        alarmSound = alarmSound.value,
+                        alarmSettings = gpsAlarm.alarmSettings.copy(
+                            name = alarmSound.value,
+                            isRepeating = isRepeating.value,
+                            duration = durationAlarm.value,
+                        )
                     )
                 )
             },

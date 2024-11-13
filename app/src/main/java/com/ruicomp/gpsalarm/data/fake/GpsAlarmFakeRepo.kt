@@ -13,10 +13,8 @@ object GpsAlarmFakeRepo {
                 reminder = "Wake up for work",
                 isActive = true,
                 radius = 100,
-                isRepeating = true,
-                durationAlarm = 30, // 30 minutes
                 activeDays = listOf(1, 2, 3, 4, 5), // Monday to Friday
-                alarmSound = "sounds/morning_alarm.mp3"
+                alarmSettings = AlarmSettingFakeRepo.alarmSettingsList.get(0)
             ),
             GpsAlarm(
                 id = 1,
@@ -25,10 +23,8 @@ object GpsAlarmFakeRepo {
                 reminder = "Time to wrap up work",
                 isActive = false,
                 radius = 50,
-                isRepeating = false,
-                durationAlarm = 20, // 15 minutes
                 activeDays = listOf(1, 3, 5), // Monday, Wednesday, Friday
-                alarmSound = "sounds/evening_alarm.mp3"
+                alarmSettings = AlarmSettingFakeRepo.alarmSettingsList.get(1)
             ),
             GpsAlarm(
                 id = 2,
@@ -37,10 +33,8 @@ object GpsAlarmFakeRepo {
                 reminder = "Get ready for brunch",
                 isActive = true,
                 radius = 250,
-                isRepeating = true,
-                durationAlarm = 30, // 45 minutes
                 activeDays = listOf(0, 6), // Sunday and Saturday
-                alarmSound = "sounds/weekend_alarm.mp3"
+                alarmSettings = AlarmSettingFakeRepo.alarmSettingsList.get(2)
             ),
             GpsAlarm(
                 id = 3,
@@ -49,10 +43,8 @@ object GpsAlarmFakeRepo {
                 reminder = "Time to hit the gym",
                 isActive = true,
                 radius = 300,
-                isRepeating = true,
-                durationAlarm = 60, // 60 minutes
                 activeDays = listOf(1, 2, 3, 4, 5, 6), // Monday to Saturday
-                alarmSound = "sounds/workout_alarm.mp3"
+                alarmSettings = AlarmSettingFakeRepo.alarmSettingsList.get(3)
             ),
             GpsAlarm(
                 id = 4,
@@ -61,10 +53,8 @@ object GpsAlarmFakeRepo {
                 reminder = "Time to hit the gymasdfaf",
                 isActive = true,
                 radius = 250,
-                isRepeating = true,
-                durationAlarm = 60, // 60 minutes
                 activeDays = listOf(1, 2, 3, 4, 5, 6), // Monday to Saturday
-                alarmSound = "sounds/workout_alarm.mp3"
+                alarmSettings = AlarmSettingFakeRepo.alarmSettingsList.get(4)
 
             )
         )
