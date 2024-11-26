@@ -41,6 +41,9 @@ fun MyNavHost(
                 mapsResult = mapsResult,
                 onNavigateToScreen = {
                     navController.navigate(it)
+                },
+                onNavigateBack = {
+                    navController.popBackStack()
                 }
             )
         }

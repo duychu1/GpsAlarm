@@ -21,11 +21,15 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
@@ -33,8 +37,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -60,6 +66,7 @@ fun DetailScreen(
     modifier: Modifier = Modifier,
     mapsResult: MapsToDetailResult?,
     onNavigateToScreen: (Any) -> Unit,
+    onNavigateBack: () -> Unit,
     viewModel: DetailViewModel = hiltViewModel()
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle()
@@ -113,7 +120,8 @@ fun DetailScreen(
         onClickAddress = viewModel::onNavigateToMaps,
         onSave = {
 
-        }
+        },
+        onBack = onNavigateBack
     )
 }
 
@@ -125,6 +133,7 @@ fun DetailScreenContent(
     onDeleteGpsAlarm: (Int) -> Unit,
     onClickAddress: () -> Unit,
     onSave: (GpsAlarm) -> Unit,
+    onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier.fillMaxSize()) {
@@ -144,7 +153,8 @@ fun DetailScreenContent(
                 onActiveChange = onActiveChange,
                 onDelete = { onDeleteGpsAlarm(gpsAlarm.id) },
                 onClickAddress = onClickAddress,
-                onSave = { }
+                onSave = { },
+                onBack = onBack
             )
         }
     }
@@ -159,6 +169,7 @@ fun GpsAlarmItem(
     onDelete: () -> Unit,
     onClickAddress: () -> Unit,
     onSave: (GpsAlarm) -> Unit,
+    onBack: () -> Unit,
 ) {
     val name = remember { mutableStateOf(gpsAlarm.name) }
     val reminder = remember { mutableStateOf(gpsAlarm.reminder) }
@@ -167,13 +178,29 @@ fun GpsAlarmItem(
     val isRepeating = remember { mutableStateOf(gpsAlarm.alarmSettings.isRepeating) }
     val durationAlarm = remember { mutableIntStateOf(gpsAlarm.alarmSettings.duration) }
     val activeDays = remember { mutableStateOf(gpsAlarm.activeDays) }
-    val alarmSound = remember { mutableStateOf(gpsAlarm.alarmSettings.name) }
+    val alarmName = remember { mutableStateOf(gpsAlarm.alarmSettings.name) }
+    val alarmVolume = remember { mutableFloatStateOf(gpsAlarm.alarmSettings.soundVolume) }
+    val alarmVibrate = remember { mutableFloatStateOf(gpsAlarm.alarmSettings.vibrationLevel) }
 
     // UI
     Column(
-        modifier = Modifier.padding(16.dp).verticalScroll(rememberScrollState())
+        modifier = Modifier
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState())
     ) {
-        Text("Edit GPS Alarm", style = MaterialTheme.typography.titleLarge)
+        TopAppBar(
+            title = { Text("Edit GPS Alarm", style = MaterialTheme.typography.titleLarge) },
+            navigationIcon = {
+                IconButton(
+                    onClick = onBack
+                ) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                }
+            },
+            actions = {
+//                Text("Delete", modifier = Modifier.clickable { onDelete() })
+            }
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -199,7 +226,8 @@ fun GpsAlarmItem(
 
         Text("Address")
         Column(
-            Modifier.fillMaxWidth()
+            Modifier
+                .fillMaxWidth()
                 .clickable(onClick = onClickAddress)
         ) {
             gpsAlarm.location.addressLine?.let {
@@ -233,32 +261,56 @@ fun GpsAlarmItem(
         // Slider value is represented as a float between 0f and (listRadius.size - 1)
         val sliderValue = listRadius.indexOf(radius.intValue).toFloat()
 
-        val interactionSource = remember { MutableInteractionSource() }
 
-        Slider(
+        CustomSlider(
             value = sliderValue,
-            onValueChange = { newValue ->
-                dlog("newValue: $newValue, to int: ${newValue.toInt()}")
-                radius.intValue = listRadius[newValue.toInt()]
-            },
-            valueRange = 0f..(listRadius.size - 1).toFloat(), // Range from 0 to list size - 1
-            steps = listRadius.size - 2, // To get discrete steps
-            onValueChangeFinished = {
-                // Optionally do something when the value change finishes
-            },
-            thumb = {
-                SliderDefaults.Thumb(
-                    interactionSource = interactionSource,
-                    thumbSize = DpSize(20.dp, 20.dp),
-                )
-            },
-            track = {
-                SliderDefaults.Track(
-                    sliderState = it,
-                    thumbTrackGapSize = 0.dp,
-                )
+            maxRange = (listRadius.size - 1).toFloat(),
+            steps = listRadius.size - 2,
+            onValueChange = {
+                radius.intValue = listRadius[it.toInt()]
+                dlog("onValueChange: ${radius.intValue}")
+
             }
         )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(text = "Alarm Setting", style = MaterialTheme.typography.titleLarge)
+
+        Text(text = "Volume:")
+        CustomSlider(
+            value = alarmVolume.floatValue,
+            maxRange = 1f,
+            steps = 2,
+            onValueChange = {
+                alarmVolume.floatValue = it
+                dlog("onValueChange: ${alarmVolume.floatValue}")
+            }
+        )
+
+        Text(text = "Vibrate level:")
+        CustomSlider(
+            value = alarmVibrate.floatValue,
+            maxRange = 1f,
+            steps = 2,
+            onValueChange = {
+                alarmVibrate.floatValue = it
+                dlog("onValueChange: ${alarmVibrate.floatValue}")
+            }
+        )
+
+        // Repeating (Checkbox)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text("Repeating")
+            Switch(
+                checked = isRepeating.value,
+                onCheckedChange = { isRepeating.value = it }
+            )
+        }
 
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -302,18 +354,6 @@ fun GpsAlarmItem(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Repeating (Checkbox)
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text("Repeating")
-            Switch(
-                checked = isRepeating.value,
-                onCheckedChange = { isRepeating.value = it }
-            )
-        }
 
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -365,8 +405,8 @@ fun GpsAlarmItem(
 
         // Alarm Sound (TextField for file URI or path)
         TextField(
-            value = alarmSound.value,
-            onValueChange = { alarmSound.value = it },
+            value = alarmName.value,
+            onValueChange = { alarmName.value = it },
             label = { Text("Alarm Sound Path/URI") },
             modifier = Modifier.fillMaxWidth()
         )
@@ -384,7 +424,7 @@ fun GpsAlarmItem(
                         radius = radius.value,
                         activeDays = activeDays.value,
                         alarmSettings = gpsAlarm.alarmSettings.copy(
-                            name = alarmSound.value,
+                            name = alarmName.value,
                             isRepeating = isRepeating.value,
                             duration = durationAlarm.value,
                         )
@@ -396,6 +436,38 @@ fun GpsAlarmItem(
             Text("Save")
         }
     }
+}
+
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+private fun CustomSlider(
+    value: Float,
+    maxRange: Float,
+    steps: Int,
+    onValueChange: (Float) -> Unit,
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    Slider(
+        value = value,
+        onValueChange = onValueChange,
+        valueRange = 0f..maxRange, // Range from 0 to list size - 1
+        steps = steps, // To get discrete steps
+        onValueChangeFinished = {
+            // Optionally do something when the value change finishes
+        },
+        thumb = {
+            SliderDefaults.Thumb(
+                interactionSource = interactionSource,
+                thumbSize = DpSize(20.dp, 20.dp),
+            )
+        },
+        track = {
+            SliderDefaults.Track(
+                sliderState = it,
+                thumbTrackGapSize = 0.dp,
+            )
+        }
+    )
 }
 
 
@@ -410,7 +482,8 @@ private fun PreviewDetailScreen() {
                 onActiveChange = { _, _ -> },
                 onDelete = { },
                 onClickAddress = {},
-                onSave = { }
+                onSave = { },
+                onBack = { }
             )
         }
     }
