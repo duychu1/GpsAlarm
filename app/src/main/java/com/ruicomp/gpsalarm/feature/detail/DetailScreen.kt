@@ -258,9 +258,9 @@ fun GpsAlarmItem(
             Switch(
                 checked = gpsAlarm.isActive,
                 onCheckedChange = {
-                    onAlarmChange(gpsAlarm.copy(isActive = it))
+//                    onAlarmChange(gpsAlarm.copy(isActive = it))
 //                    isActive.value = it
-//                    onActiveChange(gpsAlarm.id, it)
+                    onActiveChange(gpsAlarm.id, it)
                 }
             )
         }
@@ -268,19 +268,18 @@ fun GpsAlarmItem(
         Spacer(modifier = Modifier.height(8.dp))
 
         // Radius (Slider)
-        Text("Radius (meters): ${gpsAlarm.radius}")
+        Text("Radius (meters): ${radius.intValue}")
 
-        val listRadius = listOf(50, 100, 250, 500, 750, 1000)
+        val listRadius = remember { listOf(50, 100, 250, 500, 750, 1000) }
         // Slider value is represented as a float between 0f and (listRadius.size - 1)
-        val sliderValue = listRadius.indexOf(gpsAlarm.radius).toFloat()
+        val sliderValue = listRadius.indexOf(radius.intValue).toFloat()
 
         CustomSlider(
             value = sliderValue,
             maxRange = (listRadius.size - 1).toFloat(),
             steps = listRadius.size - 2,
             onValueChange = {
-//                radius.intValue = listRadius[it.toInt()]
-                onAlarmChange(gpsAlarm.copy(radius = listRadius[it.toInt()]))
+                radius.intValue = listRadius[it.toInt()]
                 dlog("onValueChange: ${radius.intValue}")
 
             }
@@ -321,7 +320,10 @@ fun GpsAlarmItem(
             Text("Repeating")
             Switch(
                 checked = isRepeating.value,
-                onCheckedChange = { isRepeating.value = it }
+                onCheckedChange = {
+                    isRepeating.value = it
+                    onAlarmChange(gpsAlarm.copy(alarmSettings = gpsAlarm.alarmSettings.copy(isRepeating = it)))
+                }
             )
         }
 
