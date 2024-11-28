@@ -11,7 +11,7 @@ class DetailScreenReducer : Reducer<DetailState, DetailEvent, DetailEffect> {
             is DetailEvent.UpdateLoading -> {
                 previousState.copy(isLoading = event.isLoading) to null
             }
-            is DetailEvent.UpdateData -> {
+            is DetailEvent.UpdateGpsAlarm -> {
                 previousState.copy(isLoading = false, gpsAlarm = event.gpsAlarm) to null
             }
             is DetailEvent.UpdateLocation -> TODO()

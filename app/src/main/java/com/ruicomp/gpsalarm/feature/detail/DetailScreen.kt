@@ -121,6 +121,11 @@ fun DetailScreen(
         onSave = {
 
         },
+        onAlarmChange = {
+            viewModel.sendEvent(
+                DetailEvent.UpdateGpsAlarm(it)
+            )
+        },
         onBack = onNavigateBack
     )
 }
@@ -132,6 +137,7 @@ fun DetailScreenContent(
     onActiveChange: (Int, Boolean) -> Unit,
     onDeleteGpsAlarm: (Int) -> Unit,
     onClickAddress: () -> Unit,
+    onAlarmChange: (GpsAlarm) -> Unit,
     onSave: (GpsAlarm) -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier
@@ -154,6 +160,7 @@ fun DetailScreenContent(
                 onDelete = { onDeleteGpsAlarm(gpsAlarm.id) },
                 onClickAddress = onClickAddress,
                 onSave = { },
+                onAlarmChange = onAlarmChange,
                 onBack = onBack
             )
         }
@@ -168,6 +175,7 @@ fun GpsAlarmItem(
     onActiveChange: (Int, Boolean) -> Unit,
     onDelete: () -> Unit,
     onClickAddress: () -> Unit,
+    onAlarmChange: (GpsAlarm) -> Unit,
     onSave: (GpsAlarm) -> Unit,
     onBack: () -> Unit,
 ) {
@@ -175,10 +183,10 @@ fun GpsAlarmItem(
     val reminder = remember { mutableStateOf(gpsAlarm.reminder) }
     val isActive = remember { mutableStateOf(gpsAlarm.isActive) }
     val radius = remember { mutableIntStateOf(gpsAlarm.radius) }
-    val isRepeating = remember { mutableStateOf(gpsAlarm.alarmSettings.isRepeating) }
-    val durationAlarm = remember { mutableIntStateOf(gpsAlarm.alarmSettings.duration) }
     val activeDays = remember { mutableStateOf(gpsAlarm.activeDays) }
     val alarmName = remember { mutableStateOf(gpsAlarm.alarmSettings.name) }
+    val isRepeating = remember { mutableStateOf(gpsAlarm.alarmSettings.isRepeating) }
+    val durationAlarm = remember { mutableIntStateOf(gpsAlarm.alarmSettings.duration) }
     val alarmVolume = remember { mutableFloatStateOf(gpsAlarm.alarmSettings.soundVolume) }
     val alarmVibrate = remember { mutableFloatStateOf(gpsAlarm.alarmSettings.vibrationLevel) }
 
@@ -244,10 +252,11 @@ fun GpsAlarmItem(
         ) {
             Text("Active")
             Switch(
-                checked = isActive.value,
+                checked = gpsAlarm.isActive,
                 onCheckedChange = {
-                    isActive.value = it
-                    onActiveChange(gpsAlarm.id, it)
+                    onAlarmChange(gpsAlarm.copy(isActive = it))
+//                    isActive.value = it
+//                    onActiveChange(gpsAlarm.id, it)
                 }
             )
         }
@@ -255,19 +264,19 @@ fun GpsAlarmItem(
         Spacer(modifier = Modifier.height(8.dp))
 
         // Radius (Slider)
-        Text("Radius (meters): ${radius.intValue}")
+        Text("Radius (meters): ${gpsAlarm.radius}")
 
         val listRadius = listOf(50, 100, 250, 500, 750, 1000)
         // Slider value is represented as a float between 0f and (listRadius.size - 1)
-        val sliderValue = listRadius.indexOf(radius.intValue).toFloat()
-
+        val sliderValue = listRadius.indexOf(gpsAlarm.radius).toFloat()
 
         CustomSlider(
             value = sliderValue,
             maxRange = (listRadius.size - 1).toFloat(),
             steps = listRadius.size - 2,
             onValueChange = {
-                radius.intValue = listRadius[it.toInt()]
+//                radius.intValue = listRadius[it.toInt()]
+                onAlarmChange(gpsAlarm.copy(radius = listRadius[it.toInt()]))
                 dlog("onValueChange: ${radius.intValue}")
 
             }
@@ -482,6 +491,7 @@ private fun PreviewDetailScreen() {
                 onActiveChange = { _, _ -> },
                 onDelete = { },
                 onClickAddress = {},
+                onAlarmChange = {},
                 onSave = { },
                 onBack = { }
             )

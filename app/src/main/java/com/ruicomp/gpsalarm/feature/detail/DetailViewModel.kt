@@ -21,13 +21,13 @@ class DetailViewModel @Inject constructor(
         val id = savedStateHandle.toRoute<NavRoutes.Detail>().id
         val gpsAlarm = gpsAlarmRepo.getGpsAlarmById(id)
         sendEvent(
-            DetailEvent.UpdateData(gpsAlarm)
+            DetailEvent.UpdateGpsAlarm(gpsAlarm)
         )
     }
 
     fun initData(gpsAlarm: GpsAlarm) {
         sendEvent(
-            DetailEvent.UpdateData(gpsAlarm)
+            DetailEvent.UpdateGpsAlarm(gpsAlarm)
         )
     }
 
