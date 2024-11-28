@@ -96,7 +96,11 @@ fun DetailScreen(
         if (mapsResult != null) {
             viewModel.sendEvent(
                 DetailEvent.UpdateFromMaps(
-                    location = GpsLocation(mapsResult.lat, mapsResult.lng, addressLine = mapsResult.addressLine),
+                    location = GpsLocation(
+                        mapsResult.lat,
+                        mapsResult.lng,
+                        addressLine = mapsResult.addressLine
+                    ),
                     radius = mapsResult.radius,
                 )
             )
@@ -233,7 +237,7 @@ fun GpsAlarmItem(
             gpsAlarm.location.addressLine?.let {
                 Text(text = it)
             }
-            Text(text = String.format("%.5f, %.5f", gpsAlarm.location.x, gpsAlarm.location.y),)
+            Text(text = String.format("%.5f, %.5f", gpsAlarm.location.x, gpsAlarm.location.y))
         }
 
         // Active (Checkbox)
@@ -316,38 +320,13 @@ fun GpsAlarmItem(
 
         Text(text = "Alarm duration: ${durationAlarm.intValue}s")
         // Duration (TextField)
-        val listDurations = listOf(10, 20, 30, 60, 90, 120)
+        val listDurations = remember { listOf(10, 20, 30, 60, 90, 120) }
 
         FlowRow {
             listDurations.forEach { duration ->
-                Card(
-                    shape = CircleShape,
-                    colors = CardDefaults.cardColors(
-                        containerColor = if (durationAlarm.intValue == duration) {
-                            MaterialTheme.colorScheme.primary
-                        } else {
-                            MaterialTheme.colorScheme.surface
-                        },
-                        contentColor = if (durationAlarm.intValue == duration) {
-                            MaterialTheme.colorScheme.onPrimary
-                        } else {
-                            MaterialTheme.colorScheme.onSurface
-                        }
-                    ),
-                    border = if (durationAlarm.intValue == duration) null else CardDefaults.outlinedCardBorder(),
-                    modifier = Modifier
-                        .padding(vertical = 4.dp)
-                        .clickable {
-                            durationAlarm.intValue = duration
-                        }
-                ) {
-                    Text(
-                        text = "${duration}s",
-                        modifier = Modifier.padding(vertical = 4.dp, horizontal = 12.dp)
-                    )
-                }
+                val isSelected = durationAlarm.intValue == duration
+                DurationCardItem(duration, isSelected) { durationAlarm.intValue = duration }
                 Spacer(Modifier.width(8.dp))
-
             }
         }
 
@@ -360,43 +339,19 @@ fun GpsAlarmItem(
 
         // Active Days (Multiple Select)
         Text("Active Days")
-        val dayOfWeek = listOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat")
+        val dayOfWeek = remember { listOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat") }
 
         FlowRow(
-            modifier = Modifier.padding(top = 4.dp),
+            modifier = Modifier.padding(top = 4.dp)
         ) {
             dayOfWeek.forEachIndexed { index, day ->
-                Card(
-                    shape = CircleShape,
-                    colors = CardDefaults.cardColors(
-                        containerColor = if (activeDays.value.contains(index)) {
-                            MaterialTheme.colorScheme.primary
-                        } else {
-                            MaterialTheme.colorScheme.surface
-                        },
-                        contentColor = if (activeDays.value.contains(index)) {
-                            MaterialTheme.colorScheme.onPrimary
-                        } else {
-                            MaterialTheme.colorScheme.onSurface
-                        }
-                    ),
-                    border = if (activeDays.value.contains(index)) null else CardDefaults.outlinedCardBorder(),
-                    modifier = Modifier
-                        .padding(vertical = 4.dp)
-                        .clickable {
-                            if (activeDays.value.contains(index)) {
-                                activeDays.value = activeDays.value - index
-                            } else {
-                                activeDays.value = activeDays.value + index
-                            }
-                        }
-                ) {
-                    Text(
-                        text = day,
-                        modifier = Modifier.padding(vertical = 4.dp, horizontal = 12.dp)
-                    )
+                DayItem(day, index, activeDays.value.contains(index)) { clickedIndex ->
+                    activeDays.value = if (activeDays.value.contains(clickedIndex)) {
+                        activeDays.value - clickedIndex
+                    } else {
+                        activeDays.value + clickedIndex
+                    }
                 }
-
                 Spacer(Modifier.width(8.dp))
             }
         }
@@ -435,6 +390,51 @@ fun GpsAlarmItem(
         ) {
             Text("Save")
         }
+    }
+}
+
+@Composable
+fun DurationCardItem(duration: Int, isSelected: Boolean, onSelect: () -> Unit) {
+    Card(
+        shape = CircleShape,
+        colors = CardDefaults.cardColors(
+            containerColor = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface,
+            contentColor = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
+        ),
+        border = if (isSelected) null else CardDefaults.outlinedCardBorder(),
+        modifier = Modifier
+            .padding(vertical = 4.dp)
+            .clickable { onSelect() }
+    ) {
+        Text(
+            text = "${duration}s",
+            modifier = Modifier.padding(vertical = 4.dp, horizontal = 12.dp)
+        )
+    }
+}
+
+@Composable
+fun DayItem(
+    day: String,
+    index: Int,
+    isActive: Boolean,
+    onDayClick: (Int) -> Unit
+) {
+    Card(
+        shape = CircleShape,
+        colors = CardDefaults.cardColors(
+            containerColor = if (isActive) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface,
+            contentColor = if (isActive) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
+        ),
+        border = if (isActive) null else CardDefaults.outlinedCardBorder(),
+        modifier = Modifier
+            .padding(vertical = 4.dp)
+            .clickable { onDayClick(index) }
+    ) {
+        Text(
+            text = day,
+            modifier = Modifier.padding(vertical = 4.dp, horizontal = 12.dp)
+        )
     }
 }
 
