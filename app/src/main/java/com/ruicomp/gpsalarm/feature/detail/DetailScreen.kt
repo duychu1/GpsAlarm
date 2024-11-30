@@ -40,6 +40,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -123,7 +124,8 @@ fun DetailScreen(
         },
         onClickAddress = viewModel::onNavigateToMaps,
         onSave = {
-
+            viewModel.onSave(it)
+            onNavigateBack()
         },
         onAlarmChange = {
             viewModel.sendEvent(
@@ -163,11 +165,62 @@ fun DetailScreenContent(
                 onActiveChange = onActiveChange,
                 onDelete = { onDeleteGpsAlarm(gpsAlarm.id) },
                 onClickAddress = onClickAddress,
-                onSave = { },
+                onSave = onSave,
                 onAlarmChange = onAlarmChange,
                 onBack = onBack
             )
         }
+    }
+}
+
+@Composable
+private fun ActivateAlarm(isActive: MutableState<Boolean>) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text("Active")
+        Switch(
+            checked = isActive.value,
+            onCheckedChange = {
+//                    onAlarmChange(gpsAlarm.copy(isActive = it))
+                isActive.value = it
+//                    onActiveChange(gpsAlarm.id, it)
+            }
+        )
+    }
+}
+
+@Composable
+private fun ActivateAlarm2(isActive: Boolean, onActiveChange: (Boolean) -> Unit) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text("Active")
+        Switch(
+            checked = isActive,
+            onCheckedChange = {
+                onActiveChange(it)
+            }
+        )
+    }
+}
+
+@Composable
+fun RepeatingAlarm(isRepeating: Boolean, onRepeatingChange: (Boolean) -> Unit) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text("Repeating")
+        Switch(
+            checked = isRepeating,
+            onCheckedChange = onRepeatingChange
+        )
     }
 }
 
@@ -249,21 +302,9 @@ fun GpsAlarmItem(
         }
 
         // Active (Checkbox)
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text("Active")
-            Switch(
-                checked = gpsAlarm.isActive,
-                onCheckedChange = {
-//                    onAlarmChange(gpsAlarm.copy(isActive = it))
-//                    isActive.value = it
-                    onActiveChange(gpsAlarm.id, it)
-                }
-            )
-        }
+        ActivateAlarm2(isActive = gpsAlarm.isActive, onActiveChange = {
+            onActiveChange(gpsAlarm.id, it)
+        })
 
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -312,18 +353,33 @@ fun GpsAlarmItem(
         )
 
         // Repeating (Checkbox)
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text("Repeating")
-            Switch(
-                checked = isRepeating.value,
-                onCheckedChange = {
-                    isRepeating.value = it
-                    onAlarmChange(gpsAlarm.copy(alarmSettings = gpsAlarm.alarmSettings.copy(isRepeating = it)))
-                }
+//        Row(
+//            modifier = Modifier.fillMaxWidth(),
+//            horizontalArrangement = Arrangement.SpaceBetween,
+//            verticalAlignment = Alignment.CenterVertically
+//        ) {
+//            Text("Repeating")
+//            Switch(
+//                checked = isRepeating.value,
+//                onCheckedChange = {
+//                    isRepeating.value = it
+//                    onAlarmChange(
+//                        gpsAlarm.copy(
+//                            alarmSettings = gpsAlarm.alarmSettings.copy(
+//                                isRepeating = it
+//                            )
+//                        )
+//                    )
+//                }
+//            )
+//        }
+        RepeatingAlarm(isRepeating = gpsAlarm.alarmSettings.isRepeating) {
+            onAlarmChange(
+                gpsAlarm.copy(
+                    alarmSettings = gpsAlarm.alarmSettings.copy(
+                        isRepeating = it
+                    )
+                )
             )
         }
 
@@ -387,12 +443,12 @@ fun GpsAlarmItem(
                         name = name.value,
                         reminder = reminder.value,
                         isActive = isActive.value,
-                        radius = radius.value,
+                        radius = radius.intValue,
                         activeDays = activeDays.value,
                         alarmSettings = gpsAlarm.alarmSettings.copy(
                             name = alarmName.value,
                             isRepeating = isRepeating.value,
-                            duration = durationAlarm.value,
+                            duration = durationAlarm.intValue,
                         )
                     )
                 )

@@ -42,4 +42,9 @@ class DetailViewModel @Inject constructor(
             )
         }
     }
+
+    fun onSave(gpsAlarm: GpsAlarm) {
+        //save to database
+
+    }
 }
