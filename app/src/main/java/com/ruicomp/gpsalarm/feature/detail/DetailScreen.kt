@@ -61,6 +61,7 @@ import com.ruicomp.gpsalarm.model.MapsToDetailResult
 import com.ruicomp.gpsalarm.navigation.NavRoutes
 import com.ruicomp.gpsalarm.ui.theme.TemplateTheme
 import com.ruicomp.gpsalarm.utils.dlog
+import kotlin.math.roundToInt
 
 @Composable
 fun DetailScreen(
@@ -320,9 +321,9 @@ fun GpsAlarmItem(
             maxRange = (listRadius.size - 1).toFloat(),
             steps = listRadius.size - 2,
             onValueChange = {
-                radius.intValue = listRadius[it.toInt()]
-                dlog("onValueChange: ${radius.intValue}")
-
+                radius.intValue = listRadius[it.roundToInt()]
+                dlog("onValueChange: $it")
+                dlog("onValueChange: radius=${radius.intValue}")
             }
         )
 
