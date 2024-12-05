@@ -1,17 +1,15 @@
 package com.ruicomp.gpsalarm.feature.home
 
+import android.annotation.SuppressLint
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -31,13 +29,14 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.ruicomp.gpsalarm.model.GpsAlarm
-import com.ruicomp.gpsalarm.utils.rememberFlowWithLifecycle
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.ruicomp.gpsalarm.data.fake.GpsAlarmFakeRepo
+import com.ruicomp.gpsalarm.model.GpsAlarm
 import com.ruicomp.gpsalarm.navigation.NavRoutes
+import com.ruicomp.gpsalarm.utils.rememberFlowWithLifecycle
 
 @Composable
 fun HomeScreen(
@@ -127,6 +126,7 @@ fun HomeScreenContent(
     }
 }
 
+@SuppressLint("DefaultLocale")
 @Composable
 fun GpsAlarmItem(
     gpsAlarm: GpsAlarm,
@@ -143,20 +143,45 @@ fun GpsAlarmItem(
         Column(modifier = Modifier.padding(16.dp)) {
             Log.d("dddd", "GpsAlarmItem: compose")
             Text(text = gpsAlarm.name, style = MaterialTheme.typography.titleLarge)
-            Text(text = "Location: ${gpsAlarm.location.x}, ${gpsAlarm.location.y}", style = MaterialTheme.typography.bodyMedium)
             Text(text = "Reminder: ${gpsAlarm.reminder}", style = MaterialTheme.typography.bodyMedium)
+            gpsAlarm.location.addressLine?.let {
+                Text(text = "Address: $it")
+            }
+            Text(text = String.format("%.5f, %.5f", gpsAlarm.location.x, gpsAlarm.location.y), style = MaterialTheme.typography.bodyMedium)
             // Add more details as needed (e.g., active days, duration, sound)
-            Row(modifier = Modifier.fillMaxWidth()) {
-                Switch(
-                    checked = gpsAlarm.isActive,
-                    onCheckedChange = { onActiveChange(gpsAlarm.id, it) },
-                    modifier = Modifier.align(Alignment.CenterVertically)
-                )
-                Spacer(modifier = Modifier.width(16.dp))
+            Box(modifier = Modifier.fillMaxWidth()) {
                 IconButton(onClick = onDelete) {
                     Icon(Icons.Default.Delete, contentDescription = "Delete alarm")
                 }
+                Switch(
+                    modifier = Modifier.align(Alignment.CenterEnd),
+                    checked = gpsAlarm.isActive,
+                    onCheckedChange = { onActiveChange(gpsAlarm.id, it) }
+                )
             }
+//            Row(modifier = Modifier.fillMaxWidth()) {
+//                IconButton(onClick = onDelete) {
+//                    Icon(Icons.Default.Delete, contentDescription = "Delete alarm")
+//                }
+//                Spacer(modifier = Modifier.width(16.dp))
+//                Switch(
+//                    modifier = Modifier.weight(1f),
+//                    checked = gpsAlarm.isActive,
+//                    onCheckedChange = { onActiveChange(gpsAlarm.id, it) }
+//                )
+//            }
         }
     }
+}
+
+@Preview
+@Composable
+private fun PreItem() {
+    val gpsAlarm = GpsAlarmFakeRepo.fakeListGpsAlarms().get(1)
+    GpsAlarmItem(
+        gpsAlarm = gpsAlarm,
+        onClick = {},
+        onActiveChange = { _, _ -> },
+        onDelete = {},
+    )
 }

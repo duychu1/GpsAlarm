@@ -18,7 +18,7 @@ object GpsAlarmFakeRepo {
             ),
             GpsAlarm(
                 id = 1,
-                location = GpsLocation(34.0522, -118.2437), // Los Angeles
+                location = GpsLocation(34.0522, -118.2437, "190 ngo 290 cau giay"), // Los Angeles
                 name = "Evening Alarm",
                 reminder = "Time to wrap up work",
                 isActive = false,

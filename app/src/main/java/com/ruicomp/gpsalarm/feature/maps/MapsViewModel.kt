@@ -21,6 +21,7 @@ import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRe
 import com.google.android.libraries.places.api.net.PlacesClient
 import com.ruicomp.gpsalarm.BuildConfig
 import com.ruicomp.gpsalarm.data.fake.SearchedPlacesFakeRepo
+import com.ruicomp.gpsalarm.model.GpsAlarm
 import com.ruicomp.gpsalarm.model.PlaceAutoComplete
 import com.ruicomp.gpsalarm.navigation.NavRoutes
 import com.ruicomp.gpsalarm.utils.dlog

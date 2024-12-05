@@ -111,10 +111,17 @@ fun DetailScreen(
     DetailScreenContent(
         modifier = modifier,
         isLoading = state.value.isLoading,
+        isActive = state.value.isActive,
+        isRepeating = state.value.isRepeating,
         gpsAlarm = state.value.gpsAlarm,
         onActiveChange = { id, isActive ->
             viewModel.sendEvent(
                 DetailEvent.UpdateAlarmActive(id, isActive)
+            )
+        },
+        onRepeatingChange = {
+            viewModel.sendEvent(
+                DetailEvent.UpdateAlarmRepeating(2, it)
             )
         },
         onDeleteGpsAlarm = {
@@ -139,6 +146,9 @@ fun DetailScreen(
 @Composable
 fun DetailScreenContent(
     isLoading: Boolean,
+    isActive: Boolean,
+    isRepeating: Boolean,
+    onRepeatingChange: (Boolean) -> Unit,
     gpsAlarm: GpsAlarm?,
     onActiveChange: (Int, Boolean) -> Unit,
     onDeleteGpsAlarm: (Int) -> Unit,
@@ -162,6 +172,9 @@ fun DetailScreenContent(
             }
             GpsAlarmItem(
                 gpsAlarm = gpsAlarm,
+                isActive2 = isActive,
+                isRepeating2 = isRepeating,
+                onRepeatingChange = onRepeatingChange,
                 onActiveChange = onActiveChange,
                 onDelete = { onDeleteGpsAlarm(gpsAlarm.id) },
                 onClickAddress = onClickAddress,
@@ -229,7 +242,10 @@ fun RepeatingAlarm(isRepeating: Boolean, onRepeatingChange: (Boolean) -> Unit) {
 @Composable
 fun GpsAlarmItem(
     gpsAlarm: GpsAlarm,
+    isActive2: Boolean,
+    isRepeating2: Boolean,
     onActiveChange: (Int, Boolean) -> Unit,
+    onRepeatingChange: (Boolean) -> Unit,
     onDelete: () -> Unit,
     onClickAddress: () -> Unit,
     onAlarmChange: (GpsAlarm) -> Unit,
@@ -250,7 +266,7 @@ fun GpsAlarmItem(
     // UI
     Column(
         modifier = Modifier
-            .padding(16.dp)
+            .padding(horizontal = 16.dp)
             .verticalScroll(rememberScrollState())
     ) {
         TopAppBar(
@@ -302,8 +318,8 @@ fun GpsAlarmItem(
         }
 
         // Active (Checkbox)
-        ActivateAlarm2(isActive = gpsAlarm.isActive, onActiveChange = {
-            onActiveChange(gpsAlarm.id, it)
+        ActivateAlarm2(isActive = isActive2, onActiveChange = {
+            onActiveChange(2, it)
         })
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -373,14 +389,8 @@ fun GpsAlarmItem(
 //                }
 //            )
 //        }
-        RepeatingAlarm(isRepeating = gpsAlarm.alarmSettings.isRepeating) {
-            onAlarmChange(
-                gpsAlarm.copy(
-                    alarmSettings = gpsAlarm.alarmSettings.copy(
-                        isRepeating = it
-                    )
-                )
-            )
+        RepeatingAlarm(isRepeating = isRepeating2) {
+            onRepeatingChange(it)
         }
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -550,8 +560,11 @@ private fun PreviewDetailScreen() {
                 onDelete = { },
                 onClickAddress = {},
                 onAlarmChange = {},
+                onRepeatingChange = {},
                 onSave = { },
-                onBack = { }
+                onBack = { },
+                isActive2 = false,
+                isRepeating2 = false,
             )
         }
     }

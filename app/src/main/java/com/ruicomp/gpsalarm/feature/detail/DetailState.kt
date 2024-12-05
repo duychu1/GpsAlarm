@@ -8,12 +8,16 @@ import com.ruicomp.gpsalarm.model.GpsAlarm
 @Immutable
 data class DetailState (
     val isLoading: Boolean,
+    val isActive: Boolean,
+    val isRepeating: Boolean,
     val gpsAlarm: GpsAlarm?
 ) : Reducer.ViewState {
     companion object {
         fun initial(): DetailState {
             return DetailState(
                 isLoading = true,
+                isActive = true,
+                isRepeating = false,
                 gpsAlarm = null
             )
         }
