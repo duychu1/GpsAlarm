@@ -18,6 +18,7 @@ sealed class DetailEvent : Reducer.ViewEvent {
     data class UpdateAlarmActiveDays(val id: Int, val activeDays: List<Int>) : DetailEvent()
     data class UpdateAlarmSound(val id: Int, val alarmSound: String) : DetailEvent()
     data class UpdateAlarmActive(val id: Int, val isActive: Boolean) : DetailEvent()
+    data class UpdateAlarmRepeating(val id: Int, val isRepeating: Boolean) : DetailEvent()
     data class DeleteAlarm(val id: Int) : DetailEvent()
     data class NewAlarm(val alarm: GpsAlarm) : DetailEvent()
     data class SaveAlarm(val alarm: GpsAlarm) : DetailEvent()

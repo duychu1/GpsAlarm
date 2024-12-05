@@ -24,8 +24,19 @@ class DetailScreenReducer : Reducer<DetailState, DetailEvent, DetailEffect> {
             is DetailEvent.NewAlarm -> TODO()
             is DetailEvent.SaveAlarm -> TODO()
             is DetailEvent.UpdateAlarmActive -> {
+//                previousState.copy(
+//                    gpsAlarm = previousState.gpsAlarm?.copy(isActive = event.isActive)
+//                ) to null
                 previousState.copy(
-                    gpsAlarm = previousState.gpsAlarm?.copy(isActive = event.isActive)
+                    isActive = event.isActive
+                ) to null
+            }
+            is DetailEvent.UpdateAlarmRepeating -> {
+//                previousState.copy(
+//                    gpsAlarm = previousState.gpsAlarm?.copy(isActive = event.isActive)
+//                ) to null
+                previousState.copy(
+                    isRepeating = event.isRepeating
                 ) to null
             }
             is DetailEvent.UpdateAlarmActiveDays -> TODO()
