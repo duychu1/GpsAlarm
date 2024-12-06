@@ -126,7 +126,7 @@ fun DetailScreen(
         onClickAddress = viewModel::onNavigateToMaps,
         onSave = {
             viewModel.onSave(it)
-            onNavigateBack()
+            onNavigateToScreen(NavRoutes.Home)
         },
         onAlarmChange = {
             viewModel.sendEvent(

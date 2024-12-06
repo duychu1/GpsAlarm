@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Constraints
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -22,7 +23,7 @@ fun MyNavHost(
     navController: NavHostController = rememberNavController(),
 
     ) {
-    NavHost(navController = navController, startDestination = NavRoutes.Maps(null,null,null,250)) {
+    NavHost(navController = navController, startDestination = NavRoutes.Home) {
         composable<NavRoutes.Home> {
             HomeScreen(
                 modifier = modifier,
@@ -40,7 +41,11 @@ fun MyNavHost(
                 modifier = modifier,
                 mapsResult = mapsResult,
                 onNavigateToScreen = {
-                    navController.navigate(it)
+                    navController.navigate(it) {
+                        popUpTo(it) { inclusive = false }
+                        restoreState = true
+                        launchSingleTop = true
+                    }
                 },
                 onNavigateBack = {
                     navController.popBackStack()

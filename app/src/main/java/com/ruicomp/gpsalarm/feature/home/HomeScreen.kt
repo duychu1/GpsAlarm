@@ -102,6 +102,9 @@ fun HomeScreen(
             viewModel.sendEventForEffect(
                 HomeEvent.DeleteAlarm(it)
             )
+        },
+        onNavigateToMaps = {
+            onNavigateToScreen(NavRoutes.Maps(null, null, null, 500))
         }
     )
 }
@@ -113,6 +116,7 @@ fun HomeScreenContent(
     onItemClick: (GpsAlarm) -> Unit,
     onActiveChange: (Int, Boolean) -> Unit,
     onDeleteGpsAlarm: (Int) -> Unit,
+    onNavigateToMaps: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier.fillMaxSize()) {
@@ -131,6 +135,17 @@ fun HomeScreenContent(
                     )
                 }
             }
+        }
+
+        Button (
+            modifier = Modifier
+                .padding(end = 32.dp, bottom = 64.dp)
+                .size(64.dp)
+                .align(Alignment.BottomEnd),
+            elevation = ButtonDefaults.elevatedButtonElevation(6.dp),
+            onClick = onNavigateToMaps,
+        ) {
+            Icon(Icons.Filled.Add, contentDescription = "Add")
         }
     }
 }
@@ -180,8 +195,8 @@ private fun PreviewHomeScreen() {
             listGpsAlarms = listGpsAlarms,
             onItemClick = {},
             onActiveChange = { _, _ -> },
-            onDeleteGpsAlarm = {}
-
+            onDeleteGpsAlarm = {},
+            onNavigateToMaps = {},
         )
     }
 

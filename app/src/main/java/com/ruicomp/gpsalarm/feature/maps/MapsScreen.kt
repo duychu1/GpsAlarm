@@ -4,6 +4,7 @@ import com.ruicomp.gpsalarm.R
 import android.Manifest
 import android.annotation.SuppressLint
 import android.health.connect.datatypes.units.Volume
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -122,6 +123,11 @@ fun MapsScreen(
         onSearchPlace = viewModel::onSearchPlaces,
         onSelectPlace = viewModel::onSelectedPlace,
         onClickSave = {
+            if (state.value.selectedLatLng == null || state.value.selectedAddressLine == null) {
+                Toast.makeText(context, "Location not selected", Toast.LENGTH_SHORT).show()
+                return@MapsScreenContent
+            }
+
             onBackDetail(
                 state.value.alarmId,
                 state.value.selectedLatLng!!.latitude,
