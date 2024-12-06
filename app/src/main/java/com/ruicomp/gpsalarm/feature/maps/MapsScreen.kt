@@ -84,7 +84,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun MapsScreen(
     modifier: Modifier = Modifier,
-    onBackDetail: (Double, Double, Int, String?) -> Unit,
+    onBackDetail: (Int?, Double, Double, Int, String?) -> Unit,
     viewModel: MapsViewModel = hiltViewModel(),
 ) {
     val state = viewModel.mapUiState.collectAsStateWithLifecycle()
@@ -123,6 +123,7 @@ fun MapsScreen(
         onSelectPlace = viewModel::onSelectedPlace,
         onClickSave = {
             onBackDetail(
+                state.value.alarmId,
                 state.value.selectedLatLng!!.latitude,
                 state.value.selectedLatLng!!.longitude,
                 state.value.radius,

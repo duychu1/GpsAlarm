@@ -5,6 +5,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class MapsToDetailResult(
+    val alarmId: Int?,
     val lat: Double,
     val lng: Double,
     val radius: Int,

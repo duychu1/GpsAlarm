@@ -19,4 +19,5 @@ class GpsAlarmRepoImpl {
 
     fun getGpsAlarmById(id: Int): GpsAlarm? = GpsAlarmFakeRepo.fakeListGpsAlarms().firstOrNull { it.id == id }
 
+    fun getDefaultGpsAlarm(): GpsAlarm = GpsAlarmFakeRepo.fakeListGpsAlarms().first()
 }

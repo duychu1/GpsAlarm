@@ -10,9 +10,9 @@ sealed class NavRoutes {
     data object Home: NavRoutes()
 
     @Serializable
-    data class Detail(val id: Int): NavRoutes()
+    data class Detail(val id: Int?, val lat: Double?, val lng: Double?, val radius: Int ,val addressLine: String?): NavRoutes()
 
     @Serializable
-    data class Maps(val lat: Double?, val lng: Double?, val radius: Float): NavRoutes()
+    data class Maps(val id: Int?, val lat: Double?, val lng: Double?, val radius: Int): NavRoutes()
 
 }

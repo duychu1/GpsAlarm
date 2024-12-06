@@ -2,6 +2,7 @@ package com.ruicomp.gpsalarm.feature.home
 
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,7 +16,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -31,13 +35,17 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ruicomp.gpsalarm.model.GpsAlarm
 import com.ruicomp.gpsalarm.utils.rememberFlowWithLifecycle
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.ruicomp.gpsalarm.data.fake.GpsAlarmFakeRepo
 import com.ruicomp.gpsalarm.navigation.NavRoutes
+import com.ruicomp.gpsalarm.ui.theme.TemplateTheme
+import javax.xml.transform.Templates
 
 @Composable
 fun HomeScreen(
@@ -54,7 +62,7 @@ fun HomeScreen(
         effect.collect { action ->
             when (action) {
                 is HomeEffect.NavigateToDetail -> {
-                    onNavigateToScreen(NavRoutes.Detail(action.id))
+                    onNavigateToScreen(NavRoutes.Detail(action.id, null,null,0,null))
 //                    navController.navigate(route = NavRoutes.DetailTest(action.gpsAlarm.id, action.gpsAlarm.location, action.gpsAlarm.activeDays))
                 }
 
@@ -159,4 +167,22 @@ fun GpsAlarmItem(
             }
         }
     }
+}
+
+
+@Preview
+@Composable
+private fun PreviewHomeScreen() {
+    val listGpsAlarms = GpsAlarmFakeRepo.fakeListGpsAlarms()
+    TemplateTheme {
+        HomeScreenContent(
+            isLoading = false,
+            listGpsAlarms = listGpsAlarms,
+            onItemClick = {},
+            onActiveChange = { _, _ -> },
+            onDeleteGpsAlarm = {}
+
+        )
+    }
+
 }

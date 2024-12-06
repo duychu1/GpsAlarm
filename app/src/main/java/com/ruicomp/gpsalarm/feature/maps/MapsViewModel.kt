@@ -51,14 +51,16 @@ class MapsViewModel @Inject constructor(
     private var geocoder: Geocoder
 
     init {
-        val (lat, lng, radius) = savedStateHandle.toRoute<NavRoutes.Maps>()
-        _mapUiState.value = _mapUiState.value.copy(
-            defaultCamPos = LatLng(lat!!, lng!!),
-            selectedLatLng = LatLng(lat, lng),
-            radius = radius.toInt(),
-            zoom = 15f,
-        )
-
+        val (id, lat, lng, radius) = savedStateHandle.toRoute<NavRoutes.Maps>()
+        id?.let {
+            _mapUiState.value = _mapUiState.value.copy(
+                alarmId = id,
+                defaultCamPos = LatLng(lat!!, lng!!),
+                selectedLatLng = LatLng(lat, lng),
+                radius = radius,
+                zoom = 15f,
+            )
+        }
 
         Places.initialize(appContext, BuildConfig.mapk)
         placesClient = Places.createClient(appContext)
@@ -260,6 +262,7 @@ class MapsViewModel @Inject constructor(
 
 
     data class MapUiState(
+        val alarmId: Int? = null,
         val currentLocation: LatLng? = null,
         val listPlaces: List<PlaceAutoComplete>? = emptyList<PlaceAutoComplete>(),
         val selectedLatLng: LatLng? = null,

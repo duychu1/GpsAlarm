@@ -8,8 +8,8 @@ object GpsAlarmFakeRepo {
         return listOf(
             GpsAlarm(
                 id = 0,
-                location = GpsLocation(37.7749, -122.4194), // San Francisco
-                name = "Morning Alarm",
+                location = GpsLocation(20.99026, 104.8487278, "123 test default, HCM City"), // San Francisco
+                name = "Morning Alarm test default",
                 reminder = "Wake up for work",
                 isActive = true,
                 radius = 100,

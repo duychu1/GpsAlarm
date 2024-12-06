@@ -5,7 +5,7 @@ import com.ruicomp.gpsalarm.base_mvi.Reducer
 
 @Immutable
 sealed class DetailEffect : Reducer.ViewEffect {
-    data class NavigateToMaps(val lat: Double?, val lng: Double?, val radius: Float) : DetailEffect()
+    data class NavigateToMaps(val id: Int?, val lat: Double?, val lng: Double?, val radius: Int) : DetailEffect()
     data class NavigateToScreen(val screen: String) : DetailEffect()
     data class ShowToats(val msg: String): DetailEffect()
 }

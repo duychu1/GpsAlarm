@@ -79,7 +79,7 @@ fun DetailScreen(
         effect.collect { action ->
             when (action) {
                 is DetailEffect.NavigateToMaps -> {
-                    onNavigateToScreen(NavRoutes.Maps(action.lat, action.lng, action.radius))
+                    onNavigateToScreen(NavRoutes.Maps(action.id, action.lat, action.lng, action.radius))
                     Log.d("DetailScreen", "Navigate to topic with id: ")
                 }
 

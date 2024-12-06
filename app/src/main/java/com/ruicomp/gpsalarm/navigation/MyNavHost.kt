@@ -22,7 +22,7 @@ fun MyNavHost(
     navController: NavHostController = rememberNavController(),
 
     ) {
-    NavHost(navController = navController, startDestination = NavRoutes.Detail(4)) {
+    NavHost(navController = navController, startDestination = NavRoutes.Maps(null,null,null,250)) {
         composable<NavRoutes.Home> {
             HomeScreen(
                 modifier = modifier,
@@ -51,10 +51,15 @@ fun MyNavHost(
         composable<NavRoutes.Maps>() {
             MapsScreen(
                 modifier = modifier,
-                onBackDetail = { lat, lng, radius, addressLine ->
+                onBackDetail = { alarmId, lat, lng, radius, addressLine ->
+                    //check if detail not on backstack
+                    if (alarmId == null) {
+                        navController.navigate(NavRoutes.Detail(alarmId, lat, lng, radius, addressLine))
+                        return@MapsScreen
+                    }
                     navController.previousBackStackEntry
                         ?.savedStateHandle
-                        ?.set(Constants.KEY_FROM_MAPS, MapsToDetailResult(lat, lng, radius, addressLine))
+                        ?.set(Constants.KEY_FROM_MAPS, MapsToDetailResult(alarmId, lat, lng, radius, addressLine))
                     navController.popBackStack()
                 }
             )
