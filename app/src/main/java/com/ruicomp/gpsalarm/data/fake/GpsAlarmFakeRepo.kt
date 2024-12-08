@@ -14,7 +14,11 @@ object GpsAlarmFakeRepo {
                 isActive = true,
                 radius = 100,
                 activeDays = listOf(1, 2, 3, 4, 5), // Monday to Friday
-                alarmSettings = AlarmSettingFakeRepo.alarmSettingsList.get(0)
+                alarmSettings = AlarmSettingFakeRepo.alarmSettingsList.get(0),
+                isPinned = true,
+                pinnedAt = System.currentTimeMillis() - 3000000,
+                createdAt = System.currentTimeMillis() - 9000000,
+                lastUpdated = System.currentTimeMillis() - 6000000,
             ),
             GpsAlarm(
                 id = 1,
@@ -24,7 +28,11 @@ object GpsAlarmFakeRepo {
                 isActive = false,
                 radius = 50,
                 activeDays = listOf(1, 3, 5), // Monday, Wednesday, Friday
-                alarmSettings = AlarmSettingFakeRepo.alarmSettingsList.get(1)
+                alarmSettings = AlarmSettingFakeRepo.alarmSettingsList.get(1),
+                isPinned = false,
+                pinnedAt = System.currentTimeMillis() - 30000300,
+                createdAt = System.currentTimeMillis() - 90002000,
+                lastUpdated = System.currentTimeMillis() - 60600000,
             ),
             GpsAlarm(
                 id = 2,
@@ -34,7 +42,11 @@ object GpsAlarmFakeRepo {
                 isActive = true,
                 radius = 250,
                 activeDays = listOf(0, 6), // Sunday and Saturday
-                alarmSettings = AlarmSettingFakeRepo.alarmSettingsList.get(2)
+                alarmSettings = AlarmSettingFakeRepo.alarmSettingsList.get(2),
+                isPinned = false,
+                pinnedAt = System.currentTimeMillis() - 35000000,
+                createdAt = System.currentTimeMillis() - 90000080,
+                lastUpdated = System.currentTimeMillis() - 60600000,
             ),
             GpsAlarm(
                 id = 3,
@@ -44,7 +56,11 @@ object GpsAlarmFakeRepo {
                 isActive = true,
                 radius = 300,
                 activeDays = listOf(1, 2, 3, 4, 5, 6), // Monday to Saturday
-                alarmSettings = AlarmSettingFakeRepo.alarmSettingsList.get(3)
+                alarmSettings = AlarmSettingFakeRepo.alarmSettingsList.get(3),
+                isPinned = false,
+                pinnedAt = System.currentTimeMillis() - 30200000,
+                createdAt = System.currentTimeMillis() - 90000200,
+                lastUpdated = System.currentTimeMillis() - 60030000,
             ),
             GpsAlarm(
                 id = 4,
@@ -54,7 +70,11 @@ object GpsAlarmFakeRepo {
                 isActive = true,
                 radius = 250,
                 activeDays = listOf(1, 2, 3, 4, 5, 6), // Monday to Saturday
-                alarmSettings = AlarmSettingFakeRepo.alarmSettingsList.get(4)
+                alarmSettings = AlarmSettingFakeRepo.alarmSettingsList.get(4),
+                isPinned = true,
+                pinnedAt = System.currentTimeMillis() - 30030000,
+                createdAt = System.currentTimeMillis() - 90040000,
+                lastUpdated = System.currentTimeMillis() - 60004000,
 
             )
         )

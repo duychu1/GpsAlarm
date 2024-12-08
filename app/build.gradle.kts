@@ -7,6 +7,7 @@ plugins {
     id("template.android.hilt")
     alias(libs.plugins.kotlin.serialization)
     id("kotlin-parcelize")
+    id("template.android.room")
 }
 
 android {
@@ -30,10 +31,6 @@ android {
         buildConfigField("String", "mapk", "\"$mapsApiKey\"")
 
     }
-
-//    buildFeatures {
-//        buildConfig = true
-//    }
 
     buildTypes {
         release {
@@ -78,7 +75,6 @@ dependencies {
 
     implementation(libs.places.maps)
     implementation(libs.accompanist.flowlayout)
-
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -23,7 +23,11 @@ data class MapsState (
                     isActive = false,
                     radius = 50,
                     activeDays = listOf(1, 3, 5), // Monday, Wednesday, Friday
-                    alarmSettings = AlarmSettingFakeRepo.alarmSettingsList.get(1)
+                    alarmSettings = AlarmSettingFakeRepo.alarmSettingsList.get(1),
+                    isPinned = false,
+                    pinnedAt = System.currentTimeMillis() - 30000080,
+                    createdAt = System.currentTimeMillis() - 92000000,
+                    lastUpdated = System.currentTimeMillis() - 60030000,
                 ),
             )
         }
