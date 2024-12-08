@@ -1,6 +1,7 @@
 package com.ruicomp.gpsalarm.model
 
 import android.os.Parcelable
+import com.ruicomp.gpsalarm.database.GpsAlarmEntities
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 
@@ -19,4 +20,21 @@ data class GpsAlarm(
     val pinnedAt: Long,
     val createdAt: Long,
     val lastUpdated: Long,
-): Parcelable
+): Parcelable {
+    fun asEntities(): GpsAlarmEntities {
+        return GpsAlarmEntities(
+            id = id,
+            location = location,
+            name = name,
+            reminder = reminder,
+            isActive = isActive,
+            radius = radius,
+            activeDays = activeDays,
+            alarmSettings = alarmSettings,
+            isPinned = isPinned,
+            pinnedAt = pinnedAt,
+            createdAt = createdAt,
+            lastUpdated = lastUpdated
+        )
+    }
+}

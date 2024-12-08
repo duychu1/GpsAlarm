@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.ruicomp.gpsalarm.base_mvi.BaseViewModel
 import com.ruicomp.gpsalarm.common.result.Result
 import com.ruicomp.gpsalarm.data.GpsAlarmRepoImpl
+import com.ruicomp.gpsalarm.data.repository.GpsAlarmRepository
 import com.ruicomp.gpsalarm.model.GpsAlarm
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -11,7 +12,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val gpsAlarmRepo: GpsAlarmRepoImpl
+    private val gpsAlarmRepo: GpsAlarmRepository
 ) : BaseViewModel<HomeState, HomeEvent, HomeEffect>(
     initialState = HomeState.initial(),
     reducer = HomeScreenReducer()
@@ -22,7 +23,7 @@ class HomeViewModel @Inject constructor(
 
     fun getData() {
         viewModelScope.launch {
-            gpsAlarmRepo.getAllGpsAlarms().collect { result ->
+            gpsAlarmRepo.getAllAlarms().collect { result ->
                 sendEvent(
                     event = HomeEvent.UpdateLoading(
                         isLoading = result is Result.Loading
@@ -34,11 +35,11 @@ class HomeViewModel @Inject constructor(
                     is Result.Error -> {
                         sendEffect(HomeEffect.ShowToats("Error when fetch data"))
                     }
-                    is Result.Success -> {
-                        sendEvent(
-                            HomeEvent.UpdateListGpsAlarms(result.data)
-                        )
-                    }
+//                    is Result.Success -> {
+//                        sendEvent(
+//                            HomeEvent.UpdateListGpsAlarms(result.data)
+//                        )
+//                    }
                 }
             }
         }

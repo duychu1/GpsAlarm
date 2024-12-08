@@ -1,19 +1,22 @@
 package com.ruicomp.gpsalarm.feature.detail
 
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.ruicomp.gpsalarm.base_mvi.BaseViewModel
 import com.ruicomp.gpsalarm.data.GpsAlarmRepoImpl
+import com.ruicomp.gpsalarm.data.repository.GpsAlarmRepository
 import com.ruicomp.gpsalarm.model.GpsAlarm
 import com.ruicomp.gpsalarm.model.GpsLocation
 import com.ruicomp.gpsalarm.navigation.NavRoutes
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class DetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val gpsAlarmRepo: GpsAlarmRepoImpl
+    private val gpsAlarmRepo: GpsAlarmRepository,
 ) : BaseViewModel<DetailState, DetailEvent, DetailEffect>(
     initialState = DetailState.initial(),
     reducer = DetailScreenReducer()
@@ -25,21 +28,26 @@ class DetailViewModel @Inject constructor(
         if (id == null) {
             val defaultGpsAlarm = gpsAlarmRepo.getDefaultGpsAlarm()
             sendEvent(
-                DetailEvent.UpdateGpsAlarm(defaultGpsAlarm.copy(
-                    id = -1,
-                    radius = radius,
-                    location = GpsLocation(
-                        x = lat!!,
-                        y = lng!!,
-                        addressLine = addressLine
+                DetailEvent.UpdateGpsAlarm(
+                    defaultGpsAlarm.copy(
+                        id = -1,
+                        radius = radius,
+                        location = GpsLocation(
+                            x = lat!!,
+                            y = lng!!,
+                            addressLine = addressLine
+                        )
                     )
-                ))
+                )
             )
         } else {
-            val gpsAlarm = gpsAlarmRepo.getGpsAlarmById(id)
-            sendEvent(
-                DetailEvent.UpdateGpsAlarm(gpsAlarm)
-            )
+            viewModelScope.launch {
+                gpsAlarmRepo.getAlarmById(id).collect { value ->
+                    sendEvent(
+                        DetailEvent.UpdateGpsAlarm(value)
+                    )
+                }
+            }
         }
     }
 

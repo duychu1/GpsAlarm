@@ -18,5 +18,5 @@ interface GpsAlarmDao {
     fun getAllAlarms(): Flow<List<GpsAlarmEntities>>
 
     @Query("SELECT * FROM gps_alarms WHERE id = :id")
-    suspend fun getAlarmById(id: Int): GpsAlarmEntities?
+    fun getAlarmById(id: Int): Flow<GpsAlarmEntities>
 }

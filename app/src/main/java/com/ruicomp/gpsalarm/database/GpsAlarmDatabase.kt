@@ -8,8 +8,4 @@ import androidx.room.TypeConverters
 @TypeConverters(Converters::class)
 abstract class GpsAlarmDatabase : RoomDatabase() {
     abstract fun gpsAlarmDao(): GpsAlarmDao
-
-    companion object {
-
-    }
 }
