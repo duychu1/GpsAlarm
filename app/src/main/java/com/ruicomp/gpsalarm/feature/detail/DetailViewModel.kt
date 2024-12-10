@@ -72,6 +72,9 @@ class DetailViewModel @Inject constructor(
 
     fun onSave(gpsAlarm: GpsAlarm) {
         //save to database
+        viewModelScope.launch {
+            gpsAlarmRepo.insert(gpsAlarm)
+        }
 
     }
 }

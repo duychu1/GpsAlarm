@@ -11,4 +11,6 @@ sealed class HomeEvent : Reducer.ViewEvent {
     data class UpdateLocation(val location: Pair<Double, Double>) : HomeEvent()
     data class UpdateAlarmActive(val id: Int, val isActive: Boolean) : HomeEvent()
     data class DeleteAlarm(val id: Int) : HomeEvent()
+    data class UndoDelete(val alarm: GpsAlarm, val index: Int) : HomeEvent()
+
 }

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -15,13 +16,16 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -30,6 +34,8 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -75,9 +81,13 @@ fun HomeScreen(
                         withDismissAction = true,
                         duration = SnackbarDuration.Short
                     )
-                    if (result == SnackbarResult.ActionPerformed) {
-                        // Restore the deleted item if "Undo" was clicked
-
+                    when (result) {
+                        SnackbarResult.Dismissed -> {
+                            viewModel.onDbDeleteAlarm()
+                        }
+                        SnackbarResult.ActionPerformed -> {
+                            viewModel.onClickUndoDelete()
+                        }
                     }
                 }
             }
@@ -93,29 +103,22 @@ fun HomeScreen(
         isLoading = state.value.isLoading,
         listGpsAlarms = state.value.gpsAlarms,
         onItemClick = viewModel::onAlarmClick,
-        onActiveChange = { id, isActive ->
-            viewModel.sendEvent(
-                HomeEvent.UpdateAlarmActive(id, isActive)
-            )
-        },
-        onDeleteGpsAlarm = {
-            viewModel.sendEventForEffect(
-                HomeEvent.DeleteAlarm(it)
-            )
-        },
+        onActiveChange = viewModel::onAlarmActiveChange,
+        onDeleteGpsAlarm = viewModel::onClickDeleteAlarm,
         onNavigateToMaps = {
             onNavigateToScreen(NavRoutes.Maps(null, null, null, 500))
         }
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreenContent(
     isLoading: Boolean,
     listGpsAlarms: List<GpsAlarm>,
     onItemClick: (GpsAlarm) -> Unit,
     onActiveChange: (Int, Boolean) -> Unit,
-    onDeleteGpsAlarm: (Int) -> Unit,
+    onDeleteGpsAlarm: (GpsAlarm, Int) -> Unit,
     onNavigateToMaps: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -125,13 +128,41 @@ fun HomeScreenContent(
                 .size(64.dp)
                 .align(Alignment.Center))
         } else {
+
+            if (listGpsAlarms.isEmpty()) {
+                Text("No data", modifier = Modifier.align(Alignment.Center))
+            }
+
             LazyColumn(modifier = Modifier.fillMaxSize()) {
-                items(items = listGpsAlarms, key = { it.id }) { gpsAlarm ->
+                item {
+                    TopAppBar(
+                        title = { Text("Edit GPS Alarm", style = MaterialTheme.typography.titleLarge) },
+                        navigationIcon = {
+                            IconButton(
+                                onClick = {}
+                            ) {
+                                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                            }
+                        },
+                        windowInsets = WindowInsets(0, 0, 0, 0),
+                        actions = {
+//                Text("Delete", modifier = Modifier.clickable { onDelete() })
+                        },
+                        colors = TopAppBarDefaults.topAppBarColors(
+                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                    )
+                }
+                itemsIndexed(
+                    items = listGpsAlarms,
+                    key = { _, item -> item.id }
+                ) { index, item ->
                     GpsAlarmItem(
-                        gpsAlarm = gpsAlarm,
-                        onClick = { onItemClick(gpsAlarm) },
-                        onActiveChange = onActiveChange,
-                        onDelete = { onDeleteGpsAlarm(gpsAlarm.id) }
+                        gpsAlarm = item,
+                        onClick = { onItemClick(item) },
+                        onActiveChange = { id, isActive -> onActiveChange(id, isActive) },
+                        onDelete = { onDeleteGpsAlarm(item, index) }
                     )
                 }
             }
@@ -195,7 +226,7 @@ private fun PreviewHomeScreen() {
             listGpsAlarms = listGpsAlarms,
             onItemClick = {},
             onActiveChange = { _, _ -> },
-            onDeleteGpsAlarm = {},
+            onDeleteGpsAlarm = { _, _ -> },
             onNavigateToMaps = {},
         )
     }

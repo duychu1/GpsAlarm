@@ -22,6 +22,10 @@ class FakeGpsAlarmRepositoryImpl @Inject constructor(
         gpsAlarmDao.update(alarm.asEntities())
     }
 
+    override suspend fun updateIsActiveById(id: Int, isActive: Boolean) {
+        gpsAlarmDao.updateIsActiveById(id, isActive)
+    }
+
     override suspend fun delete(alarm: GpsAlarm) {
         gpsAlarmDao.delete(alarm.asEntities())
     }

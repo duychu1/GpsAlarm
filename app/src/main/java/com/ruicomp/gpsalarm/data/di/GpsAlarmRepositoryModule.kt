@@ -1,5 +1,6 @@
 package com.ruicomp.gpsalarm.data.di
 
+import com.ruicomp.gpsalarm.data.fake.FakeGpsAlarmRepositoryImpl
 import com.ruicomp.gpsalarm.data.repository.GpsAlarmRepository
 import com.ruicomp.gpsalarm.data.repository.GpsAlarmRepositoryImpl
 import dagger.Binds

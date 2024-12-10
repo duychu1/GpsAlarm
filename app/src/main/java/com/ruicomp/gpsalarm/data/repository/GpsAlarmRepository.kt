@@ -11,5 +11,7 @@ interface GpsAlarmRepository {
     suspend fun update(alarm: GpsAlarm)
     suspend fun delete(alarm: GpsAlarm)
 
+    suspend fun updateIsActiveById(id: Int, isActive: Boolean)
+
     fun getDefaultGpsAlarm(): GpsAlarm
 }

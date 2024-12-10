@@ -12,9 +12,11 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -38,6 +40,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -251,7 +254,7 @@ fun GpsAlarmItem(
     // UI
     Column(
         modifier = Modifier
-            .padding(16.dp)
+            .padding(horizontal = 16.dp)
             .verticalScroll(rememberScrollState())
     ) {
         TopAppBar(
@@ -263,9 +266,14 @@ fun GpsAlarmItem(
                     Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                 }
             },
+            windowInsets = WindowInsets(0, 0, 0, 0),
             actions = {
 //                Text("Delete", modifier = Modifier.clickable { onDelete() })
-            }
+            },
+//            colors = TopAppBarDefaults.topAppBarColors(
+//                containerColor = MaterialTheme.colorScheme.primaryContainer,
+//                titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+//            )
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -303,9 +311,7 @@ fun GpsAlarmItem(
         }
 
         // Active (Checkbox)
-        ActivateAlarm2(isActive = gpsAlarm.isActive, onActiveChange = {
-            onActiveChange(gpsAlarm.id, it)
-        })
+        ActivateAlarm(isActive = isActive)
 
         Spacer(modifier = Modifier.height(8.dp))
 

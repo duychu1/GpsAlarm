@@ -21,11 +21,19 @@ class GpsAlarmRepositoryImpl @Inject constructor(
     }
 
     override suspend fun insert(alarm: GpsAlarm) {
-        gpsAlarmDao.insert(alarm.asEntities())
+        if (alarm.id == -1) {
+            gpsAlarmDao.insert(alarm.copy(id = 0).asEntities())
+        } else {
+            gpsAlarmDao.insert(alarm.asEntities())
+        }
     }
 
     override suspend fun update(alarm: GpsAlarm) {
         gpsAlarmDao.update(alarm.asEntities())
+    }
+
+    override suspend fun updateIsActiveById(id: Int, isActive: Boolean) {
+        gpsAlarmDao.updateIsActiveById(id, isActive)
     }
 
     override suspend fun delete(alarm: GpsAlarm) {
