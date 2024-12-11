@@ -4,14 +4,21 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.location.Address
 import android.location.Geocoder
+import android.location.LocationListener
 import android.location.LocationManager
+import android.os.Build
+import android.os.Looper
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.libraries.places.api.Places
@@ -49,6 +56,16 @@ class MapsViewModel @Inject constructor(
     private var fusedLocationClient: FusedLocationProviderClient
     private var locationManager: LocationManager
     private var geocoder: Geocoder
+
+    private val locationListener = LocationListener { location ->
+        dlog("listenLocationChange: $location")
+        _mapUiState.value = _mapUiState.value.copy(
+            currentLocation = LatLng(
+                location.latitude,
+                location.longitude
+            )
+        )
+    }
 
     init {
         val (id, lat, lng, radius, addressLine) = savedStateHandle.toRoute<NavRoutes.Maps>()
@@ -146,32 +163,87 @@ class MapsViewModel @Inject constructor(
             }
     }
 
+
+
     fun listenLocationChange() {
         try {
             locationManager.requestLocationUpdates(
                 LocationManager.GPS_PROVIDER,
                 1000L,
                 10f,
-            ) { location ->
-                dlog("listenLocationChange: $location")
-                _mapUiState.value = _mapUiState.value.copy(
-                    currentLocation = LatLng(
-                        location.latitude,
-                        location.longitude
-                    )
-                )
-            }
-
+                locationListener
+            )
         } catch (ex: SecurityException) {
             // Handle permission denied
             dlog("listenLocationChange SecurityException")
         } catch (ex: Exception) {
             // Handle other exceptions
             dlog("listenLocationChange Exception")
+            ex.printStackTrace()
         }
     }
 
-    fun getAddressFromLocation(latitude: Double, longitude: Double): String? {
+
+    fun listenLocationChange2() {
+
+        // Create the location request
+        val locationRequest = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            // For Android 12 (API 31) and above
+            LocationRequest.Builder(
+                Priority.PRIORITY_BALANCED_POWER_ACCURACY,
+                10000 // Update interval in milliseconds
+            ).setMinUpdateIntervalMillis(5000) // Fastest interval (5 seconds)
+                .build()
+        } else {
+            // For older Android versions
+            LocationRequest.create().apply {
+                interval = 10000 // Update interval in milliseconds
+                fastestInterval = 5000 // Fastest update interval in milliseconds
+                priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY // Set priority
+            }
+        }
+
+        // Create the location callback to handle location updates
+        val locationCallback = object : LocationCallback() {
+            override fun onLocationResult(locationResult: com.google.android.gms.location.LocationResult) {
+                super.onLocationResult(locationResult)
+                locationResult.lastLocation?.let {
+                    // Handle location update here
+                    dlog("listenLocationChange: $it")
+                    _mapUiState.value = _mapUiState.value.copy(
+                        currentLocation = LatLng(it.latitude, it.longitude)
+                    )
+                }
+            }
+        }
+
+        try {
+            // Request location updates using FusedLocationProviderClient
+            fusedLocationClient.requestLocationUpdates(
+                locationRequest,
+                locationCallback,
+                Looper.getMainLooper() // Ensure this runs on the main thread
+            )
+        } catch (ex: SecurityException) {
+            // Handle permission denied error
+            dlog("listenLocationChange SecurityException")
+        } catch (ex: Exception) {
+            // Handle any other exceptions
+            dlog("listenLocationChange Exception")
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        try {
+            locationManager.removeUpdates(locationListener)
+        } catch (ex: Exception) {
+            // Handle potential exceptions (e.g., SecurityException)
+            Log.e("MapsViewModel", "Error removing location updates", ex)
+        }
+    }
+
+    suspend fun getAddressFromLocation(latitude: Double, longitude: Double): String? {
         return try {
             // Perform geocoding on the background thread to avoid blocking the UI
             val addresses: List<Address>? = geocoder.getFromLocation(latitude, longitude, 1)
@@ -278,7 +350,7 @@ class MapsViewModel @Inject constructor(
             ), LatLng(13.461209117192677, 109.1738935187459)
         ),
         val isMarkerVisible: Boolean = false,
-        val radius: Int = 100 // Default radius meters
+        val radius: Int = 100, // Default radius meters
     )
 
 }

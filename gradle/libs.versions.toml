@@ -16,6 +16,7 @@ androidxHiltNavigationCompose = "1.2.0"
 kotlinxSerializationJson = "1.7.1"
 navigationCompose = "2.8.3"
 servicesMaps = "19.0.0"
+servicesLocation = "22.0.0"
 mapsCompose = "6.1.2"
 googleAccompanist = "0.34.0"
 
@@ -44,6 +45,7 @@ room-compiler = { group = "androidx.room", name = "room-compiler", version.ref =
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 
+services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "servicesLocation" }
 services-maps = { group = "com.google.android.gms", name = "play-services-maps", version.ref = "servicesMaps" }
 maps-compose = { group = "com.google.maps.android", name = "maps-compose", version.ref = "mapsCompose" }
 places-maps = { module = "com.google.android.libraries.places:places", version.ref = "places" }
