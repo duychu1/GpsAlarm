@@ -106,7 +106,7 @@ fun HomeScreen(
         onActiveChange = viewModel::onAlarmActiveChange,
         onDeleteGpsAlarm = viewModel::onClickDeleteAlarm,
         onNavigateToMaps = {
-            onNavigateToScreen(NavRoutes.Maps(null, null, null, 500))
+            onNavigateToScreen(NavRoutes.Maps(null, null, null, 500, null))
         }
     )
 }

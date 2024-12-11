@@ -13,6 +13,6 @@ sealed class NavRoutes {
     data class Detail(val id: Int?, val lat: Double?, val lng: Double?, val radius: Int ,val addressLine: String?): NavRoutes()
 
     @Serializable
-    data class Maps(val id: Int?, val lat: Double?, val lng: Double?, val radius: Int): NavRoutes()
+    data class Maps(val id: Int?, val lat: Double?, val lng: Double?, val radius: Int ,val addressLine: String?): NavRoutes()
 
 }

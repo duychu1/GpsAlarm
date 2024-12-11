@@ -51,12 +51,13 @@ class MapsViewModel @Inject constructor(
     private var geocoder: Geocoder
 
     init {
-        val (id, lat, lng, radius) = savedStateHandle.toRoute<NavRoutes.Maps>()
+        val (id, lat, lng, radius, addressLine) = savedStateHandle.toRoute<NavRoutes.Maps>()
         id?.let {
             _mapUiState.value = _mapUiState.value.copy(
                 alarmId = id,
                 defaultCamPos = LatLng(lat!!, lng!!),
                 selectedLatLng = LatLng(lat, lng),
+                selectedAddressLine = addressLine,
                 radius = radius,
                 zoom = 15f,
             )
@@ -69,19 +70,19 @@ class MapsViewModel @Inject constructor(
         geocoder = Geocoder(appContext, Locale.getDefault())
 
         getLastKnownLocation()
-        viewModelScope.launch {
-            repeat(10) {
-                delay(1000)
-                _mapUiState.value = _mapUiState.value.copy(
-                    currentLocation = LatLng(
-                        (21.028238 + 0.1*it),
-                        (105.234535 + 0.1*it)
-                    )
-                )
-                dlog("current location: ${_mapUiState.value.currentLocation}")
-            }
-        }
-//        listenLocationChange()
+//        viewModelScope.launch {
+//            repeat(10) {
+//                delay(1000)
+//                _mapUiState.value = _mapUiState.value.copy(
+//                    currentLocation = LatLng(
+//                        (21.028238 + 0.1*it),
+//                        (105.234535 + 0.1*it)
+//                    )
+//                )
+//                dlog("current location: ${_mapUiState.value.currentLocation}")
+//            }
+//        }
+        listenLocationChange()
     }
 
     fun onMapClicked(latLng: LatLng) {
@@ -149,9 +150,10 @@ class MapsViewModel @Inject constructor(
         try {
             locationManager.requestLocationUpdates(
                 LocationManager.GPS_PROVIDER,
-                3000L,
-                20f,
+                1000L,
+                10f,
             ) { location ->
+                dlog("listenLocationChange: $location")
                 _mapUiState.value = _mapUiState.value.copy(
                     currentLocation = LatLng(
                         location.latitude,

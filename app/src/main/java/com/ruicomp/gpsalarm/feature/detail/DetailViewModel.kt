@@ -64,7 +64,8 @@ class DetailViewModel @Inject constructor(
                     id = it.id,
                     lat = it.location.x,
                     lng = it.location.y,
-                    radius = it.radius
+                    radius = it.radius,
+                    addressLine = it.location.addressLine
                 )
             )
         }
