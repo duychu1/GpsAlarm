@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -40,7 +39,6 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -86,7 +84,7 @@ fun DetailScreen(
                     Log.d("DetailScreen", "Navigate to topic with id: ")
                 }
 
-                is DetailEffect.ShowToats -> Toast.makeText(
+                is DetailEffect.ShowToasts -> Toast.makeText(
                     context,
                     "Fetch false",
                     Toast.LENGTH_SHORT
@@ -146,7 +144,7 @@ fun DetailScreenContent(
     gpsAlarm: GpsAlarm?,
     onActiveChange: (Int, Boolean) -> Unit,
     onDeleteGpsAlarm: (Int) -> Unit,
-    onClickAddress: () -> Unit,
+    onClickAddress: (Int) -> Unit,
     onAlarmChange: (GpsAlarm) -> Unit,
     onSave: (GpsAlarm) -> Unit,
     onBack: () -> Unit,
@@ -235,7 +233,7 @@ fun GpsAlarmItem(
     gpsAlarm: GpsAlarm,
     onActiveChange: (Int, Boolean) -> Unit,
     onDelete: () -> Unit,
-    onClickAddress: () -> Unit,
+    onClickAddress: (Int) -> Unit,
     onAlarmChange: (GpsAlarm) -> Unit,
     onSave: (GpsAlarm) -> Unit,
     onBack: () -> Unit,
@@ -250,6 +248,10 @@ fun GpsAlarmItem(
     val durationAlarm = remember { mutableIntStateOf(gpsAlarm.alarmSettings.duration) }
     val alarmVolume = remember { mutableFloatStateOf(gpsAlarm.alarmSettings.soundVolume) }
     val alarmVibrate = remember { mutableFloatStateOf(gpsAlarm.alarmSettings.vibrationLevel) }
+
+    LaunchedEffect(gpsAlarm.radius) {
+        radius.intValue = gpsAlarm.radius
+    }
 
     // UI
     Column(
@@ -302,7 +304,7 @@ fun GpsAlarmItem(
         Column(
             Modifier
                 .fillMaxWidth()
-                .clickable(onClick = onClickAddress)
+                .clickable(onClick = { onClickAddress(radius.value) })
         ) {
             gpsAlarm.location.addressLine?.let {
                 Text(text = it)

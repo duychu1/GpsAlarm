@@ -86,7 +86,7 @@ class MapsViewModel @Inject constructor(
         locationManager = appContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         geocoder = Geocoder(appContext, Locale.getDefault())
 
-        getLastKnownLocation()
+//        getLastKnownLocation()
 //        viewModelScope.launch {
 //            repeat(10) {
 //                delay(1000)

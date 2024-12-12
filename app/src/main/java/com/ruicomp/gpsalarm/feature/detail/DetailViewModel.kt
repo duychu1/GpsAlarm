@@ -57,14 +57,14 @@ class DetailViewModel @Inject constructor(
         )
     }
 
-    fun onNavigateToMaps() {
+    fun onNavigateToMaps(radius: Int) {
         state.value.gpsAlarm?.let {
             sendEffect(
                 DetailEffect.NavigateToMaps(
                     id = it.id,
                     lat = it.location.x,
                     lng = it.location.y,
-                    radius = it.radius,
+                    radius = radius,
                     addressLine = it.location.addressLine
                 )
             )
