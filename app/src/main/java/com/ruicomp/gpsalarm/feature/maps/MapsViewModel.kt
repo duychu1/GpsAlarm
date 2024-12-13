@@ -99,11 +99,12 @@ class MapsViewModel @Inject constructor(
 //                dlog("current location: ${_mapUiState.value.currentLocation}")
 //            }
 //        }
+
         listenLocationChange()
     }
 
     fun onMapClicked(latLng: LatLng) {
-        Log.d("dddd", "onMapClicked: pos=($latLng)")
+        dlog("onMapClicked: pos=($latLng)")
         _mapUiState.value = _mapUiState.value.copy(
             selectedLatLng = latLng,
             isMarkerVisible = true

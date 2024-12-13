@@ -1,10 +1,15 @@
 package com.ruicomp.gpsalarm.feature.home
 
+import android.annotation.SuppressLint
+import android.content.Context
+import android.content.Intent
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewModelScope
 import com.ruicomp.gpsalarm.base_mvi.BaseViewModel
 import com.ruicomp.gpsalarm.common.result.Result
 import com.ruicomp.gpsalarm.common.result.asResult
 import com.ruicomp.gpsalarm.data.repository.GpsAlarmRepository
+import com.ruicomp.gpsalarm.feature.service.LocationService
 import com.ruicomp.gpsalarm.model.GpsAlarm
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -54,11 +59,24 @@ class HomeViewModel @Inject constructor(
         )
     }
 
-    fun onAlarmActiveChange(id: Int, isActive: Boolean) {
+    fun onAlarmActiveChange(context: Context, alarm: GpsAlarm, isActive: Boolean) {
         viewModelScope.launch {
-            gpsAlarmRepo.updateIsActiveById(id, isActive)
-        }
+            val newAlarm = alarm.copy(isActive = isActive)
+            gpsAlarmRepo.update(newAlarm)
+            val serviceIntent = Intent(context, LocationService::class.java)
 
+            if (!isActive) {
+                try {
+                    context.stopService(serviceIntent)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+                return@launch
+            }
+
+            serviceIntent.putExtra("target_location", newAlarm)
+            ContextCompat.startForegroundService(context, serviceIntent)
+        }
     }
 
 

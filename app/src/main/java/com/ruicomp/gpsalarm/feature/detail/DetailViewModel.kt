@@ -4,7 +4,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.ruicomp.gpsalarm.base_mvi.BaseViewModel
-import com.ruicomp.gpsalarm.data.GpsAlarmRepoImpl
 import com.ruicomp.gpsalarm.data.repository.GpsAlarmRepository
 import com.ruicomp.gpsalarm.model.GpsAlarm
 import com.ruicomp.gpsalarm.model.GpsLocation
@@ -33,8 +32,8 @@ class DetailViewModel @Inject constructor(
                         id = -1,
                         radius = radius,
                         location = GpsLocation(
-                            x = lat!!,
-                            y = lng!!,
+                            latitude = lat!!,
+                            longitude = lng!!,
                             addressLine = addressLine
                         )
                     )
@@ -62,8 +61,8 @@ class DetailViewModel @Inject constructor(
             sendEffect(
                 DetailEffect.NavigateToMaps(
                     id = it.id,
-                    lat = it.location.x,
-                    lng = it.location.y,
+                    lat = it.location.latitude,
+                    lng = it.location.longitude,
                     radius = radius,
                     addressLine = it.location.addressLine
                 )

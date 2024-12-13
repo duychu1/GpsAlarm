@@ -2,7 +2,6 @@ package com.ruicomp.gpsalarm.feature.home
 
 import android.util.Log
 import android.widget.Toast
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -47,11 +45,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ruicomp.gpsalarm.model.GpsAlarm
 import com.ruicomp.gpsalarm.utils.rememberFlowWithLifecycle
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import com.ruicomp.gpsalarm.data.fake.GpsAlarmFakeRepo
 import com.ruicomp.gpsalarm.navigation.NavRoutes
 import com.ruicomp.gpsalarm.ui.theme.TemplateTheme
-import javax.xml.transform.Templates
 
 @Composable
 fun HomeScreen(
@@ -103,7 +99,9 @@ fun HomeScreen(
         isLoading = state.value.isLoading,
         listGpsAlarms = state.value.gpsAlarms,
         onItemClick = viewModel::onAlarmClick,
-        onActiveChange = viewModel::onAlarmActiveChange,
+        onActiveChange = { alarm, isActive ->
+            viewModel.onAlarmActiveChange(context, alarm, isActive)
+        },
         onDeleteGpsAlarm = viewModel::onClickDeleteAlarm,
         onNavigateToMaps = {
             onNavigateToScreen(NavRoutes.Maps(null, null, null, 500, null))
@@ -117,7 +115,7 @@ fun HomeScreenContent(
     isLoading: Boolean,
     listGpsAlarms: List<GpsAlarm>,
     onItemClick: (GpsAlarm) -> Unit,
-    onActiveChange: (Int, Boolean) -> Unit,
+    onActiveChange: (GpsAlarm, Boolean) -> Unit,
     onDeleteGpsAlarm: (GpsAlarm, Int) -> Unit,
     onNavigateToMaps: () -> Unit,
     modifier: Modifier = Modifier
@@ -161,7 +159,7 @@ fun HomeScreenContent(
                     GpsAlarmItem(
                         gpsAlarm = item,
                         onClick = { onItemClick(item) },
-                        onActiveChange = { id, isActive -> onActiveChange(id, isActive) },
+                        onActiveChange = { id, isActive -> onActiveChange(item, isActive) },
                         onDelete = { onDeleteGpsAlarm(item, index) }
                     )
                 }
@@ -197,7 +195,7 @@ fun GpsAlarmItem(
         Column(modifier = Modifier.padding(16.dp)) {
             Log.d("dddd", "GpsAlarmItem: compose")
             Text(text = gpsAlarm.name, style = MaterialTheme.typography.titleLarge)
-            Text(text = "Location: ${gpsAlarm.location.x}, ${gpsAlarm.location.y}", style = MaterialTheme.typography.bodyMedium)
+            Text(text = "Location: ${gpsAlarm.location.latitude}, ${gpsAlarm.location.longitude}", style = MaterialTheme.typography.bodyMedium)
             Text(text = "Reminder: ${gpsAlarm.reminder}", style = MaterialTheme.typography.bodyMedium)
             // Add more details as needed (e.g., active days, duration, sound)
             Row(modifier = Modifier.fillMaxWidth()) {

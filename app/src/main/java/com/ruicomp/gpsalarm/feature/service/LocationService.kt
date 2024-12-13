@@ -18,26 +18,28 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.ruicomp.gpsalarm.model.GpsAlarm
 import com.ruicomp.gpsalarm.utils.BroadcastUtils
 import com.ruicomp.gpsalarm.utils.dlog
 
 class LocationService : Service() {
 
     private lateinit var locationManager: LocationManager
-    private val locationListener = LocationListener { location ->
-        // Check if the user is within the target location
-        val targetLatitude = 19.4219999 // Replace with your target latitude
-        val targetLongitude = -105.0840575 // Replace with your target longitude
-        val radius = 100f // 100 meters radius
+    private var listTargetAlarms: MutableList<GpsAlarm> = mutableListOf()
 
-        val distance = FloatArray(1)
-        Location.distanceBetween(
-            location.latitude, location.longitude,
-            targetLatitude, targetLongitude, distance
-        )
-        dlog("LocationService", "distance: ${distance[0]}")
-        if (distance[0] < radius) {
-            sendNotification() // Notify user when they are within the radius
+    private val locationListener = LocationListener { location ->
+        dlog("locationListener: onLocationChanged: $location")
+        listTargetAlarms.removeAll { targetLocation ->
+            val distance = FloatArray(1)
+            Location.distanceBetween(
+                location.latitude, location.longitude,
+                targetLocation.location.latitude, targetLocation.location.longitude, distance
+            )
+            dlog("locationListener: distance: ${distance[0]}")
+            if (distance[0] < targetLocation.radius) {
+                sendNotification()
+            }
+            distance[0] < targetLocation.radius // Remove if distance is less than radius
         }
     }
 
@@ -57,12 +59,16 @@ class LocationService : Service() {
         super.onCreate()
         locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         BroadcastUtils.registerReceiver(this, broadcastReceiver, IntentFilter("com.example.location.UPDATE"))
+        createNotificationChannel(this)
         startForegroundService()
         listenLocationChange(minTimeMs = 1000L, minDistanceM = 10f, locationListener)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-
+        val targetAlarm = intent?.getParcelableExtra<GpsAlarm>("target_location")
+        targetAlarm?.let {
+            listTargetAlarms.add(it)
+        }
 
         return super.onStartCommand(intent, flags, startId)
     }
@@ -83,6 +89,7 @@ class LocationService : Service() {
             .setContentTitle("Tracking Location")
             .setContentText("Tracking your location in the background.")
             .setSmallIcon(android.R.drawable.ic_dialog_info)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
             .build()
 
         startForeground(1, notification)

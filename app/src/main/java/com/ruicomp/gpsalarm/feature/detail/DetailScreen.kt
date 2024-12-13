@@ -309,7 +309,7 @@ fun GpsAlarmItem(
             gpsAlarm.location.addressLine?.let {
                 Text(text = it)
             }
-            Text(text = String.format("%.5f, %.5f", gpsAlarm.location.x, gpsAlarm.location.y))
+            Text(text = String.format("%.5f, %.5f", gpsAlarm.location.latitude, gpsAlarm.location.longitude))
         }
 
         // Active (Checkbox)
