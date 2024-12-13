@@ -11,11 +11,11 @@ object GpsAlarmFakeRepo {
                 location = GpsLocation(20.99026, 104.8487278, "123 test default, HCM City"), // San Francisco
                 name = "Morning Alarm test default",
                 reminder = "Wake up for work",
-                isActive = true,
+                isActive = false,
                 radius = 100,
-                activeDays = listOf(1, 2, 3, 4, 5), // Monday to Friday
+                activeDays = listOf(0, 1, 2, 3, 4, 5, 6), // Monday to Friday
                 alarmSettings = AlarmSettingFakeRepo.alarmSettingsList.get(0),
-                isPinned = true,
+                isPinned = false,
                 pinnedAt = System.currentTimeMillis() - 3000000,
                 createdAt = System.currentTimeMillis() - 9000000,
                 lastUpdated = System.currentTimeMillis() - 6000000,
