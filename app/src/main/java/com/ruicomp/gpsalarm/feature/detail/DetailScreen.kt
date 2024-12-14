@@ -46,6 +46,7 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -238,16 +239,16 @@ fun GpsAlarmItem(
     onSave: (GpsAlarm) -> Unit,
     onBack: () -> Unit,
 ) {
-    val name = remember { mutableStateOf(gpsAlarm.name) }
-    val reminder = remember { mutableStateOf(gpsAlarm.reminder) }
-    val isActive = remember { mutableStateOf(gpsAlarm.isActive) }
-    val radius = remember { mutableIntStateOf(gpsAlarm.radius) }
-    val activeDays = remember { mutableStateOf(gpsAlarm.activeDays) }
-    val alarmName = remember { mutableStateOf(gpsAlarm.alarmSettings.name) }
-    val isRepeating = remember { mutableStateOf(gpsAlarm.alarmSettings.isRepeating) }
-    val durationAlarm = remember { mutableIntStateOf(gpsAlarm.alarmSettings.duration) }
-    val alarmVolume = remember { mutableFloatStateOf(gpsAlarm.alarmSettings.soundVolume) }
-    val alarmVibrate = remember { mutableFloatStateOf(gpsAlarm.alarmSettings.vibrationLevel) }
+    val name = rememberSaveable { mutableStateOf(gpsAlarm.name) }
+    val reminder = rememberSaveable { mutableStateOf(gpsAlarm.reminder) }
+    val isActive = rememberSaveable { mutableStateOf(gpsAlarm.isActive) }
+    val radius = rememberSaveable { mutableIntStateOf(gpsAlarm.radius) }
+    val activeDays = rememberSaveable { mutableStateOf(gpsAlarm.activeDays) }
+    val alarmName = rememberSaveable { mutableStateOf(gpsAlarm.alarmSettings.name) }
+    val isRepeating = rememberSaveable { mutableStateOf(gpsAlarm.alarmSettings.isRepeating) }
+    val durationAlarm = rememberSaveable { mutableIntStateOf(gpsAlarm.alarmSettings.duration) }
+    val alarmVolume = rememberSaveable { mutableFloatStateOf(gpsAlarm.alarmSettings.soundVolume) }
+    val alarmVibrate = rememberSaveable { mutableFloatStateOf(gpsAlarm.alarmSettings.vibrationLevel) }
 
     LaunchedEffect(gpsAlarm.radius) {
         radius.intValue = gpsAlarm.radius
@@ -304,7 +305,7 @@ fun GpsAlarmItem(
         Column(
             Modifier
                 .fillMaxWidth()
-                .clickable(onClick = { onClickAddress(radius.value) })
+                .clickable(onClick = { onClickAddress(radius.intValue) })
         ) {
             gpsAlarm.location.addressLine?.let {
                 Text(text = it)
