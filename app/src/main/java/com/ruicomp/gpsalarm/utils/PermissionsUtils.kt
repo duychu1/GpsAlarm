@@ -72,11 +72,7 @@ fun RequestPermissions (
                     ) { }
                 }
             }
-            it.status.shouldShowRationale -> {
-                Log.d("RequestPermissions","write: status.shouldShowRationale")
-
-            }
-            !it.status.isGranted && !it.status.shouldShowRationale -> {
+            !it.status.isGranted -> {
                 Log.d("RequestPermissions","write: deny or something else")
                 RequestPermissionDialog(
                     context = context,

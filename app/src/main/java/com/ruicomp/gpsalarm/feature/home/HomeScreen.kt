@@ -1,5 +1,7 @@
 package com.ruicomp.gpsalarm.feature.home
 
+import android.Manifest
+import android.os.Build
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.clickable
@@ -48,6 +50,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.ruicomp.gpsalarm.data.fake.GpsAlarmFakeRepo
 import com.ruicomp.gpsalarm.navigation.NavRoutes
 import com.ruicomp.gpsalarm.ui.theme.TemplateTheme
+import com.ruicomp.gpsalarm.utils.RequestPermissions
 
 @Composable
 fun HomeScreen(
@@ -107,6 +110,15 @@ fun HomeScreen(
             onNavigateToScreen(NavRoutes.Maps(null, null, null, 500, null))
         }
     )
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        RequestPermissions(
+            permissions = listOf(
+                Manifest.permission.POST_NOTIFICATIONS,
+            ),
+            permissionNameDisplay = "Post Notification"
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
