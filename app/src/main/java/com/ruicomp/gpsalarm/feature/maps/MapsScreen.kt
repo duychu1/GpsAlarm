@@ -3,7 +3,6 @@ package com.ruicomp.gpsalarm.feature.maps
 import com.ruicomp.gpsalarm.R
 import android.Manifest
 import android.annotation.SuppressLint
-import android.health.connect.datatypes.units.Volume
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -20,7 +19,6 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -226,12 +224,12 @@ fun MapsScreenContent(
 
 
 
-        val currentLocation = rememberUpdatedState(newValue = currentLocation)
+        val currentLocationState = rememberUpdatedState(newValue = currentLocation)
         MyLocationIcon {
             CoroutineScope(Dispatchers.Unconfined).launch {
                 try {
                     cameraPositionState.animate(
-                        update = CameraUpdateFactory.newLatLngZoom(currentLocation.value!!, 15f),
+                        update = CameraUpdateFactory.newLatLngZoom(currentLocationState.value!!, 15f),
                         durationMs = 1000
                     )
                 } catch (e: Exception) {
@@ -377,13 +375,12 @@ fun BoxWithConstraintsScope.CircularButtonWithDropdown(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(4.dp)
                         .clickable(onClick = {
                             expanded.value = false
                             onRadiusChanged(item)
                         })
                 ) {
-                    Text(text = "${item}m")
+                    Text(text = "${item}m", modifier = Modifier.padding(4.dp))
                 }
             }
         }

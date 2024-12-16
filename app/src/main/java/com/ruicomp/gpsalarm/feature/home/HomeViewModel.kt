@@ -63,15 +63,8 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             val newAlarm = alarm.copy(isActive = isActive)
             gpsAlarmRepo.update(newAlarm)
-            val serviceIntent = Intent(context, LocationService::class.java)
-
-            if (!isActive) {
-                try {
-                    context.stopService(serviceIntent)
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
-                return@launch
+            val serviceIntent = Intent(context, LocationService::class.java).apply {
+                action = if (isActive) "ACTION_NEW_TARGET" else "ACTION_REMOVE_TARGET"
             }
 
             serviceIntent.putExtra("target_location", newAlarm)

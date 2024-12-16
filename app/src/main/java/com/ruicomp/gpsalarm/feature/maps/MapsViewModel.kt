@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.location.Address
 import android.location.Geocoder
+import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Build
@@ -86,20 +87,7 @@ class MapsViewModel @Inject constructor(
         locationManager = appContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         geocoder = Geocoder(appContext, Locale.getDefault())
 
-//        getLastKnownLocation()
-//        viewModelScope.launch {
-//            repeat(10) {
-//                delay(1000)
-//                _mapUiState.value = _mapUiState.value.copy(
-//                    currentLocation = LatLng(
-//                        (21.028238 + 0.1*it),
-//                        (105.234535 + 0.1*it)
-//                    )
-//                )
-//                dlog("current location: ${_mapUiState.value.currentLocation}")
-//            }
-//        }
-
+//        getCurrentLocation()
         listenLocationChange()
     }
 
@@ -164,9 +152,28 @@ class MapsViewModel @Inject constructor(
             }
     }
 
+    private fun getCurrentLocation() {
+        val location: Location? = try {
+            locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+                ?: locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+        } catch (e: SecurityException) {
+            // Handle permission denial
+            dlog("getCurrentLocation SecurityException")
+            null
+        }
+        if (location != null) {
+            _mapUiState.value = _mapUiState.value.copy(
+                currentLocation = LatLng(
+                    location.latitude,
+                    location.longitude
+                )
+            )
+        }
+    }
 
 
     fun listenLocationChange() {
+        dlog("listenLocationChange")
         try {
             locationManager.requestLocationUpdates(
                 LocationManager.GPS_PROVIDER,
@@ -185,7 +192,7 @@ class MapsViewModel @Inject constructor(
     }
 
 
-    fun listenLocationChange2() {
+      fun listenLocationChange2() {
 
         // Create the location request
         val locationRequest = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
