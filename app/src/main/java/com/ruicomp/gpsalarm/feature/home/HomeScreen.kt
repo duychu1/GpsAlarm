@@ -1,6 +1,7 @@
 package com.ruicomp.gpsalarm.feature.home
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.os.Build
 import android.util.Log
 import android.widget.Toast
@@ -146,14 +147,14 @@ fun HomeScreenContent(
             LazyColumn(modifier = Modifier.fillMaxSize()) {
                 item {
                     TopAppBar(
-                        title = { Text("Edit GPS Alarm", style = MaterialTheme.typography.titleLarge) },
-                        navigationIcon = {
-                            IconButton(
-                                onClick = {}
-                            ) {
-                                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                            }
-                        },
+                        title = { Text("All Alarm", style = MaterialTheme.typography.titleLarge) },
+//                        navigationIcon = {
+//                            IconButton(
+//                                onClick = {}
+//                            ) {
+//                                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+//                            }
+//                        },
                         windowInsets = WindowInsets(0, 0, 0, 0),
                         actions = {
 //                Text("Delete", modifier = Modifier.clickable { onDelete() })
@@ -191,6 +192,7 @@ fun HomeScreenContent(
     }
 }
 
+@SuppressLint("DefaultLocale")
 @Composable
 fun GpsAlarmItem(
     gpsAlarm: GpsAlarm,
@@ -207,7 +209,7 @@ fun GpsAlarmItem(
         Column(modifier = Modifier.padding(16.dp)) {
             Log.d("dddd", "GpsAlarmItem: compose")
             Text(text = gpsAlarm.name, style = MaterialTheme.typography.titleLarge)
-            Text(text = "Location: ${gpsAlarm.location.latitude}, ${gpsAlarm.location.longitude}", style = MaterialTheme.typography.bodyMedium)
+            Text(text = String.format("Location: %.5f, %.5f", gpsAlarm.location.latitude, gpsAlarm.location.longitude), style = MaterialTheme.typography.bodyMedium)
             Text(text = "Reminder: ${gpsAlarm.reminder}", style = MaterialTheme.typography.bodyMedium)
             // Add more details as needed (e.g., active days, duration, sound)
             Row(modifier = Modifier.fillMaxWidth()) {

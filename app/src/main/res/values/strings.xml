@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">Gps Alarm</string>
     <string name="save">Save</string>
+    <string name="stop_all">STOP ALL</string>
+    <string name="stop">STOP</string>
+    <string name="arrived">Arrived</string>
+    <string name="you_have_entered_the_area">You have entered the %1$s area!</string>
 </resources>

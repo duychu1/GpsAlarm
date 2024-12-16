@@ -1,6 +1,5 @@
 package com.ruicomp.gpsalarm.feature.service
 
-import android.Manifest
 import android.app.*
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -16,7 +15,6 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.ruicomp.gpsalarm.R
 import com.ruicomp.gpsalarm.data.repository.GpsAlarmRepository
@@ -32,64 +30,66 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class LocationService : Service() {
 
+    private val FOREGROUND_SERVICE_ID = 101
+    private val ARRIVED_NOTIFICATION_ID = 102
+    private val INTENT_STOP_ALL_CODE = 202
+    private val INTENT_STOP_CODE = 201
+
     @Inject
     lateinit var gpsAlarmRepository: GpsAlarmRepository
 
     private lateinit var locationManager: LocationManager
     private var listTargetAlarms: MutableList<GpsAlarm> = mutableListOf()
+    private lateinit var stopAllPendingIntent: PendingIntent
     private lateinit var stopPendingIntent: PendingIntent
+    private lateinit var notificationManager: NotificationManagerCompat
 
     private val locationListener = LocationListener { location ->
         dlog("locationListener: onLocationChanged: $location")
-        listTargetAlarms.removeAll { targetLocation ->
+        listTargetAlarms.removeAll { gpsAlarm ->
             val distance = FloatArray(1)
             Location.distanceBetween(
                 location.latitude, location.longitude,
-                targetLocation.location.latitude, targetLocation.location.longitude, distance
+                gpsAlarm.location.latitude, gpsAlarm.location.longitude, distance
             )
             dlog("locationListener: distance: ${distance[0]}")
-            if (distance[0] < targetLocation.radius) {
-                handleArrival()
+            if (distance[0] < gpsAlarm.radius) {
+                CoroutineScope(Dispatchers.IO).launch {
+                    gpsAlarmRepository.updateIsActiveById(gpsAlarm.id, false)
+                }
+                handleArrival(gpsAlarm)
             }
-            distance[0] < targetLocation.radius // Remove if distance is less than radius
+            distance[0] < gpsAlarm.radius // Remove if distance is less than radius
         }
     }
 
     private val broadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             dlog("broadcastReceiver: onReceive: ${intent.action}")
-            if (intent.action == "ACTION_STOP_SERVICE") {
-                stopSelf()
+            when (intent.action) {
+                "ACTION_STOP_ARRIVED" -> {
+                    notificationManager.cancel(ARRIVED_NOTIFICATION_ID)
+                }
+                "ACTION_STOP_SERVICE" -> {
+                    notificationManager.cancel(ARRIVED_NOTIFICATION_ID)
+                    stopSelf()
+                }
             }
         }
     }
 
-//    val stopServiceIntent = Intent(this, LocationService::class.java).apply {
-//        action = "ACTION_STOP_SERVICE"
-//    }
-//    val stopPendingIntent1: PendingIntent = PendingIntent.getBroadcast(
-//        this,
-//        0,
-//        stopServiceIntent,
-//        PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_CANCEL_CURRENT
-//    )
-//
-//    // Create a NotificationCompat.Action to stop the service
-//    val stopAction = NotificationCompat.Action.Builder(
-//        R.drawable.ic_my_location, // Replace with your stop icon
-//        "Turn off", // Replace with your title
-//        stopPendingIntent
-//    ).build()
-
-
+    val intentFilter = IntentFilter().apply {
+        addAction("ACTION_STOP_SERVICE")
+        addAction("ACTION_STOP_ARRIVED")
+    }
 
     override fun onCreate() {
         super.onCreate()
         locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        BroadcastUtils.registerReceiver(this, broadcastReceiver, IntentFilter("ACTION_STOP_SERVICE"))
         createNotificationChannel(this)
         startForegroundService()
         listenLocationChange(minTimeMs = 1000L, minDistanceM = 10f, locationListener)
+        BroadcastUtils.registerReceiver(this, broadcastReceiver, intentFilter)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -106,9 +106,43 @@ class LocationService : Service() {
                     }
                 }
             }
+            handleNoti()
         }
 
         return super.onStartCommand(intent, flags, startId)
+    }
+
+    private fun handleNoti(listSize: Int = listTargetAlarms.size) {
+        if (listSize == 0) return
+        // Default text
+        val contentText: String = if (listSize == 1) {
+            "On the way to the destination"
+        } else {
+            "On the way to $listSize destinations"
+        }
+
+// Build the notification
+        val notification = NotificationCompat.Builder(this, "location_channel")
+            .setContentTitle("Progressing")
+            .setContentText(contentText)
+            .setSmallIcon(android.R.drawable.ic_dialog_info)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setOnlyAlertOnce(true)
+            .addAction(0, // Replace with your stop icon
+                getString(R.string.stop_all), // Replace with your title
+                stopAllPendingIntent)
+            .build()
+
+        notificationManager = NotificationManagerCompat.from(this)
+
+        try {
+            notificationManager.notify(FOREGROUND_SERVICE_ID, notification)
+        } catch (se: SecurityException) {
+            dlog("handleArrival: SecurityException: ${se.message}")
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
     }
 
     override fun onBind(intent: Intent?): IBinder? {
@@ -134,24 +168,24 @@ class LocationService : Service() {
 
     // Start the foreground service with a notification
     private fun startForegroundService() {
-        stopPendingIntent = PendingIntent.getBroadcast(
+        stopAllPendingIntent = PendingIntent.getBroadcast(
             this,
-            0,
+            INTENT_STOP_ALL_CODE,
             Intent("ACTION_STOP_SERVICE"),
             PendingIntent.FLAG_IMMUTABLE
         )
 
         val notification = NotificationCompat.Builder(this, "location_channel")
-            .setContentTitle("Tracking Location")
-            .setContentText("Tracking your location in the background.")
+            .setContentTitle("Progressing")
+            .setContentText("On the way to destination")
             .setSmallIcon(android.R.drawable.ic_dialog_info)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .addAction(0, // Replace with your stop icon
-                "Turn off", // Replace with your title
-                stopPendingIntent)
+                getString(R.string.stop_all), // Replace with your title
+                stopAllPendingIntent)
             .build()
 
-        startForeground(1, notification)
+        startForeground(FOREGROUND_SERVICE_ID, notification)
     }
 
     // Listen for location updates
@@ -185,28 +219,47 @@ class LocationService : Service() {
         notificationManager.createNotificationChannel(channel)
     }
 
+    fun getFirst5Character(title: String): String {
+        return if (title.length > 5) {
+            title.substring(0, 5) + "..."
+        } else {
+            title
+        }
+    }
 
     // Send a notification when the user enters the target location radius
-    private fun handleArrival() {
+    private fun handleArrival(gpsAlarm: GpsAlarm) {
+        stopPendingIntent = PendingIntent.getBroadcast(
+            this,
+            INTENT_STOP_CODE,
+            Intent("ACTION_STOP_ARRIVED"),
+            PendingIntent.FLAG_IMMUTABLE
+        )
+
         val notificationBuilder = NotificationCompat.Builder(this, "location_channel")
-            .setContentTitle("You are near the target location!")
-            .setContentText("You have entered the target radius.")
+            .setContentTitle(getString(R.string.arrived))
+            .setContentText(
+                getString(
+                    R.string.you_have_entered_the_area,
+                    getFirst5Character(gpsAlarm.name)
+                )
+            )
             .setSmallIcon(android.R.drawable.ic_dialog_info)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setAutoCancel(true)
-            .addAction(0, // Replace with your stop icon
-                "Turn off", // Replace with your title
+            .addAction(0,
+                getString(R.string.stop),
                 stopPendingIntent)
 
-        val notificationManager = NotificationManagerCompat.from(this)
-
         try {
-            notificationManager.notify(1, notificationBuilder.build())
+            notificationManager.notify(ARRIVED_NOTIFICATION_ID, notificationBuilder.build())
         } catch (se: SecurityException) {
             dlog("handleArrival: SecurityException: ${se.message}")
         } catch (e: Exception) {
             e.printStackTrace()
         }
+
+        handleNoti(listTargetAlarms.size - 1)
     }
 
 
