@@ -1,5 +1,6 @@
 package com.ruicomp.gpsalarm.feature.service
 
+import android.annotation.SuppressLint
 import android.app.*
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -34,6 +35,7 @@ class LocationService : Service() {
     private val ARRIVED_NOTIFICATION_ID = 102
     private val INTENT_STOP_ALL_CODE = 202
     private val INTENT_STOP_CODE = 201
+    private val ARRIVED_NOTI_GROUP_KEY = "ARRIVED_NOTI_GROUP_KEY"
 
     @Inject
     lateinit var gpsAlarmRepository: GpsAlarmRepository
@@ -68,9 +70,11 @@ class LocationService : Service() {
             dlog("broadcastReceiver: onReceive: ${intent.action}")
             when (intent.action) {
                 "ACTION_STOP_ARRIVED" -> {
-                    notificationManager.cancel(ARRIVED_NOTIFICATION_ID)
+                    notificationManager.cancelAll()
                 }
+
                 "ACTION_STOP_SERVICE" -> {
+                    notificationManager.cancelAll()
                     notificationManager.cancel(ARRIVED_NOTIFICATION_ID)
                     stopSelf()
                 }
@@ -97,10 +101,10 @@ class LocationService : Service() {
         val targetAlarm = intent?.getParcelableExtra<GpsAlarm>("target_location")
 
         targetAlarm?.let {
-            when(intent.action) {
+            when (intent.action) {
                 "ACTION_NEW_TARGET" -> listTargetAlarms.add(it)
                 "ACTION_REMOVE_TARGET" -> {
-                    listTargetAlarms.removeAll { alarm -> alarm.id == it.id  }
+                    listTargetAlarms.removeAll { alarm -> alarm.id == it.id }
                     if (listTargetAlarms.isEmpty()) {
                         stopSelf()
                     }
@@ -110,39 +114,6 @@ class LocationService : Service() {
         }
 
         return super.onStartCommand(intent, flags, startId)
-    }
-
-    private fun handleNoti(listSize: Int = listTargetAlarms.size) {
-        if (listSize == 0) return
-        // Default text
-        val contentText: String = if (listSize == 1) {
-            "On the way to the destination"
-        } else {
-            "On the way to $listSize destinations"
-        }
-
-// Build the notification
-        val notification = NotificationCompat.Builder(this, "location_channel")
-            .setContentTitle("Progressing")
-            .setContentText(contentText)
-            .setSmallIcon(android.R.drawable.ic_dialog_info)
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-            .setOnlyAlertOnce(true)
-            .addAction(0, // Replace with your stop icon
-                getString(R.string.stop_all), // Replace with your title
-                stopAllPendingIntent)
-            .build()
-
-        notificationManager = NotificationManagerCompat.from(this)
-
-        try {
-            notificationManager.notify(FOREGROUND_SERVICE_ID, notification)
-        } catch (se: SecurityException) {
-            dlog("handleArrival: SecurityException: ${se.message}")
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-
     }
 
     override fun onBind(intent: Intent?): IBinder? {
@@ -175,21 +146,72 @@ class LocationService : Service() {
             PendingIntent.FLAG_IMMUTABLE
         )
 
-        val notification = NotificationCompat.Builder(this, "location_channel")
-            .setContentTitle("Progressing")
-            .setContentText("On the way to destination")
-            .setSmallIcon(android.R.drawable.ic_dialog_info)
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .addAction(0, // Replace with your stop icon
-                getString(R.string.stop_all), // Replace with your title
-                stopAllPendingIntent)
-            .build()
+        val notification = foregroundNoti()
 
         startForeground(FOREGROUND_SERVICE_ID, notification)
     }
 
+    @SuppressLint("StringFormatMatches")
+    private fun handleNoti(listSize: Int = listTargetAlarms.size) {
+        val contentText = when (listSize) {
+            0 -> getString(R.string.all_destinations_have_been_reached)
+            1 -> getString(R.string.on_the_way_to_the_destination)
+            else -> getString(R.string.on_the_way_to_number_destinations, listSize, listSize)
+        }
+
+        val contentTitle = when (listSize) {
+            0 -> getString(R.string.arrived)
+            else -> getString(R.string.progressing)
+        }
+
+
+        val notification = foregroundNofiUpdate(contentTitle, contentText)
+
+        notificationManager = NotificationManagerCompat.from(this)
+
+        try {
+            notificationManager.notify(FOREGROUND_SERVICE_ID, notification)
+        } catch (se: SecurityException) {
+            dlog("handleArrival: SecurityException: ${se.message}")
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+    }
+
+    private fun foregroundNoti(): Notification =
+        NotificationCompat.Builder(this, "location_channel")
+            .setContentTitle(getString(R.string.progressing))
+            .setContentText(getString(R.string.on_the_way_to_the_destination))
+            .setSmallIcon(android.R.drawable.ic_dialog_info)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .addAction(
+                0, // Replace with your stop icon
+                getString(R.string.stop_all), // Replace with your title
+                stopAllPendingIntent
+            )
+            .build()
+
+    private fun foregroundNofiUpdate(contentTitle: String, contentText: String): Notification =
+        NotificationCompat.Builder(this, "location_channel")
+            .setContentTitle(contentTitle)
+            .setContentText(contentText)
+            .setSmallIcon(android.R.drawable.ic_dialog_info)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setOnlyAlertOnce(true)
+            .addAction(
+                0, // Replace with your stop icon
+                getString(R.string.stop_all), // Replace with your title
+                stopAllPendingIntent
+            )
+            .build()
+
     // Listen for location updates
-    private fun listenLocationChange(minTimeMs: Long, minDistanceM: Float, locationListener: LocationListener) {
+    private fun listenLocationChange(
+        minTimeMs: Long,
+        minDistanceM: Float,
+        locationListener: LocationListener,
+    ) {
         try {
             locationManager.requestLocationUpdates(
                 LocationManager.GPS_PROVIDER,
@@ -236,23 +258,10 @@ class LocationService : Service() {
             PendingIntent.FLAG_IMMUTABLE
         )
 
-        val notificationBuilder = NotificationCompat.Builder(this, "location_channel")
-            .setContentTitle(getString(R.string.arrived))
-            .setContentText(
-                getString(
-                    R.string.you_have_entered_the_area,
-                    getFirst5Character(gpsAlarm.name)
-                )
-            )
-            .setSmallIcon(android.R.drawable.ic_dialog_info)
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setAutoCancel(true)
-            .addAction(0,
-                getString(R.string.stop),
-                stopPendingIntent)
+        val notificationBuilder = arrivedNoti(gpsAlarm.name)
 
         try {
-            notificationManager.notify(ARRIVED_NOTIFICATION_ID, notificationBuilder.build())
+            notificationManager.notify(gpsAlarm.id, notificationBuilder.build())
         } catch (se: SecurityException) {
             dlog("handleArrival: SecurityException: ${se.message}")
         } catch (e: Exception) {
@@ -261,6 +270,26 @@ class LocationService : Service() {
 
         handleNoti(listTargetAlarms.size - 1)
     }
+
+    private fun arrivedNoti(gpsAlarmName: String): NotificationCompat.Builder =
+        NotificationCompat.Builder(this, "location_channel")
+            .setContentTitle(getString(R.string.arrived))
+            .setContentText(
+                getString(
+                    R.string.you_have_entered_the_area,
+                    getFirst5Character(gpsAlarmName)
+                )
+            )
+            .setSmallIcon(android.R.drawable.ic_dialog_info)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setAutoCancel(true)
+            .setGroup(ARRIVED_NOTI_GROUP_KEY)
+            .setGroupSummary(true)
+            .addAction(
+                0,
+                getString(R.string.stop),
+                stopPendingIntent
+            )
 
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)

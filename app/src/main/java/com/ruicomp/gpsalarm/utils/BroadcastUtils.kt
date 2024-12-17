@@ -13,7 +13,7 @@ object BroadcastUtils {
         intentFilter: IntentFilter
     ) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            context.registerReceiver(receiver, intentFilter, Context.RECEIVER_NOT_EXPORTED)
+            context.registerReceiver(receiver, intentFilter, Context.RECEIVER_EXPORTED)
         } else {
             @SuppressLint("UnspecifiedRegisterReceiverFlag")
             context.registerReceiver(receiver, intentFilter)

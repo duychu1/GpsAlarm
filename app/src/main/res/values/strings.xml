@@ -5,4 +5,8 @@
     <string name="stop">STOP</string>
     <string name="arrived">Arrived</string>
     <string name="you_have_entered_the_area">You have entered the %1$s area!</string>
+    <string name="progressing">Progressing</string>
+    <string name="on_the_way_to_the_destination">On the way to the destination</string>
+    <string name="all_destinations_have_been_reached">All destinations have been reached</string>
+    <string name="on_the_way_to_number_destinations">On the way to %1$s destinations</string>
 </resources>
