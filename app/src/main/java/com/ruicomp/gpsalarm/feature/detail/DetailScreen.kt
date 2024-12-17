@@ -71,7 +71,7 @@ fun DetailScreen(
     mapsResult: MapsToDetailResult?,
     onNavigateToScreen: (Any) -> Unit,
     onNavigateBack: () -> Unit,
-    viewModel: DetailViewModel = hiltViewModel()
+    viewModel: DetailViewModel = hiltViewModel(),
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle()
     val effect = rememberFlowWithLifecycle(viewModel.effect)
@@ -81,7 +81,15 @@ fun DetailScreen(
         effect.collect { action ->
             when (action) {
                 is DetailEffect.NavigateToMaps -> {
-                    onNavigateToScreen(NavRoutes.Maps(action.id, action.lat, action.lng, action.radius, action.addressLine))
+                    onNavigateToScreen(
+                        NavRoutes.Maps(
+                            action.id,
+                            action.lat,
+                            action.lng,
+                            action.radius,
+                            action.addressLine
+                        )
+                    )
                     Log.d("DetailScreen", "Navigate to topic with id: ")
                 }
 
@@ -149,7 +157,7 @@ fun DetailScreenContent(
     onAlarmChange: (GpsAlarm) -> Unit,
     onSave: (GpsAlarm) -> Unit,
     onBack: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier.fillMaxSize()) {
         if (isLoading) {
@@ -248,7 +256,8 @@ fun GpsAlarmItem(
     val isRepeating = rememberSaveable { mutableStateOf(gpsAlarm.alarmSettings.isRepeating) }
     val durationAlarm = rememberSaveable { mutableIntStateOf(gpsAlarm.alarmSettings.duration) }
     val alarmVolume = rememberSaveable { mutableFloatStateOf(gpsAlarm.alarmSettings.soundVolume) }
-    val alarmVibrate = rememberSaveable { mutableFloatStateOf(gpsAlarm.alarmSettings.vibrationLevel) }
+    val alarmVibrate =
+        rememberSaveable { mutableFloatStateOf(gpsAlarm.alarmSettings.vibrationLevel) }
 
     LaunchedEffect(gpsAlarm.radius) {
         radius.intValue = gpsAlarm.radius
@@ -271,7 +280,22 @@ fun GpsAlarmItem(
             },
             windowInsets = WindowInsets(0, 0, 0, 0),
             actions = {
-//                Text("Delete", modifier = Modifier.clickable { onDelete() })
+                Text("Save", modifier = Modifier.clickable {
+                    onSave(
+                        gpsAlarm.copy(
+                            name = name.value,
+                            reminder = reminder.value,
+                            isActive = isActive.value,
+                            radius = radius.intValue,
+                            activeDays = activeDays.value,
+                            alarmSettings = gpsAlarm.alarmSettings.copy(
+                                name = alarmName.value,
+                                isRepeating = isRepeating.value,
+                                duration = durationAlarm.intValue,
+                            )
+                        )
+                    )
+                })
             },
 //            colors = TopAppBarDefaults.topAppBarColors(
 //                containerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -310,7 +334,13 @@ fun GpsAlarmItem(
             gpsAlarm.location.addressLine?.let {
                 Text(text = it)
             }
-            Text(text = String.format("%.5f, %.5f", gpsAlarm.location.latitude, gpsAlarm.location.longitude))
+            Text(
+                text = String.format(
+                    "%.5f, %.5f",
+                    gpsAlarm.location.latitude,
+                    gpsAlarm.location.longitude
+                )
+            )
         }
 
         // Active (Checkbox)
@@ -363,26 +393,26 @@ fun GpsAlarmItem(
         )
 
         // Repeating (Checkbox)
-//        Row(
-//            modifier = Modifier.fillMaxWidth(),
-//            horizontalArrangement = Arrangement.SpaceBetween,
-//            verticalAlignment = Alignment.CenterVertically
-//        ) {
-//            Text("Repeating")
-//            Switch(
-//                checked = isRepeating.value,
-//                onCheckedChange = {
-//                    isRepeating.value = it
-//                    onAlarmChange(
-//                        gpsAlarm.copy(
-//                            alarmSettings = gpsAlarm.alarmSettings.copy(
-//                                isRepeating = it
-//                            )
-//                        )
-//                    )
-//                }
-//            )
-//        }
+        //        Row(
+        //            modifier = Modifier.fillMaxWidth(),
+        //            horizontalArrangement = Arrangement.SpaceBetween,
+        //            verticalAlignment = Alignment.CenterVertically
+        //        ) {
+        //            Text("Repeating")
+        //            Switch(
+        //                checked = isRepeating.value,
+        //                onCheckedChange = {
+        //                    isRepeating.value = it
+        //                    onAlarmChange(
+        //                        gpsAlarm.copy(
+        //                            alarmSettings = gpsAlarm.alarmSettings.copy(
+        //                                isRepeating = it
+        //                            )
+        //                        )
+        //                    )
+        //                }
+        //            )
+        //        }
         RepeatingAlarm(isRepeating = gpsAlarm.alarmSettings.isRepeating) {
             onAlarmChange(
                 gpsAlarm.copy(
@@ -446,27 +476,27 @@ fun GpsAlarmItem(
         Spacer(modifier = Modifier.height(16.dp))
 
         // Save Button
-        Button(
-            onClick = {
-                onSave(
-                    gpsAlarm.copy(
-                        name = name.value,
-                        reminder = reminder.value,
-                        isActive = isActive.value,
-                        radius = radius.intValue,
-                        activeDays = activeDays.value,
-                        alarmSettings = gpsAlarm.alarmSettings.copy(
-                            name = alarmName.value,
-                            isRepeating = isRepeating.value,
-                            duration = durationAlarm.intValue,
-                        )
-                    )
-                )
-            },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Save")
-        }
+//        Button(
+//            onClick = {
+//                onSave(
+//                    gpsAlarm.copy(
+//                        name = name.value,
+//                        reminder = reminder.value,
+//                        isActive = isActive.value,
+//                        radius = radius.intValue,
+//                        activeDays = activeDays.value,
+//                        alarmSettings = gpsAlarm.alarmSettings.copy(
+//                            name = alarmName.value,
+//                            isRepeating = isRepeating.value,
+//                            duration = durationAlarm.intValue,
+//                        )
+//                    )
+//                )
+//            },
+//            modifier = Modifier.fillMaxWidth()
+//        ) {
+//            Text("Save")
+//        }
     }
 }
 
@@ -495,7 +525,7 @@ fun DayItem(
     day: String,
     index: Int,
     isActive: Boolean,
-    onDayClick: (Int) -> Unit
+    onDayClick: (Int) -> Unit,
 ) {
     Card(
         shape = CircleShape,
