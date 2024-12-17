@@ -100,4 +100,11 @@ class HomeViewModel @Inject constructor(
         deleteAlarm == null
         indexDeleteAlarm == null
     }
+
+    fun onDuplicateAlarm(gpsAlarm: GpsAlarm) {
+        viewModelScope.launch {
+            gpsAlarmRepo.insert(gpsAlarm.copy(id = 0))
+        }
+
+    }
 }

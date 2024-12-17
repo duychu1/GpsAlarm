@@ -109,7 +109,8 @@ fun HomeScreen(
         onDeleteGpsAlarm = viewModel::onClickDeleteAlarm,
         onNavigateToMaps = {
             onNavigateToScreen(NavRoutes.Maps(null, null, null, 500, null))
-        }
+        },
+        onClickDuplicate = viewModel::onDuplicateAlarm
     )
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -130,6 +131,7 @@ fun HomeScreenContent(
     onItemClick: (GpsAlarm) -> Unit,
     onActiveChange: (GpsAlarm, Boolean) -> Unit,
     onDeleteGpsAlarm: (GpsAlarm, Int) -> Unit,
+    onClickDuplicate: (GpsAlarm) -> Unit,
     onNavigateToMaps: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -173,7 +175,8 @@ fun HomeScreenContent(
                         gpsAlarm = item,
                         onClick = { onItemClick(item) },
                         onActiveChange = { id, isActive -> onActiveChange(item, isActive) },
-                        onDelete = { onDeleteGpsAlarm(item, index) }
+                        onDelete = { onDeleteGpsAlarm(item, index) },
+                        onClickDuplicate = { onClickDuplicate(item) }
                     )
                 }
             }
@@ -199,6 +202,7 @@ fun GpsAlarmItem(
     onClick: () -> Unit,
     onActiveChange: (Int, Boolean) -> Unit,
     onDelete: () -> Unit,
+    onClickDuplicate: () -> Unit,
 ) {
     Card(
         modifier = Modifier
@@ -222,6 +226,10 @@ fun GpsAlarmItem(
                 IconButton(onClick = onDelete) {
                     Icon(Icons.Default.Delete, contentDescription = "Delete alarm")
                 }
+                Spacer(modifier = Modifier.width(16.dp))
+                IconButton(onClick = onClickDuplicate) {
+                    Icon(Icons.Default.Add, contentDescription = "Delete alarm")
+                }
             }
         }
     }
@@ -240,6 +248,7 @@ private fun PreviewHomeScreen() {
             onActiveChange = { _, _ -> },
             onDeleteGpsAlarm = { _, _ -> },
             onNavigateToMaps = {},
+            onClickDuplicate = {},
         )
     }
 
