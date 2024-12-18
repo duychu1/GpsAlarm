@@ -107,6 +107,7 @@ class LocationService : Service() {
                     listTargetAlarms.removeAll { alarm -> alarm.id == it.id }
                     if (listTargetAlarms.isEmpty()) {
                         stopSelf()
+                        return@let
                     }
                 }
             }
@@ -156,7 +157,7 @@ class LocationService : Service() {
         val contentText = when (listSize) {
             0 -> getString(R.string.all_destinations_have_been_reached)
             1 -> getString(R.string.on_the_way_to_the_destination)
-            else -> getString(R.string.on_the_way_to_number_destinations, listSize, listSize)
+            else -> getString(R.string.on_the_way_to_number_destinations, listSize)
         }
 
         val contentTitle = when (listSize) {
@@ -185,6 +186,9 @@ class LocationService : Service() {
             .setContentText(getString(R.string.on_the_way_to_the_destination))
             .setSmallIcon(android.R.drawable.ic_dialog_info)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setVibrate(longArrayOf(0, 500, 200, 500))
+            .setDeleteIntent(stopAllPendingIntent)
+            .setOngoing(true)
             .addAction(
                 0, // Replace with your stop icon
                 getString(R.string.stop_all), // Replace with your title
@@ -234,6 +238,7 @@ class LocationService : Service() {
             NotificationManager.IMPORTANCE_HIGH
         ).apply {
             description = "Notifications for location tracking"
+            enableVibration(true)
         }
 
         val notificationManager =
@@ -282,6 +287,7 @@ class LocationService : Service() {
             )
             .setSmallIcon(android.R.drawable.ic_dialog_info)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setVibrate(longArrayOf(0, 500, 200, 500))
             .setAutoCancel(true)
             .setGroup(ARRIVED_NOTI_GROUP_KEY)
             .setGroupSummary(true)
