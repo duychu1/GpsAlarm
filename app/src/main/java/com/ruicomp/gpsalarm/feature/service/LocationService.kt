@@ -1,5 +1,6 @@
 package com.ruicomp.gpsalarm.feature.service
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.*
 import android.content.BroadcastReceiver
@@ -10,12 +11,20 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
+import android.media.MediaPlayer
+import android.media.RingtoneManager
 import android.os.Build
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.os.VibratorManager
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.annotation.RequiresPermission
 import androidx.core.content.ContextCompat
 import com.ruicomp.gpsalarm.R
 import com.ruicomp.gpsalarm.data.repository.GpsAlarmRepository
@@ -25,6 +34,8 @@ import com.ruicomp.gpsalarm.utils.dlog
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -40,6 +51,9 @@ class LocationService : Service() {
     @Inject
     lateinit var gpsAlarmRepository: GpsAlarmRepository
 
+    private var mediaPlayer: MediaPlayer? = null
+    private var vibrator: Vibrator? = null
+    private var soundJob: Job? = null
     private lateinit var locationManager: LocationManager
     private var listTargetAlarms: MutableList<GpsAlarm> = mutableListOf()
     private lateinit var stopAllPendingIntent: PendingIntent
@@ -71,6 +85,7 @@ class LocationService : Service() {
             when (intent.action) {
                 "ACTION_STOP_ARRIVED" -> {
                     notificationManager.cancelAll()
+                    stopSoundAndVibration()
                 }
 
                 "ACTION_STOP_SERVICE" -> {
@@ -264,6 +279,7 @@ class LocationService : Service() {
         )
 
         val notificationBuilder = arrivedNoti(gpsAlarm.name)
+        playSoundAndVibrate(this, gpsAlarm.alarmSettings.duration.toLong() * 1000)
 
         try {
             notificationManager.notify(gpsAlarm.id, notificationBuilder.build())
@@ -296,6 +312,51 @@ class LocationService : Service() {
                 getString(R.string.stop),
                 stopPendingIntent
             )
+
+
+
+    @RequiresPermission(Manifest.permission.VIBRATE)
+    private fun playSoundAndVibrate(context: Context, durationInMillis: Long) {
+        stopSoundAndVibration()
+
+        mediaPlayer = MediaPlayer.create(context, RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM))
+        mediaPlayer?.start()
+
+        vibrator = (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            ContextCompat.getSystemService(context, VibratorManager::class.java)?.defaultVibrator
+        } else {
+            ContextCompat.getSystemService(context, Vibrator::class.java)
+        })
+
+        vibrator?.vibrate(
+            VibrationEffect.createWaveform(
+                longArrayOf(0, 500, 1500, 500), // Vibrate for durationInMillis, then off for durationInMillis
+                0 // Repeat indefinitely
+            )
+        )
+
+        soundJob = CoroutineScope(Dispatchers.Main).launch {
+            delay(durationInMillis)
+            stopSoundAndVibration()
+        }
+    }
+
+
+    private fun stopSoundAndVibration() {
+        soundJob?.cancel()
+        soundJob = null
+
+        mediaPlayer?.let {
+            if (it.isPlaying) {
+                it.stop()
+            }
+            it.release()
+            mediaPlayer = null
+        }
+
+        vibrator?.cancel()
+        vibrator = null
+    }
 
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
