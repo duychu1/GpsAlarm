@@ -116,6 +116,7 @@ class MapsViewModel @Inject constructor(
 
     fun onCameraPositionChanged(latLng: LatLng, zoom: Float) {
         Log.d("dddd", "onCameraPositionChanged: pos=($latLng) zoom=($zoom)")
+        //save to datastore
     }
 
     fun onClickSave() {

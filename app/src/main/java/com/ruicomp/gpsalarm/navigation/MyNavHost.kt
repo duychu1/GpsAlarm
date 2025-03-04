@@ -22,7 +22,7 @@ fun MyNavHost(
     navController: NavHostController = rememberNavController(),
 
     ) {
-    NavHost(navController = navController, startDestination = NavRoutes.Detail(4)) {
+    NavHost(navController = navController, startDestination = NavRoutes.Home) {
         composable<NavRoutes.Home> {
             HomeScreen(
                 modifier = modifier,
@@ -37,7 +37,6 @@ fun MyNavHost(
         ) {
             val mapsResult = it.savedStateHandle.get<MapsToDetailResult>(Constants.KEY_FROM_MAPS)
             DetailScreen(
-                modifier = modifier,
                 mapsResult = mapsResult,
                 onNavigateToScreen = {
                     navController.navigate(it)
@@ -50,7 +49,6 @@ fun MyNavHost(
 
         composable<NavRoutes.Maps>() {
             MapsScreen(
-                modifier = modifier,
                 onBackDetail = { lat, lng, radius, addressLine ->
                     navController.previousBackStackEntry
                         ?.savedStateHandle

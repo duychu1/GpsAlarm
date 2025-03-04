@@ -14,5 +14,8 @@ data class GpsAlarm(
     val isActive: Boolean,
     val radius: Int,  // Radius in meters
     val activeDays: List<Int>,  // List of active days (0 = Sunday, 1 = Monday, etc.)
-    val alarmSettings: AlarmSettings  // Path or URI of the sound file
+    val alarmSettings: AlarmSettings, // Path or URI of the sound file
+    val isPin: Boolean,
+    val pinAt: Long?,
+
 ): Parcelable

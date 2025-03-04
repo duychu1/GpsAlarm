@@ -75,6 +75,8 @@ dependencies {
 
     implementation(libs.accompanist.permissions)
 
+    implementation(libs.room.compiler)
+    implementation(libs.room.runtime)
 
     implementation(libs.places.maps)
     implementation(libs.accompanist.flowlayout)
