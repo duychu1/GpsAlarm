@@ -72,9 +72,10 @@ dependencies {
 
     implementation(libs.accompanist.permissions)
 
-
     implementation(libs.places.maps)
     implementation(libs.accompanist.flowlayout)
+
+    implementation(libs.datastore.preferences)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

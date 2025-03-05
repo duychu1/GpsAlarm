@@ -29,6 +29,8 @@ import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRe
 import com.google.android.libraries.places.api.net.PlacesClient
 import com.ruicomp.gpsalarm.BuildConfig
 import com.ruicomp.gpsalarm.data.fake.SearchedPlacesFakeRepo
+import com.ruicomp.gpsalarm.datastore.PreferencesKeys
+import com.ruicomp.gpsalarm.datastore.PreferencesManager
 import com.ruicomp.gpsalarm.model.PlaceAutoComplete
 import com.ruicomp.gpsalarm.navigation.NavRoutes
 import com.ruicomp.gpsalarm.utils.dlog
@@ -40,6 +42,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import java.util.Locale
 import javax.inject.Inject
@@ -48,6 +51,7 @@ import javax.inject.Inject
 class MapsViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     @ApplicationContext appContext: Context,
+    private val preferencesManager: PreferencesManager
 ) : ViewModel() {
 
     private val _mapUiState = MutableStateFlow(MapUiState())
@@ -70,7 +74,7 @@ class MapsViewModel @Inject constructor(
 
     init {
         val (id, lat, lng, radius, addressLine) = savedStateHandle.toRoute<NavRoutes.Maps>()
-        id?.let {
+        if (id != null) {
             _mapUiState.value = _mapUiState.value.copy(
                 alarmId = id,
                 defaultCamPos = LatLng(lat!!, lng!!),
@@ -79,6 +83,18 @@ class MapsViewModel @Inject constructor(
                 radius = radius,
                 zoom = 15f,
             )
+        } else {
+            runBlocking { 
+                val lat = preferencesManager.getDouble(PreferencesKeys.CAMERA_LATITUDE)
+                val lng = preferencesManager.getDouble(PreferencesKeys.CAMERA_LONGITUDE)
+                val zoom = preferencesManager.getFloat(PreferencesKeys.CAMERA_ZOOM)
+                if (lat != null && lng != null && zoom != null) {
+                    _mapUiState.value = _mapUiState.value.copy(
+                        defaultCamPos = LatLng(lat, lng),
+                        zoom = zoom
+                    )
+                }
+            }
         }
 
         Places.initialize(appContext, BuildConfig.mapk)
@@ -124,6 +140,11 @@ class MapsViewModel @Inject constructor(
 
     fun onCameraPositionChanged(latLng: LatLng, zoom: Float) {
         Log.d("dddd", "onCameraPositionChanged: pos=($latLng) zoom=($zoom)")
+        viewModelScope.launch {
+            preferencesManager.saveDouble(PreferencesKeys.CAMERA_LATITUDE, latLng.latitude)
+            preferencesManager.saveDouble(PreferencesKeys.CAMERA_LONGITUDE, latLng.longitude)
+            preferencesManager.saveFloat(PreferencesKeys.CAMERA_ZOOM, zoom)
+        }
     }
 
     fun onClickSave() {

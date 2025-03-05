@@ -170,7 +170,16 @@ fun MapsScreenContent(
     val cameraPositionState = rememberCameraPositionState()
     val isFirstLaunch = rememberSaveable { mutableStateOf(true) }
 
+    LaunchedEffect(cameraPositionState.isMoving) {
+        if (!cameraPositionState.isMoving && !isFirstLaunch.value) {
+            onCameraPositionChanged(
+                cameraPositionState.position.target, cameraPositionState.position.zoom
+            )
+        }
+    }
+
     LaunchedEffect(firstCameraPosition) {
+        dlog("firstCameraPosition: $firstCameraPosition")
         if (isFirstLaunch.value) {
             cameraPositionState.move(CameraUpdateFactory.newLatLngZoom(firstCameraPosition, zoom))
             isFirstLaunch.value = false
@@ -193,13 +202,6 @@ fun MapsScreenContent(
 
     val query = remember { mutableStateOf("") }
 
-    LaunchedEffect(cameraPositionState.isMoving) {
-        if (!cameraPositionState.isMoving) {
-            onCameraPositionChanged(
-                cameraPositionState.position.target, cameraPositionState.position.zoom
-            )
-        }
-    }
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         GoogleMap(
             modifier = Modifier.fillMaxSize(),
