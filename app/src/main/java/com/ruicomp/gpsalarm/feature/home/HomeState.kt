@@ -14,7 +14,7 @@ data class HomeState (
         fun initial(): HomeState {
             return HomeState(
                 isLoading = true,
-                gpsAlarms = GpsAlarmFakeRepo.fakeListGpsAlarms()
+                gpsAlarms = emptyList()
             )
         }
     }

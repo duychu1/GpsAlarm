@@ -1,6 +1,5 @@
 package com.ruicomp.gpsalarm.feature.home
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import androidx.core.content.ContextCompat
@@ -44,8 +43,11 @@ class HomeViewModel @Inject constructor(
                         sendEffect(HomeEffect.ShowToats("Error when fetch data"))
                     }
                     is Result.Success -> {
+                        val pinned = result.data.filter { it.isPinned }.sortedByDescending { it.pinnedAt }
+                        val unpinned = result.data.filterNot { it.isPinned }
+
                         sendEvent(
-                            HomeEvent.UpdateListGpsAlarms(result.data)
+                            HomeEvent.UpdateListGpsAlarms(pinned + unpinned)
                         )
                     }
                 }
@@ -107,8 +109,13 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun onPinAlarm(gpsAlarm: GpsAlarm) {
-        //todo
+    fun onClickPin(gpsAlarm: GpsAlarm) {
+        viewModelScope.launch {
+            gpsAlarmRepo.update(gpsAlarm.copy(
+                isPinned = !gpsAlarm.isPinned,
+                pinnedAt = System.currentTimeMillis()
+            ))
+        }
     }
 
 }

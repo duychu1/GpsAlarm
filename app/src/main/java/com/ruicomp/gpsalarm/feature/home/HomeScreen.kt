@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Delete
@@ -41,8 +40,10 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -113,7 +114,7 @@ fun HomeScreen(
             onNavigateToScreen(NavRoutes.Maps(null, null, null, 500, null))
         },
         onClickDuplicate = viewModel::onDuplicateAlarm,
-        onClickPin = viewModel::onPinAlarm,
+        onClickPin = viewModel::onClickPin,
     )
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -139,17 +140,16 @@ fun HomeScreenContent(
     onNavigateToMaps: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+//    val sortAlarms = remember {
+//        listGpsAlarms.sortedWith(compareByDescending<GpsAlarm> { it.isPinned }.thenByDescending { it.pinnedAt })
+//    }
+
     Box(modifier = modifier.fillMaxSize()) {
         if (isLoading) {
             CircularProgressIndicator(modifier = Modifier
                 .size(64.dp)
                 .align(Alignment.Center))
         } else {
-
-            if (listGpsAlarms.isEmpty()) {
-                Text("No data", modifier = Modifier.align(Alignment.Center))
-            }
-
             LazyColumn(modifier = Modifier.fillMaxSize()) {
                 item {
                     TopAppBar(
@@ -170,6 +170,11 @@ fun HomeScreenContent(
                             titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
                         )
                     )
+                }
+                item {
+                    if (listGpsAlarms.isEmpty()) {
+                        Text("No data", modifier = Modifier.align(Alignment.Center))
+                    }
                 }
                 itemsIndexed(
                     items = listGpsAlarms,
@@ -238,7 +243,11 @@ fun GpsAlarmItem(
                 }
                 Spacer(modifier = Modifier.width(16.dp))
                 IconButton(onClick = onClickPin) {
-                    Icon(Icons.Default.PushPin, contentDescription = "Delete alarm")
+                    Icon(
+                        Icons.Default.PushPin,
+                        contentDescription = "Delete alarm",
+                        tint = if (gpsAlarm.isPinned) Color.Green else MaterialTheme.colorScheme.onSurface
+                    )
                 }
             }
         }
