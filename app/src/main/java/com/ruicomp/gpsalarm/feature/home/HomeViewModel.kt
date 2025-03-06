@@ -105,6 +105,10 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             gpsAlarmRepo.insert(gpsAlarm.copy(id = 0))
         }
-
     }
+
+    fun onPinAlarm(gpsAlarm: GpsAlarm) {
+        //todo
+    }
+
 }

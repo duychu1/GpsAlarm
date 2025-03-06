@@ -21,7 +21,9 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.PushPin
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -110,7 +112,8 @@ fun HomeScreen(
         onNavigateToMaps = {
             onNavigateToScreen(NavRoutes.Maps(null, null, null, 500, null))
         },
-        onClickDuplicate = viewModel::onDuplicateAlarm
+        onClickDuplicate = viewModel::onDuplicateAlarm,
+        onClickPin = viewModel::onPinAlarm,
     )
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -132,6 +135,7 @@ fun HomeScreenContent(
     onActiveChange: (GpsAlarm, Boolean) -> Unit,
     onDeleteGpsAlarm: (GpsAlarm, Int) -> Unit,
     onClickDuplicate: (GpsAlarm) -> Unit,
+    onClickPin: (GpsAlarm) -> Unit,
     onNavigateToMaps: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -176,7 +180,8 @@ fun HomeScreenContent(
                         onClick = { onItemClick(item) },
                         onActiveChange = { id, isActive -> onActiveChange(item, isActive) },
                         onDelete = { onDeleteGpsAlarm(item, index) },
-                        onClickDuplicate = { onClickDuplicate(item) }
+                        onClickDuplicate = { onClickDuplicate(item) },
+                        onClickPin = { onClickPin(item) },
                     )
                 }
             }
@@ -203,6 +208,7 @@ fun GpsAlarmItem(
     onActiveChange: (Int, Boolean) -> Unit,
     onDelete: () -> Unit,
     onClickDuplicate: () -> Unit,
+    onClickPin: () -> Unit,
 ) {
     Card(
         modifier = Modifier
@@ -228,7 +234,11 @@ fun GpsAlarmItem(
                 }
                 Spacer(modifier = Modifier.width(16.dp))
                 IconButton(onClick = onClickDuplicate) {
-                    Icon(Icons.Default.Add, contentDescription = "Delete alarm")
+                    Icon(Icons.Default.ContentCopy, contentDescription = "Delete alarm")
+                }
+                Spacer(modifier = Modifier.width(16.dp))
+                IconButton(onClick = onClickPin) {
+                    Icon(Icons.Default.PushPin, contentDescription = "Delete alarm")
                 }
             }
         }
@@ -249,6 +259,7 @@ private fun PreviewHomeScreen() {
             onDeleteGpsAlarm = { _, _ -> },
             onNavigateToMaps = {},
             onClickDuplicate = {},
+            onClickPin = {},
         )
     }
 

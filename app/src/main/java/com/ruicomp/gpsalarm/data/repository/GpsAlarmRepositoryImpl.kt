@@ -1,5 +1,6 @@
 package com.ruicomp.gpsalarm.data.repository
 
+import com.ruicomp.gpsalarm.data.DefaultValue
 import com.ruicomp.gpsalarm.data.fake.GpsAlarmFakeRepo
 import com.ruicomp.gpsalarm.database.GpsAlarmDao
 import com.ruicomp.gpsalarm.model.GpsAlarm
@@ -40,5 +41,5 @@ class GpsAlarmRepositoryImpl @Inject constructor(
         gpsAlarmDao.delete(alarm.asEntities())
     }
 
-    override fun getDefaultGpsAlarm(): GpsAlarm = GpsAlarmFakeRepo.fakeListGpsAlarms().first()
+    override fun getDefaultGpsAlarm(): GpsAlarm = DefaultValue.firstGpsAlarm
 }
