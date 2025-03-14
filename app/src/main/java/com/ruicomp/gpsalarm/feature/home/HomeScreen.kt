@@ -181,6 +181,7 @@ fun HomeScreenContent(
                     key = { _, item -> item.id }
                 ) { index, item ->
                     GpsAlarmItem(
+                        modifier = Modifier.animateItem(),
                         gpsAlarm = item,
                         onClick = { onItemClick(item) },
                         onActiveChange = { id, isActive -> onActiveChange(item, isActive) },
@@ -208,6 +209,7 @@ fun HomeScreenContent(
 @SuppressLint("DefaultLocale")
 @Composable
 fun GpsAlarmItem(
+    modifier: Modifier = Modifier,
     gpsAlarm: GpsAlarm,
     onClick: () -> Unit,
     onActiveChange: (Int, Boolean) -> Unit,
@@ -216,7 +218,7 @@ fun GpsAlarmItem(
     onClickPin: () -> Unit,
 ) {
     Card(
-        modifier = Modifier
+        modifier = modifier
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .clickable(onClick = onClick)
             .fillMaxWidth(),

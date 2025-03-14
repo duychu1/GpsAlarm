@@ -18,8 +18,8 @@ object DefaultValue {
     val firstGpsAlarm = GpsAlarm(
         id = 0,
         location = GpsLocation(21.035641,105.820285, "123 test default, HCM City"), // San Francisco
-        name = "Test",
-        reminder = "Test reminder",
+        name = "Alarm",
+        reminder = "Reminder",
         isActive = false,
         radius = 100,
         activeDays = listOf(0, 1, 2, 3, 4, 5, 6), // Monday to Friday
