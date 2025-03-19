@@ -33,9 +33,7 @@ fun MyNavHost(
                 }
             )
         }
-        composable<NavRoutes.Detail>(
-//            typeMap = mapOf(typeOf<GpsAlarm>() to parcelableType<GpsAlarm>())
-        ) {
+        composable<NavRoutes.Detail> {
             val mapsResult = it.savedStateHandle.get<MapsToDetailResult>(Constants.KEY_FROM_MAPS)
             DetailScreen(
                 modifier = modifier,
@@ -53,13 +51,17 @@ fun MyNavHost(
             )
         }
 
-        composable<NavRoutes.Maps>() {
+        composable<NavRoutes.Maps> {
             MapsScreen(
                 modifier = modifier,
                 onBackDetail = { alarmId, lat, lng, radius, addressLine ->
                     //check if detail not on backstack
                     if (alarmId == null) {
-                        navController.navigate(NavRoutes.Detail(alarmId, lat, lng, radius, addressLine))
+                        navController.navigate(NavRoutes.Detail(alarmId, lat, lng, radius, addressLine)) {
+                            popUpTo(NavRoutes.Maps(null, null, null, 500, null)) {
+                                inclusive = true
+                            }
+                        }
                         return@MapsScreen
                     }
                     navController.previousBackStackEntry
