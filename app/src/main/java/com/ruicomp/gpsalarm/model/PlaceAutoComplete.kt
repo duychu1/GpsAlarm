@@ -4,4 +4,5 @@ data class PlaceAutoComplete(
     val title: String,
     val detailAddress: String,
     val placeId: String,
+    val gpsLocation: GpsLocation
 )

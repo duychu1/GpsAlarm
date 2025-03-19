@@ -1,33 +1,44 @@
 package com.ruicomp.gpsalarm.data.fake
 
+import com.ruicomp.gpsalarm.model.GpsLocation
 import com.ruicomp.gpsalarm.model.PlaceAutoComplete
 
 object SearchedPlacesFakeRepo {
     fun getSearchedPlaces(): List<PlaceAutoComplete> = listOf(
+        // Europe
         PlaceAutoComplete(
-            title = "Eiffel Tower",
-            detailAddress = "Champ de Mars, 5 Avenue Anatole France, 75007 Paris, France",
-            placeId = "ChIJd7z9F_J2mEcR2gJ0I3nTZ9Y"
+            title = "Europe",
+            detailAddress = "Europe",
+            placeId = "europe",
+            gpsLocation = GpsLocation(54.5260, 15.2551) // Center of Europe
         ),
+        // North America
         PlaceAutoComplete(
-            title = "Statue of Liberty",
-            detailAddress = "Liberty Island, New York, NY 10004, United States",
-            placeId = "ChIJL4Zg7ShawokRna7Gjs_OmS8"
+            title = "North America",
+            detailAddress = "North America",
+            placeId = "north_america",
+            gpsLocation = GpsLocation(46.0730, -100.5469) // Center of North America
         ),
+        // Asia
         PlaceAutoComplete(
-            title = "Great Wall of China",
-            detailAddress = "Huairou District, Beijing, China",
-            placeId = "ChIJ9xF5cS9K8jAR_rkKzgOfcEc"
+            title = "Asia",
+            detailAddress = "Asia",
+            placeId = "asia",
+            gpsLocation = GpsLocation(34.0479, 100.6197) // Center of Asia
         ),
+        // South America
         PlaceAutoComplete(
-            title = "Colosseum",
-            detailAddress = "Piazza del Colosseo, 1, 00184 Roma RM, Italy",
-            placeId = "ChIJkWcR0UNzLxMRUAC4R7SeZ8E"
+            title = "South America",
+            detailAddress = "South America",
+            placeId = "south_america",
+            gpsLocation = GpsLocation(-14.2350, -51.9253) // Center of South America
         ),
+        // Africa
         PlaceAutoComplete(
-            title = "Machu Picchu",
-            detailAddress = "Machu Picchu, 08680, Peru",
-            placeId = "ChIJt7wiD77U8pMR5fD1SnRMDXo"
+            title = "Africa",
+            detailAddress = "Africa",
+            placeId = "africa",
+            gpsLocation = GpsLocation(7.1881, 21.0936) // Center of Africa
         )
     )
 
