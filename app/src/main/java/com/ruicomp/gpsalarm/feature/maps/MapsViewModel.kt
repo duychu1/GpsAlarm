@@ -10,6 +10,7 @@ import android.location.LocationManager
 import android.os.Build
 import android.os.Looper
 import android.util.Log
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -31,6 +32,7 @@ import com.ruicomp.gpsalarm.BuildConfig
 import com.ruicomp.gpsalarm.data.fake.SearchedPlacesFakeRepo
 import com.ruicomp.gpsalarm.datastore.PreferencesKeys
 import com.ruicomp.gpsalarm.datastore.PreferencesManager
+import com.ruicomp.gpsalarm.model.GpsLocation
 import com.ruicomp.gpsalarm.model.PlaceAutoComplete
 import com.ruicomp.gpsalarm.navigation.NavRoutes
 import com.ruicomp.gpsalarm.utils.dlog
@@ -61,6 +63,7 @@ class MapsViewModel @Inject constructor(
     private var fusedLocationClient: FusedLocationProviderClient
     private var locationManager: LocationManager
     private var geocoder: Geocoder
+    private var isLocationListenerRunning: Boolean = false
 
     private val locationListener = LocationListener { location ->
         dlog("listenLocationChange: $location")
@@ -147,21 +150,32 @@ class MapsViewModel @Inject constructor(
         }
     }
 
-    fun onClickSave() {
-        Log.d("dddd", "onClickSave: ")
-    }
+    fun onFocusMyLocation(context: Context) {
+//        getLastKnownLocation(context)
+        getCurrentLocation()
+        if(!isLocationListenerRunning) { listenLocationChange() }
 
-    fun onFocusMyLocation() {
-        _mapUiState.value = _mapUiState.value.copy(
-            defaultCamPos = _mapUiState.value.currentLocation!!,
-            zoom = 15f
-        )
+//        _mapUiState.value = _mapUiState.value.copy(
+//            defaultCamPos = _mapUiState.value.currentLocation!!,
+//            zoom = 15f
+//        )
     }
 
     @SuppressLint("MissingPermission")
-    private fun getLastKnownLocation()  {
+    private fun getLastKnownLocation(context: Context)  {
+
+        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            Toast.makeText(context, "Please enable location services", Toast.LENGTH_SHORT).show()
+            return
+        }
+
         fusedLocationClient.lastLocation
             .addOnSuccessListener { location ->
+                if (location == null) {
+                    dlog("check current location getLastKnownLocation: location is null")
+                    Toast.makeText(context, "Unable to get location", Toast.LENGTH_SHORT).show()
+                    return@addOnSuccessListener
+                }
                 _mapUiState.value = _mapUiState.value.copy(
                     currentLocation = LatLng(
                         location.latitude,
@@ -174,6 +188,8 @@ class MapsViewModel @Inject constructor(
     }
 
     private fun getCurrentLocation() {
+        if(!isLocationListenerRunning) { listenLocationChange() }
+
         val location: Location? = try {
             locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
                 ?: locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
@@ -182,6 +198,7 @@ class MapsViewModel @Inject constructor(
             dlog("getCurrentLocation SecurityException")
             null
         }
+        dlog("check current location getCurrentLocation: location is $location")
         if (location != null) {
             _mapUiState.value = _mapUiState.value.copy(
                 currentLocation = LatLng(
@@ -198,10 +215,11 @@ class MapsViewModel @Inject constructor(
         try {
             locationManager.requestLocationUpdates(
                 LocationManager.GPS_PROVIDER,
-                1000L,
-                10f,
+                2000L,
+                3f,
                 locationListener
             )
+            isLocationListenerRunning = true
         } catch (ex: SecurityException) {
             // Handle permission denied
             dlog("listenLocationChange SecurityException")
@@ -313,9 +331,9 @@ class MapsViewModel @Inject constructor(
         viewModelScope.launch {
             delay(200)
             _mapUiState.value = _mapUiState.value.copy(
-                defaultCamPos = LatLng(20.981836220438826, 105.86580377072096),
-                selectedLatLng = LatLng(20.981836220438826, 105.86580377072096),
-                zoom = 15f,
+                defaultCamPos = LatLng(place.gpsLocation.latitude, place.gpsLocation.longitude),
+                selectedLatLng = LatLng(place.gpsLocation.latitude, place.gpsLocation.longitude),
+                zoom = 3f,
             )
         }
     }
@@ -337,6 +355,7 @@ class MapsViewModel @Inject constructor(
                                 it.getPrimaryText(null).toString(),
                                 it.getSecondaryText(null).toString(),
                                 it.placeId,
+                                GpsLocation(0.0, 0.0) //need delete
                             )
                         })
                 }

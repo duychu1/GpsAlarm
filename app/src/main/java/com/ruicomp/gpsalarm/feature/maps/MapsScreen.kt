@@ -4,6 +4,7 @@ import com.ruicomp.gpsalarm.R
 import android.Manifest
 import android.annotation.SuppressLint
 import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -21,13 +22,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ButtonElevation
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -73,6 +78,7 @@ import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.ruicomp.gpsalarm.model.PlaceAutoComplete
 import com.ruicomp.gpsalarm.ui.theme.TemplateTheme
+import com.ruicomp.gpsalarm.utils.GpsCheckAndRequest
 import com.ruicomp.gpsalarm.utils.RequestPermissions
 import com.ruicomp.gpsalarm.utils.dlog
 import kotlinx.coroutines.CoroutineScope
@@ -120,6 +126,7 @@ fun MapsScreen(
         listAddress = state.value.listPlaces,
         onSearchPlace = viewModel::onSearchPlaces,
         onSelectPlace = viewModel::onSelectedPlace,
+        onFocusMyLocation = {viewModel.onFocusMyLocation(context)},
         onClickSave = {
             if (state.value.selectedLatLng == null || state.value.selectedAddressLine == null) {
                 Toast.makeText(context, "Location not selected", Toast.LENGTH_SHORT).show()
@@ -144,6 +151,8 @@ fun MapsScreen(
         ),
         permissionNameDisplay = "Location"
     )
+
+    GpsCheckAndRequest()
 }
 
 @SuppressLint("UnusedBoxWithConstraintsScope")
@@ -165,6 +174,7 @@ fun MapsScreenContent(
     listAddress: List<PlaceAutoComplete>?,
     onSearchPlace: (String) -> Unit,
     onSelectPlace: (PlaceAutoComplete) -> Unit,
+    onFocusMyLocation: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val cameraPositionState = rememberCameraPositionState()
@@ -224,21 +234,27 @@ fun MapsScreenContent(
 //            modifier = Modifier.statusBarsPadding()
 //        )
 
+        val isMyLocationClick = remember { mutableStateOf(false) }
 
-
-        val currentLocationState = rememberUpdatedState(newValue = currentLocation)
-        MyLocationIcon {
-            CoroutineScope(Dispatchers.Unconfined).launch {
-                try {
-                    cameraPositionState.animate(
-                        update = CameraUpdateFactory.newLatLngZoom(currentLocationState.value!!, 15f),
-                        durationMs = 1000
-                    )
-                } catch (e: Exception) {
-                    e.printStackTrace()
+        LaunchedEffect(isMyLocationClick.value) {
+            if (isMyLocationClick.value) {
+                isMyLocationClick.value = false
+                onFocusMyLocation()
+                CoroutineScope(Dispatchers.Unconfined).launch {
+                    try {
+                        cameraPositionState.animate(
+                            update = CameraUpdateFactory.newLatLngZoom(currentLocation!!, 15f),
+                            durationMs = 1000
+                        )
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
                 }
             }
-//            onFocusedMyLocation()
+        }
+
+        MyLocationIcon {
+            isMyLocationClick.value = true
         }
 
         CircularButtonWithDropdown(
@@ -279,20 +295,29 @@ private fun BoxWithConstraintsScope.BottomSaveAndAddress(
         if (selectedAddressLine != null)
             Text(
                 text = selectedAddressLine,
-                color = MaterialTheme.colorScheme.onPrimary
+                color = MaterialTheme.colorScheme.onPrimary,
+
             )
-        if (selectedLatLng != null)
-            Text(
-                text = String.format("%.5f, %.5f", selectedLatLng.latitude, selectedLatLng.longitude),
-                color = MaterialTheme.colorScheme.onPrimary
-            )
+//        if (selectedLatLng != null)
+//            Text(
+//                text = String.format("%.5f, %.5f", selectedLatLng.latitude, selectedLatLng.longitude),
+//                color = MaterialTheme.colorScheme.onPrimary
+//            )
         Spacer(Modifier.height(8.dp))
         Button(
             onClick = onClickSave,
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .height(48.dp),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.onPrimary),
+            elevation = ButtonDefaults.buttonElevation(
+                defaultElevation = 5.dp,),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.White,
+                contentColor = Color.Black
+            )
         ) {
-            Text(text = stringResource(R.string.save))
+            Text(text = stringResource(R.string.save), style = MaterialTheme.typography.titleMedium)
         }
     }
 }
