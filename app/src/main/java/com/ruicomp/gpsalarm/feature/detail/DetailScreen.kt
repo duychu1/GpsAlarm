@@ -232,7 +232,7 @@ fun RepeatingAlarm(isRepeating: Boolean, onRepeatingChange: (Boolean) -> Unit) {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text("Repeating", style = MaterialTheme.typography.titleMedium)
+        Text("Infinity Repeating", style = MaterialTheme.typography.titleMedium)
         Switch(
             checked = isRepeating,
             onCheckedChange = onRepeatingChange,
@@ -299,6 +299,8 @@ fun GpsAlarmItem(
                                     name = alarmName.value,
                                     isRepeating = isRepeating.value,
                                     duration = durationAlarm.intValue,
+                                    soundVolume = alarmVolume.floatValue,
+                                    vibrationLevel = alarmVibrate.floatValue,
                                 )
                             )
                         )
@@ -410,7 +412,7 @@ fun GpsAlarmItem(
         CustomSlider(
             value = alarmVolume.floatValue,
             maxRange = 1f,
-            steps = 2,
+            steps = 3,
             onValueChange = {
                 alarmVolume.floatValue = it
                 dlog("onValueChange: ${alarmVolume.floatValue}")
@@ -421,7 +423,7 @@ fun GpsAlarmItem(
         CustomSlider(
             value = alarmVibrate.floatValue,
             maxRange = 1f,
-            steps = 2,
+            steps = 3,
             onValueChange = {
                 alarmVibrate.floatValue = it
                 dlog("onValueChange: ${alarmVibrate.floatValue}")
@@ -449,15 +451,6 @@ fun GpsAlarmItem(
         //                }
         //            )
         //        }
-        RepeatingAlarm(isRepeating = gpsAlarm.alarmSettings.isRepeating) {
-            onAlarmChange(
-                gpsAlarm.copy(
-                    alarmSettings = gpsAlarm.alarmSettings.copy(
-                        isRepeating = it
-                    )
-                )
-            )
-        }
 
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -476,6 +469,9 @@ fun GpsAlarmItem(
 
         Spacer(modifier = Modifier.height(8.dp))
 
+        RepeatingAlarm(isRepeating = isRepeating.value) {
+            isRepeating.value = it
+        }
 
         Spacer(modifier = Modifier.height(8.dp))
 
