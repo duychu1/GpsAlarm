@@ -3,6 +3,7 @@ package com.ruicomp.gpsalarm.feature.detail
 import android.annotation.SuppressLint
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -17,14 +18,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -49,6 +53,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpSize
@@ -227,10 +232,10 @@ fun RepeatingAlarm(isRepeating: Boolean, onRepeatingChange: (Boolean) -> Unit) {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text("Repeating")
+        Text("Repeating", style = MaterialTheme.typography.titleMedium)
         Switch(
             checked = isRepeating,
-            onCheckedChange = onRepeatingChange
+            onCheckedChange = onRepeatingChange,
         )
     }
 }
@@ -280,22 +285,49 @@ fun GpsAlarmItem(
             },
             windowInsets = WindowInsets(0, 0, 0, 0),
             actions = {
-                Text("Save", modifier = Modifier.clickable {
-                    onSave(
-                        gpsAlarm.copy(
-                            name = name.value,
-                            reminder = reminder.value,
-                            isActive = isActive.value,
-                            radius = radius.intValue,
-                            activeDays = activeDays.value,
-                            alarmSettings = gpsAlarm.alarmSettings.copy(
-                                name = alarmName.value,
-                                isRepeating = isRepeating.value,
-                                duration = durationAlarm.intValue,
+                Button(
+                    shape = MaterialTheme.shapes.large,
+                    onClick = {
+                        onSave(
+                            gpsAlarm.copy(
+                                name = name.value,
+                                reminder = reminder.value,
+                                isActive = isActive.value,
+                                radius = radius.intValue,
+                                activeDays = activeDays.value,
+                                alarmSettings = gpsAlarm.alarmSettings.copy(
+                                    name = alarmName.value,
+                                    isRepeating = isRepeating.value,
+                                    duration = durationAlarm.intValue,
+                                )
                             )
                         )
-                    )
-                })
+                    },
+                    modifier = Modifier.padding(end = 8.dp)
+                ) {
+                    Text("Save", style = MaterialTheme.typography.titleMedium)
+                }
+
+//                Text("Save", modifier = Modifier
+//                    .padding(vertical = 3.dp, horizontal = 6.dp)
+//                    .clip(MaterialTheme.shapes.small)
+//                    .background(MaterialTheme.colorScheme.primary)
+//                    .clickable {
+//                        onSave(
+//                            gpsAlarm.copy(
+//                                name = name.value,
+//                                reminder = reminder.value,
+//                                isActive = isActive.value,
+//                                radius = radius.intValue,
+//                                activeDays = activeDays.value,
+//                                alarmSettings = gpsAlarm.alarmSettings.copy(
+//                                    name = alarmName.value,
+//                                    isRepeating = isRepeating.value,
+//                                    duration = durationAlarm.intValue,
+//                                )
+//                            )
+//                        )
+//                    })
             },
 //            colors = TopAppBarDefaults.topAppBarColors(
 //                containerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -306,50 +338,54 @@ fun GpsAlarmItem(
         Spacer(modifier = Modifier.height(16.dp))
 
         // Name
-        TextField(
+        OutlinedTextField(
             value = name.value,
             onValueChange = { name.value = it },
-            label = { Text("Alarm Name") },
-            modifier = Modifier.fillMaxWidth()
+            label = { Text("Name") },
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(12.dp)
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
         // Reminder
-        TextField(
+        OutlinedTextField(
             value = reminder.value,
             onValueChange = { reminder.value = it },
             label = { Text("Reminder") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(12.dp)
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        Text("Address")
+        Text("Address", style = MaterialTheme.typography.titleMedium)
         Column(
             Modifier
                 .fillMaxWidth()
+                .padding(horizontal = 6.dp)
                 .clickable(onClick = { onClickAddress(radius.intValue) })
         ) {
             gpsAlarm.location.addressLine?.let {
-                Text(text = it)
+                Text(text = it,color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f))
             }
             Text(
                 text = String.format(
                     "%.5f, %.5f",
                     gpsAlarm.location.latitude,
                     gpsAlarm.location.longitude
-                )
+                ),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
             )
         }
 
         // Active (Checkbox)
-        ActivateAlarm(isActive = isActive)
+//        ActivateAlarm(isActive = isActive)
 
         Spacer(modifier = Modifier.height(8.dp))
 
         // Radius (Slider)
-        Text("Radius (meters): ${radius.intValue}")
+        Text("Radius (meters): ${radius.intValue}", style = MaterialTheme.typography.titleMedium)
 
         val listRadius = remember { listOf(50, 100, 250, 500, 750, 1000) }
         // Slider value is represented as a float between 0f and (listRadius.size - 1)
@@ -370,7 +406,7 @@ fun GpsAlarmItem(
 
         Text(text = "Alarm Setting", style = MaterialTheme.typography.titleLarge)
 
-        Text(text = "Volume:")
+        Text(text = "Volume", style = MaterialTheme.typography.titleMedium)
         CustomSlider(
             value = alarmVolume.floatValue,
             maxRange = 1f,
@@ -381,7 +417,7 @@ fun GpsAlarmItem(
             }
         )
 
-        Text(text = "Vibrate level:")
+        Text(text = "Vibrate level:", style = MaterialTheme.typography.titleMedium)
         CustomSlider(
             value = alarmVibrate.floatValue,
             maxRange = 1f,
@@ -425,11 +461,11 @@ fun GpsAlarmItem(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        Text(text = "Alarm duration: ${durationAlarm.intValue}s")
+        Text(text = "Duration: ${durationAlarm.intValue}s", style = MaterialTheme.typography.titleMedium)
         // Duration (TextField)
         val listDurations = remember { listOf(10, 20, 30, 60, 90, 120) }
 
-        FlowRow {
+        FlowRow(modifier = Modifier.padding(horizontal = 4.dp)) {
             listDurations.forEach { duration ->
                 val isSelected = durationAlarm.intValue == duration
                 DurationCardItem(duration, isSelected) { durationAlarm.intValue = duration }
@@ -445,11 +481,11 @@ fun GpsAlarmItem(
 
 
         // Active Days (Multiple Select)
-        Text("Active Days")
+        Text("Active Days", style = MaterialTheme.typography.titleMedium)
         val dayOfWeek = remember { listOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat") }
 
         FlowRow(
-            modifier = Modifier.padding(top = 4.dp)
+            modifier = Modifier.padding(horizontal = 4.dp)
         ) {
             dayOfWeek.forEachIndexed { index, day ->
                 DayItem(day, index, activeDays.value.contains(index)) { clickedIndex ->
@@ -466,12 +502,12 @@ fun GpsAlarmItem(
         Spacer(modifier = Modifier.height(8.dp))
 
         // Alarm Sound (TextField for file URI or path)
-        TextField(
-            value = alarmName.value,
-            onValueChange = { alarmName.value = it },
-            label = { Text("Alarm Sound Path/URI") },
-            modifier = Modifier.fillMaxWidth()
-        )
+//        TextField(
+//            value = alarmName.value,
+//            onValueChange = { alarmName.value = it },
+//            label = { Text("Alarm Sound Path/URI") },
+//            modifier = Modifier.fillMaxWidth()
+//        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -506,7 +542,7 @@ fun DurationCardItem(duration: Int, isSelected: Boolean, onSelect: () -> Unit) {
         shape = CircleShape,
         colors = CardDefaults.cardColors(
             containerColor = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface,
-            contentColor = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
+            contentColor = if (isSelected) MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f) else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
         ),
         border = if (isSelected) null else CardDefaults.outlinedCardBorder(),
         modifier = Modifier

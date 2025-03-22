@@ -40,7 +40,10 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     snackbarHost = {
                         SnackbarHost(hostState = snackbarHostState) {
-                            Snackbar(snackbarData = it, containerColor = androidx.compose.ui.graphics.Color.Green)
+                            Snackbar(
+                                snackbarData = it,
+                                shape = MaterialTheme.shapes.small,
+                            )
                         }
                     },
                 ) { innerPadding ->

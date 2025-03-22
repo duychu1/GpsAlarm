@@ -13,17 +13,25 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.automirrored.filled.MenuBook
+import androidx.compose.material.icons.automirrored.filled.MenuOpen
+import androidx.compose.material.icons.automirrored.filled.More
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.PushPin
 import androidx.compose.material3.Button
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
@@ -154,13 +162,13 @@ fun HomeScreenContent(
                 item {
                     TopAppBar(
                         title = { Text("All Alarm", style = MaterialTheme.typography.titleLarge) },
-//                        navigationIcon = {
-//                            IconButton(
-//                                onClick = {}
-//                            ) {
-//                                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-//                            }
-//                        },
+                        navigationIcon = {
+                            IconButton(
+                                onClick = {}
+                            ) {
+                                Icon(Icons.Filled.Menu, contentDescription = "Back")
+                            }
+                        },
                         windowInsets = WindowInsets(0, 0, 0, 0),
                         actions = {
 //                Text("Delete", modifier = Modifier.clickable { onDelete() })
@@ -193,15 +201,17 @@ fun HomeScreenContent(
             }
         }
 
-        Button (
+        FloatingActionButton (
             modifier = Modifier
                 .padding(end = 32.dp, bottom = 64.dp)
                 .size(64.dp)
                 .align(Alignment.BottomEnd),
-            elevation = ButtonDefaults.elevatedButtonElevation(6.dp),
+            shape = CircleShape,
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.onPrimary,
             onClick = onNavigateToMaps,
         ) {
-            Icon(Icons.Filled.Add, contentDescription = "Add")
+            Icon(Icons.Filled.Add, contentDescription = "Add", modifier = Modifier.size(36.dp))
         }
     }
 }
@@ -219,15 +229,15 @@ fun GpsAlarmItem(
 ) {
     Card(
         modifier = modifier
-            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .padding(horizontal = 8.dp, vertical = 8.dp)
             .clickable(onClick = onClick)
             .fillMaxWidth(),
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
             Log.d("dddd", "GpsAlarmItem: compose")
             Text(text = gpsAlarm.name, style = MaterialTheme.typography.titleLarge)
-            Text(text = String.format("Location: %.5f, %.5f", gpsAlarm.location.latitude, gpsAlarm.location.longitude), style = MaterialTheme.typography.bodyMedium)
-            Text(text = "Reminder: ${gpsAlarm.reminder}", style = MaterialTheme.typography.bodyMedium)
+            Text(text = gpsAlarm.reminder, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f))
+            Text(text = String.format("%.5f, %.5f", gpsAlarm.location.latitude, gpsAlarm.location.longitude), style = MaterialTheme.typography.bodyMedium)
             // Add more details as needed (e.g., active days, duration, sound)
             Row(modifier = Modifier.fillMaxWidth()) {
                 Switch(
