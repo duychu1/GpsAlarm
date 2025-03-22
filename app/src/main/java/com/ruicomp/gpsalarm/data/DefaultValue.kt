@@ -10,9 +10,9 @@ object DefaultValue {
         name = "Morning Wake Up",
         soundUri = "android.resource://com.example.app/raw/alarm_sound_morning",
         isRepeating = true,
-        duration = 60,  // 10 minutes in seconds
-        soundVolume = 0.8f,   // 80% volume
-        vibrationLevel = 0.5f // Medium vibration level
+        duration = 60,
+        soundVolume = 0.5f,
+        vibrationLevel = 0.5f
     )
 
     val firstGpsAlarm = GpsAlarm(

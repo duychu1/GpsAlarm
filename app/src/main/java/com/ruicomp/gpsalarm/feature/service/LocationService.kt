@@ -85,13 +85,13 @@ class LocationService : Service() {
             dlog("broadcastReceiver: onReceive: ${intent.action}")
             when (intent.action) {
                 "ACTION_STOP_ARRIVED" -> {
-                    notificationManager.cancelAll()
+                    notificationManager.cancel(ARRIVED_NOTIFICATION_ID)
                     stopSoundAndVibration()
                 }
 
                 "ACTION_STOP_SERVICE" -> {
                     notificationManager.cancelAll()
-                    notificationManager.cancel(ARRIVED_NOTIFICATION_ID)
+                    stopSoundAndVibration()
                     stopSelf()
                 }
             }
@@ -108,7 +108,7 @@ class LocationService : Service() {
         locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         createNotificationChannel(this)
         startForegroundService()
-        listenLocationChange(minTimeMs = 1000L, minDistanceM = 10f, locationListener)
+        listenLocationChange(minTimeMs = 1000L, minDistanceM = 3f, locationListener)
         BroadcastUtils.registerReceiver(this, broadcastReceiver, intentFilter)
     }
 
@@ -247,7 +247,7 @@ class LocationService : Service() {
     }
 
 
-    fun createNotificationChannel(context: Context) {
+    private fun createNotificationChannel(context: Context) {
         val channel = NotificationChannel(
             "location_channel",
             "Location Notifications",
@@ -283,7 +283,7 @@ class LocationService : Service() {
         playSoundAndVibrate(this, gpsAlarm)
 
         try {
-            notificationManager.notify(gpsAlarm.id, notificationBuilder.build())
+            notificationManager.notify(ARRIVED_NOTIFICATION_ID, notificationBuilder.build())
         } catch (se: SecurityException) {
             dlog("handleArrival: SecurityException: ${se.message}")
         } catch (e: Exception) {
@@ -354,9 +354,12 @@ class LocationService : Service() {
             )
         }
 
-        soundJob = CoroutineScope(Dispatchers.Main).launch {
-            delay(gpsAlarm.alarmSettings.duration.toLong() * 1000)
-            stopSoundAndVibration()
+        if (!gpsAlarm.alarmSettings.isRepeating) {
+            soundJob = CoroutineScope(Dispatchers.Main).launch {
+                delay(gpsAlarm.alarmSettings.duration.toLong() * 1000)
+                stopSoundAndVibration()
+
+            }
         }
     }
 
@@ -375,6 +378,7 @@ class LocationService : Service() {
 
         vibrator?.cancel()
         vibrator = null
+        if (listTargetAlarms.isEmpty()) stopSelf()
     }
 
 
