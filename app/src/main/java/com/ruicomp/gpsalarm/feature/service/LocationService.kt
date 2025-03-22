@@ -20,6 +20,7 @@ import android.os.Looper
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
+import android.provider.Settings
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import android.util.Log
@@ -279,7 +280,7 @@ class LocationService : Service() {
         )
 
         val notificationBuilder = arrivedNoti(gpsAlarm.name)
-        playSoundAndVibrate(this, gpsAlarm.alarmSettings.duration.toLong() * 1000)
+        playSoundAndVibrate(this, gpsAlarm)
 
         try {
             notificationManager.notify(gpsAlarm.id, notificationBuilder.build())
@@ -316,10 +317,18 @@ class LocationService : Service() {
 
 
     @RequiresPermission(Manifest.permission.VIBRATE)
-    private fun playSoundAndVibrate(context: Context, durationInMillis: Long) {
+    private fun playSoundAndVibrate(context: Context, gpsAlarm: GpsAlarm) {
         stopSoundAndVibration()
 
-        mediaPlayer = MediaPlayer.create(context, RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM))
+        val settingUri = RingtoneManager.getActualDefaultRingtoneUri(context, RingtoneManager.TYPE_ALARM)
+        mediaPlayer = MediaPlayer().apply {
+            setDataSource(context, settingUri)
+            setAudioAttributes(android.media.AudioAttributes.Builder()
+                .setUsage(android.media.AudioAttributes.USAGE_ALARM)
+                .build())
+            prepare()
+        }
+        mediaPlayer?.setVolume(gpsAlarm.alarmSettings.soundVolume, gpsAlarm.alarmSettings.soundVolume) // Default volume
         mediaPlayer?.start()
 
         vibrator = (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -328,15 +337,25 @@ class LocationService : Service() {
             ContextCompat.getSystemService(context, Vibrator::class.java)
         })
 
-        vibrator?.vibrate(
-            VibrationEffect.createWaveform(
-                longArrayOf(0, 500, 1500, 500), // Vibrate for durationInMillis, then off for durationInMillis
-                0 // Repeat indefinitely
+        val vibrationLevel = (gpsAlarm.alarmSettings.vibrationLevel*255).toInt()
+
+        if (vibrationLevel > 0) {
+            vibrator?.vibrate(
+                VibrationEffect.createWaveform(
+                    longArrayOf(
+                        0,
+                        500,
+                        1500,
+                        500
+                    ), // Vibrate for durationInMillis, then off for durationInMillis
+                    intArrayOf(0, vibrationLevel, 0, vibrationLevel),
+                    0 // Repeat indefinitely
+                )
             )
-        )
+        }
 
         soundJob = CoroutineScope(Dispatchers.Main).launch {
-            delay(durationInMillis)
+            delay(gpsAlarm.alarmSettings.duration.toLong() * 1000)
             stopSoundAndVibration()
         }
     }
