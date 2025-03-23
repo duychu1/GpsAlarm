@@ -26,8 +26,8 @@ class HomeScreenReducer : Reducer<HomeState, HomeEvent, HomeEffect> {
             is HomeEvent.UpdateLocation -> TODO()
             is HomeEvent.DeleteAlarm -> {
                 previousState.copy(
-                    gpsAlarms = previousState.gpsAlarms.filterNot { it.id == event.id }
-                ) to HomeEffect.ShowSnackbar("Item ${event.id} deleted")
+                    gpsAlarms = previousState.gpsAlarms.filterNot { it.id == event.gpsAlarm.id }
+                ) to HomeEffect.ShowSnackbar("Item ${event.gpsAlarm.name} deleted!")
             }
             is HomeEvent.UndoDelete -> {
                 previousState.copy(

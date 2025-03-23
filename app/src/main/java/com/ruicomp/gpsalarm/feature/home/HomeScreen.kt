@@ -53,6 +53,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -161,7 +162,11 @@ fun HomeScreenContent(
             LazyColumn(modifier = Modifier.fillMaxSize()) {
                 item {
                     TopAppBar(
-                        title = { Text("All Alarm", style = MaterialTheme.typography.titleLarge) },
+                        title = { Text(
+                            text = "All Alarm",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.SemiBold
+                        ) },
                         navigationIcon = {
                             IconButton(
                                 onClick = {}
@@ -173,10 +178,10 @@ fun HomeScreenContent(
                         actions = {
 //                Text("Delete", modifier = Modifier.clickable { onDelete() })
                         },
-                        colors = TopAppBarDefaults.topAppBarColors(
-                            containerColor = MaterialTheme.colorScheme.primaryContainer,
-                            titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                        )
+//                        colors = TopAppBarDefaults.topAppBarColors(
+//                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+//                            titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+//                        )
                     )
                 }
                 item {
@@ -237,7 +242,8 @@ fun GpsAlarmItem(
             Log.d("dddd", "GpsAlarmItem: compose")
             Text(text = gpsAlarm.name, style = MaterialTheme.typography.titleLarge)
             Text(text = gpsAlarm.reminder, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f))
-            Text(text = String.format("%.5f, %.5f", gpsAlarm.location.latitude, gpsAlarm.location.longitude), style = MaterialTheme.typography.bodyMedium)
+//            Text(text = String.format("%.5f, %.5f", gpsAlarm.location.latitude, gpsAlarm.location.longitude), style = MaterialTheme.typography.bodyMedium)
+            Text(text = gpsAlarm.location.addressLine ?: "", style = MaterialTheme.typography.bodyMedium)
             // Add more details as needed (e.g., active days, duration, sound)
             Row(modifier = Modifier.fillMaxWidth()) {
                 Switch(

@@ -87,7 +87,7 @@ class HomeViewModel @Inject constructor(
         deleteAlarm = gpsAlarm
         indexDeleteAlarm = index
         sendEventForEffect(
-            HomeEvent.DeleteAlarm(gpsAlarm.id)
+            HomeEvent.DeleteAlarm(gpsAlarm)
         )
     }
 

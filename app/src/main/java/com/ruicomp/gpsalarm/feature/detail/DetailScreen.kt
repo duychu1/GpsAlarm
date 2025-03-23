@@ -268,12 +268,7 @@ fun GpsAlarmItem(
         radius.intValue = gpsAlarm.radius
     }
 
-    // UI
-    Column(
-        modifier = Modifier
-            .padding(horizontal = 16.dp)
-            .verticalScroll(rememberScrollState())
-    ) {
+    Column {
         TopAppBar(
             title = { Text("Edit GPS Alarm", style = MaterialTheme.typography.titleLarge) },
             navigationIcon = {
@@ -309,226 +304,212 @@ fun GpsAlarmItem(
                 ) {
                     Text("Save", style = MaterialTheme.typography.titleMedium)
                 }
-
-//                Text("Save", modifier = Modifier
-//                    .padding(vertical = 3.dp, horizontal = 6.dp)
-//                    .clip(MaterialTheme.shapes.small)
-//                    .background(MaterialTheme.colorScheme.primary)
-//                    .clickable {
-//                        onSave(
-//                            gpsAlarm.copy(
-//                                name = name.value,
-//                                reminder = reminder.value,
-//                                isActive = isActive.value,
-//                                radius = radius.intValue,
-//                                activeDays = activeDays.value,
-//                                alarmSettings = gpsAlarm.alarmSettings.copy(
-//                                    name = alarmName.value,
-//                                    isRepeating = isRepeating.value,
-//                                    duration = durationAlarm.intValue,
-//                                )
-//                            )
-//                        )
-//                    })
-            },
-//            colors = TopAppBarDefaults.topAppBarColors(
-//                containerColor = MaterialTheme.colorScheme.primaryContainer,
-//                titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-//            )
+            }
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Name
-        OutlinedTextField(
-            value = name.value,
-            onValueChange = { name.value = it },
-            label = { Text("Name") },
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp)
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Reminder
-        OutlinedTextField(
-            value = reminder.value,
-            onValueChange = { reminder.value = it },
-            label = { Text("Reminder") },
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp)
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text("Address", style = MaterialTheme.typography.titleMedium)
         Column(
-            Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 6.dp)
-                .clickable(onClick = { onClickAddress(radius.intValue) })
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .verticalScroll(rememberScrollState())
         ) {
-            gpsAlarm.location.addressLine?.let {
-                Text(text = it,color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f))
-            }
-            Text(
-                text = String.format(
-                    "%.5f, %.5f",
-                    gpsAlarm.location.latitude,
-                    gpsAlarm.location.longitude
-                ),
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
+
+            // Name
+            OutlinedTextField(
+                value = name.value,
+                onValueChange = { name.value = it },
+                label = { Text("Name") },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp)
             )
-        }
 
-        // Active (Checkbox)
-//        ActivateAlarm(isActive = isActive)
+            Spacer(modifier = Modifier.height(8.dp))
 
-        Spacer(modifier = Modifier.height(8.dp))
+            // Reminder
+            OutlinedTextField(
+                value = reminder.value,
+                onValueChange = { reminder.value = it },
+                label = { Text("Reminder") },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp)
+            )
 
-        // Radius (Slider)
-        Text("Radius (meters): ${radius.intValue}", style = MaterialTheme.typography.titleMedium)
+            Spacer(modifier = Modifier.height(8.dp))
 
-        val listRadius = remember { listOf(50, 100, 250, 500, 750, 1000) }
-        // Slider value is represented as a float between 0f and (listRadius.size - 1)
-        val sliderValue = listRadius.indexOf(radius.intValue).toFloat()
-
-        CustomSlider(
-            value = sliderValue,
-            maxRange = (listRadius.size - 1).toFloat(),
-            steps = listRadius.size - 2,
-            onValueChange = {
-                radius.intValue = listRadius[it.roundToInt()]
-                dlog("onValueChange: $it")
-                dlog("onValueChange: radius=${radius.intValue}")
-            }
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text(text = "Alarm Setting", style = MaterialTheme.typography.titleLarge)
-
-        Text(text = "Volume", style = MaterialTheme.typography.titleMedium)
-        CustomSlider(
-            value = alarmVolume.floatValue,
-            maxRange = 1f,
-            steps = 3,
-            onValueChange = {
-                alarmVolume.floatValue = it
-                dlog("onValueChange: ${alarmVolume.floatValue}")
-            }
-        )
-
-        Text(text = "Vibrate level:", style = MaterialTheme.typography.titleMedium)
-        CustomSlider(
-            value = alarmVibrate.floatValue,
-            maxRange = 1f,
-            steps = 3,
-            onValueChange = {
-                alarmVibrate.floatValue = it
-                dlog("onValueChange: ${alarmVibrate.floatValue}")
-            }
-        )
-
-        // Repeating (Checkbox)
-        //        Row(
-        //            modifier = Modifier.fillMaxWidth(),
-        //            horizontalArrangement = Arrangement.SpaceBetween,
-        //            verticalAlignment = Alignment.CenterVertically
-        //        ) {
-        //            Text("Repeating")
-        //            Switch(
-        //                checked = isRepeating.value,
-        //                onCheckedChange = {
-        //                    isRepeating.value = it
-        //                    onAlarmChange(
-        //                        gpsAlarm.copy(
-        //                            alarmSettings = gpsAlarm.alarmSettings.copy(
-        //                                isRepeating = it
-        //                            )
-        //                        )
-        //                    )
-        //                }
-        //            )
-        //        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text(text = "Duration: ${durationAlarm.intValue}s", style = MaterialTheme.typography.titleMedium)
-        // Duration (TextField)
-        val listDurations = remember { listOf(10, 20, 30, 60, 90, 120) }
-
-        FlowRow(modifier = Modifier.padding(horizontal = 4.dp)) {
-            listDurations.forEach { duration ->
-                val isSelected = durationAlarm.intValue == duration
-                DurationCardItem(duration, isSelected) { durationAlarm.intValue = duration }
-                Spacer(Modifier.width(8.dp))
-            }
-        }
-
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        RepeatingAlarm(isRepeating = isRepeating.value) {
-            isRepeating.value = it
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-
-        // Active Days (Multiple Select)
-        Text("Active Days", style = MaterialTheme.typography.titleMedium)
-        val dayOfWeek = remember { listOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat") }
-
-        FlowRow(
-            modifier = Modifier.padding(horizontal = 4.dp)
-        ) {
-            dayOfWeek.forEachIndexed { index, day ->
-                DayItem(day, index, activeDays.value.contains(index)) { clickedIndex ->
-                    activeDays.value = if (activeDays.value.contains(clickedIndex)) {
-                        activeDays.value - clickedIndex
-                    } else {
-                        activeDays.value + clickedIndex
-                    }
+            Text("Address", style = MaterialTheme.typography.titleMedium)
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 6.dp)
+                    .clickable(onClick = { onClickAddress(radius.intValue) })
+            ) {
+                gpsAlarm.location.addressLine?.let {
+                    Text(text = it, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f))
                 }
-                Spacer(Modifier.width(8.dp))
+                Text(
+                    text = String.format(
+                        "%.5f, %.5f",
+                        gpsAlarm.location.latitude,
+                        gpsAlarm.location.longitude
+                    ),
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
+                )
             }
+
+            // Active (Checkbox)
+            //        ActivateAlarm(isActive = isActive)
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Radius (Slider)
+            Text(
+                "Radius (meters): ${radius.intValue}",
+                style = MaterialTheme.typography.titleMedium
+            )
+
+            val listRadius = remember { listOf(50, 100, 250, 500, 750, 1000) }
+            // Slider value is represented as a float between 0f and (listRadius.size - 1)
+            val sliderValue = listRadius.indexOf(radius.intValue).toFloat()
+
+            CustomSlider(
+                value = sliderValue,
+                maxRange = (listRadius.size - 1).toFloat(),
+                steps = listRadius.size - 2,
+                onValueChange = {
+                    radius.intValue = listRadius[it.roundToInt()]
+                    dlog("onValueChange: $it")
+                    dlog("onValueChange: radius=${radius.intValue}")
+                }
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(text = "Alarm Setting", style = MaterialTheme.typography.titleLarge)
+
+            Text(text = "Volume", style = MaterialTheme.typography.titleMedium)
+            CustomSlider(
+                value = alarmVolume.floatValue,
+                maxRange = 1f,
+                steps = 3,
+                onValueChange = {
+                    alarmVolume.floatValue = it
+                    dlog("onValueChange: ${alarmVolume.floatValue}")
+                }
+            )
+
+            Text(text = "Vibrate level:", style = MaterialTheme.typography.titleMedium)
+            CustomSlider(
+                value = alarmVibrate.floatValue,
+                maxRange = 1f,
+                steps = 3,
+                onValueChange = {
+                    alarmVibrate.floatValue = it
+                    dlog("onValueChange: ${alarmVibrate.floatValue}")
+                }
+            )
+
+            // Repeating (Checkbox)
+            //        Row(
+            //            modifier = Modifier.fillMaxWidth(),
+            //            horizontalArrangement = Arrangement.SpaceBetween,
+            //            verticalAlignment = Alignment.CenterVertically
+            //        ) {
+            //            Text("Repeating")
+            //            Switch(
+            //                checked = isRepeating.value,
+            //                onCheckedChange = {
+            //                    isRepeating.value = it
+            //                    onAlarmChange(
+            //                        gpsAlarm.copy(
+            //                            alarmSettings = gpsAlarm.alarmSettings.copy(
+            //                                isRepeating = it
+            //                            )
+            //                        )
+            //                    )
+            //                }
+            //            )
+            //        }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = "Duration: ${durationAlarm.intValue}s",
+                style = MaterialTheme.typography.titleMedium
+            )
+            // Duration (TextField)
+            val listDurations = remember { listOf(10, 20, 30, 60, 90, 120) }
+
+            FlowRow(modifier = Modifier.padding(horizontal = 4.dp)) {
+                listDurations.forEach { duration ->
+                    val isSelected = durationAlarm.intValue == duration
+                    DurationCardItem(duration, isSelected) { durationAlarm.intValue = duration }
+                    Spacer(Modifier.width(8.dp))
+                }
+            }
+
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            RepeatingAlarm(isRepeating = isRepeating.value) {
+                isRepeating.value = it
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+
+            // Active Days (Multiple Select)
+            Text("Active Days", style = MaterialTheme.typography.titleMedium)
+            val dayOfWeek = remember { listOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat") }
+
+            FlowRow(
+                modifier = Modifier.padding(horizontal = 4.dp)
+            ) {
+                dayOfWeek.forEachIndexed { index, day ->
+                    DayItem(day, index, activeDays.value.contains(index)) { clickedIndex ->
+                        activeDays.value = if (activeDays.value.contains(clickedIndex)) {
+                            activeDays.value - clickedIndex
+                        } else {
+                            activeDays.value + clickedIndex
+                        }
+                    }
+                    Spacer(Modifier.width(8.dp))
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Alarm Sound (TextField for file URI or path)
+            //        TextField(
+            //            value = alarmName.value,
+            //            onValueChange = { alarmName.value = it },
+            //            label = { Text("Alarm Sound Path/URI") },
+            //            modifier = Modifier.fillMaxWidth()
+            //        )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Save Button
+            //        Button(
+            //            onClick = {
+            //                onSave(
+            //                    gpsAlarm.copy(
+            //                        name = name.value,
+            //                        reminder = reminder.value,
+            //                        isActive = isActive.value,
+            //                        radius = radius.intValue,
+            //                        activeDays = activeDays.value,
+            //                        alarmSettings = gpsAlarm.alarmSettings.copy(
+            //                            name = alarmName.value,
+            //                            isRepeating = isRepeating.value,
+            //                            duration = durationAlarm.intValue,
+            //                        )
+            //                    )
+            //                )
+            //            },
+            //            modifier = Modifier.fillMaxWidth()
+            //        ) {
+            //            Text("Save")
+            //        }
         }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Alarm Sound (TextField for file URI or path)
-//        TextField(
-//            value = alarmName.value,
-//            onValueChange = { alarmName.value = it },
-//            label = { Text("Alarm Sound Path/URI") },
-//            modifier = Modifier.fillMaxWidth()
-//        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Save Button
-//        Button(
-//            onClick = {
-//                onSave(
-//                    gpsAlarm.copy(
-//                        name = name.value,
-//                        reminder = reminder.value,
-//                        isActive = isActive.value,
-//                        radius = radius.intValue,
-//                        activeDays = activeDays.value,
-//                        alarmSettings = gpsAlarm.alarmSettings.copy(
-//                            name = alarmName.value,
-//                            isRepeating = isRepeating.value,
-//                            duration = durationAlarm.intValue,
-//                        )
-//                    )
-//                )
-//            },
-//            modifier = Modifier.fillMaxWidth()
-//        ) {
-//            Text("Save")
-//        }
     }
 }
 
