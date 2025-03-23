@@ -4,6 +4,12 @@ import com.ruicomp.gpsalarm.R
 import android.Manifest
 import android.annotation.SuppressLint
 import android.widget.Toast
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -47,8 +53,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.snapshotFlow
@@ -526,16 +535,28 @@ fun SearchBarAddress(
 @Composable
 fun MarkerMyLocation(position: LatLng?) {
     if (position == null) return
+
     val state = rememberUpdatedMarkerState(position)
     MarkerComposable(
         state = state,
     ) {
-        Icon(
-            imageVector = Icons.Default.LocationOn,
-            contentDescription = null,
-            tint = Color.Blue,
-            modifier = Modifier.size(30.dp)
-        )
+        Box(
+            modifier = Modifier
+                .size(36.dp)  // Apply the scale animation
+                .shadow(8.dp, CircleShape)
+                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.6f), CircleShape),  // Use the animated alpha
+            contentAlignment = Alignment.Center
+        ) {
+            // Blue dot location indicator
+            Box(
+                modifier = Modifier
+                    .size(24.dp)// Apply the scale animation to inner circle too
+                    .background(Color.Blue, CircleShape)
+                    .border(5.dp, Color.White, CircleShape),
+            )
+        }
+
+
     }
     dlog("MarkerMyLocation: recompose check")
 }
