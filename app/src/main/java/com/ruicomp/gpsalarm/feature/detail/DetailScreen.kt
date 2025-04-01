@@ -407,28 +407,6 @@ fun GpsAlarmItem(
                 }
             )
 
-            // Repeating (Checkbox)
-            //        Row(
-            //            modifier = Modifier.fillMaxWidth(),
-            //            horizontalArrangement = Arrangement.SpaceBetween,
-            //            verticalAlignment = Alignment.CenterVertically
-            //        ) {
-            //            Text("Repeating")
-            //            Switch(
-            //                checked = isRepeating.value,
-            //                onCheckedChange = {
-            //                    isRepeating.value = it
-            //                    onAlarmChange(
-            //                        gpsAlarm.copy(
-            //                            alarmSettings = gpsAlarm.alarmSettings.copy(
-            //                                isRepeating = it
-            //                            )
-            //                        )
-            //                    )
-            //                }
-            //            )
-            //        }
-
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
@@ -457,25 +435,25 @@ fun GpsAlarmItem(
 
 
             // Active Days (Multiple Select)
-            Text("Active Days", style = MaterialTheme.typography.titleMedium)
-            val dayOfWeek = remember { listOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat") }
-
-            FlowRow(
-                modifier = Modifier.padding(horizontal = 4.dp)
-            ) {
-                dayOfWeek.forEachIndexed { index, day ->
-                    DayItem(day, index, activeDays.value.contains(index)) { clickedIndex ->
-                        activeDays.value = if (activeDays.value.contains(clickedIndex)) {
-                            activeDays.value - clickedIndex
-                        } else {
-                            activeDays.value + clickedIndex
-                        }
-                    }
-                    Spacer(Modifier.width(8.dp))
-                }
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
+//            Text("Active Days", style = MaterialTheme.typography.titleMedium)
+//            val dayOfWeek = remember { listOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat") }
+//
+//            FlowRow(
+//                modifier = Modifier.padding(horizontal = 4.dp)
+//            ) {
+//                dayOfWeek.forEachIndexed { index, day ->
+//                    DayItem(day, index, activeDays.value.contains(index)) { clickedIndex ->
+//                        activeDays.value = if (activeDays.value.contains(clickedIndex)) {
+//                            activeDays.value - clickedIndex
+//                        } else {
+//                            activeDays.value + clickedIndex
+//                        }
+//                    }
+//                    Spacer(Modifier.width(8.dp))
+//                }
+//            }
+//
+//            Spacer(modifier = Modifier.height(8.dp))
 
             // Alarm Sound (TextField for file URI or path)
             //        TextField(
@@ -485,30 +463,8 @@ fun GpsAlarmItem(
             //            modifier = Modifier.fillMaxWidth()
             //        )
 
-            Spacer(modifier = Modifier.height(16.dp))
+//            Spacer(modifier = Modifier.height(16.dp))
 
-            // Save Button
-            //        Button(
-            //            onClick = {
-            //                onSave(
-            //                    gpsAlarm.copy(
-            //                        name = name.value,
-            //                        reminder = reminder.value,
-            //                        isActive = isActive.value,
-            //                        radius = radius.intValue,
-            //                        activeDays = activeDays.value,
-            //                        alarmSettings = gpsAlarm.alarmSettings.copy(
-            //                            name = alarmName.value,
-            //                            isRepeating = isRepeating.value,
-            //                            duration = durationAlarm.intValue,
-            //                        )
-            //                    )
-            //                )
-            //            },
-            //            modifier = Modifier.fillMaxWidth()
-            //        ) {
-            //            Text("Save")
-            //        }
         }
     }
 }

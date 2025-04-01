@@ -14,6 +14,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.BoxWithConstraintsScope
@@ -32,8 +33,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Nightlight
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
@@ -79,8 +82,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
+import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.maps.android.compose.Circle
 import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerComposable
 import com.google.maps.android.compose.MarkerState
@@ -185,6 +190,7 @@ fun MapsScreenContent(
     onSelectPlace: (PlaceAutoComplete) -> Unit,
     onFocusMyLocation: () -> Unit,
     modifier: Modifier = Modifier,
+    isDarkTheme: Boolean = isSystemInDarkTheme(),
 ) {
     val cameraPositionState = rememberCameraPositionState()
     val isFirstLaunch = rememberSaveable { mutableStateOf(true) }
@@ -218,6 +224,22 @@ fun MapsScreenContent(
 //    SideEffect {
 //        WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = false
 //    }
+    val context = LocalContext.current
+    val mapProperties = remember(isDarkTheme) {
+        MapProperties(
+            // Apply dark style JSON when in dark mode
+            mapStyleOptions = if (isDarkTheme) {
+                // Load the dark map style JSON from raw resource
+                MapStyleOptions.loadRawResourceStyle(
+                    context,
+                    R.raw.map_dark_style
+                )
+            } else {
+                // Use default light style (or you can load a custom light style)
+                null
+            }
+        )
+    }
 
     val query = remember { mutableStateOf("") }
 
@@ -225,7 +247,8 @@ fun MapsScreenContent(
         GoogleMap(
             modifier = Modifier.fillMaxSize(),
             cameraPositionState = cameraPositionState,
-            onMapClick = onMapClicked
+            onMapClick = onMapClicked,
+            properties = mapProperties,
         ) {
 
             MarkerCircleLocation(selectedLatLng, radius)
@@ -304,8 +327,8 @@ private fun BoxWithConstraintsScope.BottomSaveAndAddress(
         if (selectedAddressLine != null)
             Text(
                 text = selectedAddressLine,
-                color = MaterialTheme.colorScheme.onPrimary,
-
+                color = MaterialTheme.colorScheme.onSurface,
+                style = MaterialTheme.typography.bodySmall
             )
 //        if (selectedLatLng != null)
 //            Text(
@@ -386,6 +409,24 @@ fun BoxWithConstraintsScope.CircularButtonWithDropdown(
             .padding(end = 10.dp)
             .offset(y = (maxHeight * 0.2f))
     ) {
+        //create a circular button to change maps theme
+//        Box (
+//            modifier = Modifier
+//                .size(54.dp)
+//                .border(1.dp, Color.LightGray, CircleShape)
+//                .shadow(elevation = 2.dp, shape = CircleShape)
+//                .background(Color.White)
+//                .clickable {  },
+//            contentAlignment = Alignment.Center
+//        ) {
+//            Icon(
+//                imageVector = Icons.Default.DarkMode,
+//                contentDescription = "Icon Button",
+//                tint = Color.Blue,
+//                modifier = Modifier.size(32.dp)
+//            )
+//        }
+
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
@@ -478,7 +519,7 @@ fun SearchBarAddress(
         }
     }
 
-    Box(Modifier
+    Box(modifier = Modifier
         .fillMaxSize()
         .semantics { isTraversalGroup = true }) {
         SearchBar(
@@ -495,6 +536,8 @@ fun SearchBarAddress(
                     placeholder = { Text("Hinted search text") },
                     leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
                     trailingIcon = { Icon(Icons.Default.MoreVert, contentDescription = null) },
+                    modifier = Modifier
+                        .shadow(elevation = 2.dp, shape = CircleShape)
                 )
             },
             expanded = expanded.value,

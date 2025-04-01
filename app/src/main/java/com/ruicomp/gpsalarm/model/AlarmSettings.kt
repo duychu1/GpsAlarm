@@ -13,4 +13,18 @@ data class AlarmSettings(
     val duration: Int,
     val soundVolume: Float,
     val vibrationLevel: Float,
-): Parcelable
+): Parcelable {
+    fun getAlarmDescription(): String =
+        if (soundVolume > 0 && vibrationLevel > 0) {
+            "Sound & Vibration"
+        } else if (soundVolume > 0) {
+            "Sound"
+        } else if (vibrationLevel > 0) {
+            "Vibration"
+        } else {
+            "Silent"
+        }
+
+    fun getAlarmDuration(): String =
+        if (isRepeating) "Repeating" else "${duration}s"
+}

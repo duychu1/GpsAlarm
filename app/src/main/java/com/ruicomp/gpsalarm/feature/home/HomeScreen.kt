@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.os.Build
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,6 +27,7 @@ import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.automirrored.filled.MenuOpen
 import androidx.compose.material.icons.automirrored.filled.More
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Circle
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Menu
@@ -149,74 +151,69 @@ fun HomeScreenContent(
     onNavigateToMaps: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-//    val sortAlarms = remember {
-//        listGpsAlarms.sortedWith(compareByDescending<GpsAlarm> { it.isPinned }.thenByDescending { it.pinnedAt })
-//    }
-
-    Box(modifier = modifier.fillMaxSize()) {
-        if (isLoading) {
-            CircularProgressIndicator(modifier = Modifier
-                .size(64.dp)
-                .align(Alignment.Center))
-        } else {
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
-                item {
-                    TopAppBar(
-                        title = { Text(
-                            text = "All Alarm",
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.SemiBold
-                        ) },
-                        navigationIcon = {
-                            IconButton(
-                                onClick = {}
-                            ) {
-                                Icon(Icons.Filled.Menu, contentDescription = "Back")
-                            }
-                        },
-                        windowInsets = WindowInsets(0, 0, 0, 0),
-                        actions = {
-//                Text("Delete", modifier = Modifier.clickable { onDelete() })
-                        },
-//                        colors = TopAppBarDefaults.topAppBarColors(
-//                            containerColor = MaterialTheme.colorScheme.primaryContainer,
-//                            titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-//                        )
-                    )
+    Column(modifier = modifier.fillMaxSize()) {
+        TopAppBar(
+            title = {
+                Text(
+                    text = "All Alarm",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.SemiBold,
+                )
+            },
+            navigationIcon = {
+                IconButton(onClick = {}) {
+                    Icon(Icons.Filled.Menu, contentDescription = "Menu")
                 }
-                item {
-                    if (listGpsAlarms.isEmpty()) {
-                        Text("No data", modifier = Modifier.align(Alignment.Center))
+            },
+            windowInsets = WindowInsets(0, 0, 0, 0),
+            actions = {
+                // Additional actions can be added here if needed
+            }
+        )
+        Box(modifier = Modifier.fillMaxSize()) {
+            if (isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .size(64.dp)
+                        .align(Alignment.Center)
+                )
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    item {
+                        if (listGpsAlarms.isEmpty()) {
+                            Text("No data", modifier = Modifier.align(Alignment.Center))
+                        }
+                    }
+                    itemsIndexed(
+                        items = listGpsAlarms,
+                        key = { _, item -> item.id }
+                    ) { index, item ->
+                        GpsAlarmItem(
+                            modifier = Modifier.animateItem(),
+                            gpsAlarm = item,
+                            onClick = { onItemClick(item) },
+                            onActiveChange = { _, isActive -> onActiveChange(item, isActive) },
+                            onDelete = { onDeleteGpsAlarm(item, index) },
+                            onClickDuplicate = { onClickDuplicate(item) },
+                            onClickPin = { onClickPin(item) },
+                        )
                     }
                 }
-                itemsIndexed(
-                    items = listGpsAlarms,
-                    key = { _, item -> item.id }
-                ) { index, item ->
-                    GpsAlarmItem(
-                        modifier = Modifier.animateItem(),
-                        gpsAlarm = item,
-                        onClick = { onItemClick(item) },
-                        onActiveChange = { id, isActive -> onActiveChange(item, isActive) },
-                        onDelete = { onDeleteGpsAlarm(item, index) },
-                        onClickDuplicate = { onClickDuplicate(item) },
-                        onClickPin = { onClickPin(item) },
-                    )
-                }
             }
-        }
-
-        FloatingActionButton (
-            modifier = Modifier
-                .padding(end = 32.dp, bottom = 64.dp)
-                .size(64.dp)
-                .align(Alignment.BottomEnd),
-            shape = CircleShape,
-            containerColor = MaterialTheme.colorScheme.primary,
-            contentColor = MaterialTheme.colorScheme.onPrimary,
-            onClick = onNavigateToMaps,
-        ) {
-            Icon(Icons.Filled.Add, contentDescription = "Add", modifier = Modifier.size(36.dp))
+            FloatingActionButton(
+                modifier = Modifier
+                    .padding(end = 32.dp, bottom = 64.dp)
+                    .size(64.dp)
+                    .align(Alignment.BottomEnd),
+                shape = CircleShape,
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+                onClick = onNavigateToMaps,
+            ) {
+                Icon(Icons.Filled.Add, contentDescription = "Add", modifier = Modifier.size(36.dp))
+            }
         }
     }
 }
@@ -240,24 +237,26 @@ fun GpsAlarmItem(
     ) {
         Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
             Log.d("dddd", "GpsAlarmItem: compose")
-            Text(text = gpsAlarm.name, style = MaterialTheme.typography.titleLarge)
+            Text(text = gpsAlarm.name, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Medium)
             Text(text = gpsAlarm.reminder, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f))
 //            Text(text = String.format("%.5f, %.5f", gpsAlarm.location.latitude, gpsAlarm.location.longitude), style = MaterialTheme.typography.bodyMedium)
-            Text(text = gpsAlarm.location.addressLine ?: "", style = MaterialTheme.typography.bodyMedium)
-            // Add more details as needed (e.g., active days, duration, sound)
+            Text(text = gpsAlarm.location.addressLine ?: "", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f))
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(text = "${gpsAlarm.radius}m", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+                DotSeparator()
+                Text(text = gpsAlarm.alarmSettings.getAlarmDescription(), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+                DotSeparator()
+                Text(text = gpsAlarm.alarmSettings.getAlarmDuration(), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+            }
             Row(modifier = Modifier.fillMaxWidth()) {
-                Switch(
-                    checked = gpsAlarm.isActive,
-                    onCheckedChange = { onActiveChange(gpsAlarm.id, it) },
-                    modifier = Modifier.align(Alignment.CenterVertically)
-                )
+                IconButton(onClick = onClickDuplicate) {
+                    Icon(Icons.Default.ContentCopy, contentDescription = "Delete alarm")
+                }
                 Spacer(modifier = Modifier.width(16.dp))
                 IconButton(onClick = onDelete) {
                     Icon(Icons.Default.Delete, contentDescription = "Delete alarm")
-                }
-                Spacer(modifier = Modifier.width(16.dp))
-                IconButton(onClick = onClickDuplicate) {
-                    Icon(Icons.Default.ContentCopy, contentDescription = "Delete alarm")
                 }
                 Spacer(modifier = Modifier.width(16.dp))
                 IconButton(onClick = onClickPin) {
@@ -267,11 +266,28 @@ fun GpsAlarmItem(
                         tint = if (gpsAlarm.isPinned) Color.Green else MaterialTheme.colorScheme.onSurface
                     )
                 }
+                Spacer(modifier = Modifier.width(16.dp))
+                Switch(
+                    checked = gpsAlarm.isActive,
+                    onCheckedChange = { onActiveChange(gpsAlarm.id, it) },
+                    modifier = Modifier.align(Alignment.CenterVertically)
+                )
             }
         }
     }
 }
 
+@Composable
+fun DotSeparator(color: Color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)) {
+    Icon(
+        imageVector = Icons.Filled.Circle,
+        contentDescription = "Separator",
+        tint = color,
+        modifier = Modifier
+            .padding(horizontal = 8.dp)
+            .size(4.dp)
+    )
+}
 
 @Preview
 @Composable
