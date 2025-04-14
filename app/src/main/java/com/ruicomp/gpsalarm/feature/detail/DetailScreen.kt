@@ -54,6 +54,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpSize
@@ -62,6 +64,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ruicomp.gpsalarm.model.GpsAlarm
 import com.ruicomp.gpsalarm.utils.rememberFlowWithLifecycle
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.ruicomp.gpsalarm.data.DefaultValue
 import com.ruicomp.gpsalarm.data.fake.GpsAlarmFakeRepo
 import com.ruicomp.gpsalarm.model.GpsLocation
 import com.ruicomp.gpsalarm.model.MapsToDetailResult
@@ -100,7 +103,7 @@ fun DetailScreen(
 
                 is DetailEffect.ShowToasts -> Toast.makeText(
                     context,
-                    "Fetch false",
+                    action.msg,
                     Toast.LENGTH_SHORT
                 ).show()
 
@@ -148,6 +151,11 @@ fun DetailScreen(
                 DetailEvent.UpdateGpsAlarm(it)
             )
         },
+        onShowToast = {
+            viewModel.sendEffect(
+                DetailEffect.ShowToasts(it)
+            )
+        },
         onBack = onNavigateBack
     )
 }
@@ -161,6 +169,7 @@ fun DetailScreenContent(
     onClickAddress: (Int) -> Unit,
     onAlarmChange: (GpsAlarm) -> Unit,
     onSave: (GpsAlarm) -> Unit,
+    onShowToast: (String) -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -183,6 +192,7 @@ fun DetailScreenContent(
                 onClickAddress = onClickAddress,
                 onSave = onSave,
                 onAlarmChange = onAlarmChange,
+                onShowToast = onShowToast,
                 onBack = onBack
             )
         }
@@ -249,6 +259,7 @@ fun GpsAlarmItem(
     onDelete: () -> Unit,
     onClickAddress: (Int) -> Unit,
     onAlarmChange: (GpsAlarm) -> Unit,
+    onShowToast: (String) -> Unit,
     onSave: (GpsAlarm) -> Unit,
     onBack: () -> Unit,
 ) {
@@ -263,6 +274,8 @@ fun GpsAlarmItem(
     val alarmVolume = rememberSaveable { mutableFloatStateOf(gpsAlarm.alarmSettings.soundVolume) }
     val alarmVibrate =
         rememberSaveable { mutableFloatStateOf(gpsAlarm.alarmSettings.vibrationLevel) }
+    val focusRequester = remember { FocusRequester() }
+
 
     LaunchedEffect(gpsAlarm.radius) {
         radius.intValue = gpsAlarm.radius
@@ -283,6 +296,10 @@ fun GpsAlarmItem(
                 Button(
                     shape = MaterialTheme.shapes.large,
                     onClick = {
+                        if (name.value.isEmpty()) {
+                            onShowToast("Name cannot be empty")
+                            return@Button
+                        }
                         onSave(
                             gpsAlarm.copy(
                                 name = name.value,
@@ -318,9 +335,17 @@ fun GpsAlarmItem(
                 value = name.value,
                 onValueChange = { name.value = it },
                 label = { Text("Name") },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .focusRequester(focusRequester),
                 shape = RoundedCornerShape(12.dp)
             )
+
+            LaunchedEffect(Unit) {
+                if (name.value.isEmpty()) {
+                    focusRequester.requestFocus()
+                }
+            }
 
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -351,7 +376,8 @@ fun GpsAlarmItem(
                         gpsAlarm.location.latitude,
                         gpsAlarm.location.longitude
                     ),
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                    style = MaterialTheme.typography.bodySmall
                 )
             }
 
@@ -366,8 +392,7 @@ fun GpsAlarmItem(
                 style = MaterialTheme.typography.titleMedium
             )
 
-            val listRadius = remember { listOf(50, 100, 250, 500, 750, 1000) }
-            // Slider value is represented as a float between 0f and (listRadius.size - 1)
+            val listRadius = remember { DefaultValue.listRadius }
             val sliderValue = listRadius.indexOf(radius.intValue).toFloat()
 
             CustomSlider(
@@ -560,6 +585,7 @@ private fun PreviewDetailScreen() {
                 onClickAddress = {},
                 onAlarmChange = {},
                 onSave = { },
+                onShowToast = { },
                 onBack = { }
             )
         }

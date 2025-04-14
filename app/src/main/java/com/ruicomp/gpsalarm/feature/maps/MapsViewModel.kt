@@ -11,7 +11,6 @@ import android.os.Build
 import android.os.Looper
 import android.util.Log
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -29,6 +28,7 @@ import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
 import com.google.android.libraries.places.api.net.PlacesClient
 import com.ruicomp.gpsalarm.BuildConfig
+import com.ruicomp.gpsalarm.data.DefaultValue
 import com.ruicomp.gpsalarm.data.fake.SearchedPlacesFakeRepo
 import com.ruicomp.gpsalarm.datastore.PreferencesKeys
 import com.ruicomp.gpsalarm.datastore.PreferencesManager
@@ -45,7 +45,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 import java.util.Locale
 import javax.inject.Inject
 
@@ -151,9 +150,9 @@ class MapsViewModel @Inject constructor(
     }
 
     fun onFocusMyLocation(context: Context) {
-//        getLastKnownLocation(context)
-        getCurrentLocation()
-        if(!isLocationListenerRunning) { listenLocationChange() }
+        getLastKnownLocation(context)
+//        getLastKnownLocation2()
+//        if(!isLocationListenerRunning) { listenLocationChange() }
 
 //        _mapUiState.value = _mapUiState.value.copy(
 //            defaultCamPos = _mapUiState.value.currentLocation!!,
@@ -183,11 +182,11 @@ class MapsViewModel @Inject constructor(
                     )
                 )
             }.addOnFailureListener {
-
+                Toast.makeText(context, "Unable to get location", Toast.LENGTH_SHORT).show()
             }
     }
 
-    private fun getCurrentLocation() {
+    private fun getLastKnownLocation2() {
         if(!isLocationListenerRunning) { listenLocationChange() }
 
         val location: Location? = try {
@@ -210,13 +209,13 @@ class MapsViewModel @Inject constructor(
     }
 
 
-    fun listenLocationChange() {
+    fun listenLocationChange2() {
         dlog("listenLocationChange")
         try {
             locationManager.requestLocationUpdates(
                 LocationManager.GPS_PROVIDER,
-                2000L,
-                3f,
+                1000L,
+                0.5f,
                 locationListener
             )
             isLocationListenerRunning = true
@@ -231,15 +230,15 @@ class MapsViewModel @Inject constructor(
     }
 
 
-      fun listenLocationChange2() {
+      fun listenLocationChange() {
 
         // Create the location request
         val locationRequest = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             // For Android 12 (API 31) and above
             LocationRequest.Builder(
                 Priority.PRIORITY_BALANCED_POWER_ACCURACY,
-                10000 // Update interval in milliseconds
-            ).setMinUpdateIntervalMillis(5000) // Fastest interval (5 seconds)
+                2000 // Update interval in milliseconds
+            ).setMinUpdateIntervalMillis(1000) // Fastest interval (5 seconds)
                 .build()
         } else {
             // For older Android versions
@@ -398,7 +397,6 @@ class MapsViewModel @Inject constructor(
             ), LatLng(13.461209117192677, 109.1738935187459)
         ),
         val isMarkerVisible: Boolean = false,
-        val radius: Int = 100, // Default radius meters
+        val radius: Int = DefaultValue.firstRadius,
     )
-
 }

@@ -90,6 +90,7 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerComposable
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
+import com.ruicomp.gpsalarm.data.DefaultValue
 import com.ruicomp.gpsalarm.model.PlaceAutoComplete
 import com.ruicomp.gpsalarm.ui.theme.TemplateTheme
 import com.ruicomp.gpsalarm.utils.GpsCheckAndRequest
@@ -401,7 +402,7 @@ fun BoxWithConstraintsScope.CircularButtonWithDropdown(
     onRadiusChanged: (Int) -> Unit,
 ) {
     val expanded = remember { mutableStateOf(false) }
-    val listRadius = listOf(50, 100, 250, 500, 750, 1000)
+    val listRadius = DefaultValue.listRadius
 
     Column(
         modifier = Modifier
@@ -533,7 +534,7 @@ fun SearchBarAddress(
                     onSearch = { expanded.value = false },
                     expanded = expanded.value,
                     onExpandedChange = { expanded.value = it },
-                    placeholder = { Text("Hinted search text") },
+                    placeholder = { Text("Search") },
                     leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
                     trailingIcon = { Icon(Icons.Default.MoreVert, contentDescription = null) },
                     modifier = Modifier
