@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     id("kotlin-parcelize")
     id("template.android.room")
+    id("template.android.firebase")
 }
 
 android {
@@ -39,6 +40,10 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+        }
+
+        firebaseCrashlytics {
+            mappingFileUploadEnabled = true
         }
     }
 

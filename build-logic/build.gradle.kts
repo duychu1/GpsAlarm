@@ -36,6 +36,10 @@ gradlePlugin {
             id = "template.android.room"
             implementationClass = "AndroidRoomConventionPlugin"
         }
+        register("templateFirebaseConventionPlugin") {
+            id = "template.android.firebase"
+            implementationClass = "AndroidFirebaseConventionPlugin"
+        }
 
     }
 }

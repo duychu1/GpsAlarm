@@ -1,0 +1,18 @@
+# Sensitive Data & Configuration Files
+google-services.json
+*.json # exclude all json files, you may want to comment this if you have other json files that are not secrets
+secrets/*  # Exclude any directory named "secrets"
+
+# Build & IDE Artifacts
+.gradle/
+build/
+.idea/
+*.iml
+
+# Local/Machine Specific Configuration
+local.properties
+
+# Other data
+*.keystore # Exclude any keystore files
+*.p12
+*.pfx
