@@ -289,7 +289,7 @@ class MapsViewModel @Inject constructor(
         }
     }
 
-    suspend fun getAddressFromLocation(latitude: Double, longitude: Double): String? {
+    fun getAddressFromLocation(latitude: Double, longitude: Double): String? {
         return try {
             // Perform geocoding on the background thread to avoid blocking the UI
             val addresses: List<Address>? = geocoder.getFromLocation(latitude, longitude, 1)
@@ -319,9 +319,37 @@ class MapsViewModel @Inject constructor(
         job?.cancel()
         job = viewModelScope.launch {
             delay(500L)
-            _mapUiState.value =
-                _mapUiState.value.copy(listPlaces = SearchedPlacesFakeRepo.getSearchedPlaces())
+            _mapUiState.value = _mapUiState.value.copy(
+                    listPlaces = SearchedPlacesFakeRepo.getSearchedPlaces().filter {
+                        it.title.contains(query, ignoreCase = true)
+                    }
+                )
             Log.d("dddd", "onSearchPlaces: ${mapUiState.value.listPlaces!!.size}")
+        }
+    }
+
+    fun onSearchAddress(query: String) {
+        job?.cancel()
+        job = viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val addresses = geocoder.getFromLocationName(query, 3) // Limit to 5 results
+                val placeAutoCompleteList = addresses?.map { address ->
+                    PlaceAutoComplete(
+                        title = address.featureName ?: "unknown",
+                        detailAddress = address.getAddressLine(0) ?: "No address available",
+                        placeId = "", // Geocoder does not provide a place ID
+                        gpsLocation = GpsLocation(address.latitude, address.longitude)
+                    )
+                } ?: emptyList()
+
+                _mapUiState.value = _mapUiState.value.copy(
+                    listPlaces = placeAutoCompleteList,
+                )
+                Log.d("onSearchAddress", "Found ${placeAutoCompleteList.size} addresses")
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Log.e("onSearchAddress", "Error fetching addresses: ${e.message}")
+            }
         }
     }
 
@@ -332,7 +360,8 @@ class MapsViewModel @Inject constructor(
             _mapUiState.value = _mapUiState.value.copy(
                 defaultCamPos = LatLng(place.gpsLocation.latitude, place.gpsLocation.longitude),
                 selectedLatLng = LatLng(place.gpsLocation.latitude, place.gpsLocation.longitude),
-                zoom = 3f,
+                zoom = 15f,
+                selectedAddressLine = place.detailAddress
             )
         }
     }

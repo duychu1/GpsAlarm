@@ -21,18 +21,6 @@ class AndroidFirebaseConventionPlugin : Plugin<Project> {
                 add("implementation", libs.findLibrary("firebase-analytics").get())
             }
 
-            //Apply proguard for crashlytics
-            tasks.withType<org.gradle.api.tasks.compile.JavaCompile>().configureEach {
-                options.compilerArgs.addAll(
-                    listOf(
-                        "-keep public class * extends java.lang.Exception",
-                        "-keep public class com.google.firebase.** { *; }",
-                        "-keep public class android.support.** { *; }",
-                        "-keep public class androidx.** { *; }"
-                    )
-                )
-            }
-
         }
     }
 }

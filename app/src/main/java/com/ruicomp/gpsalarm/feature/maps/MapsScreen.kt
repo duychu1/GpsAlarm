@@ -139,7 +139,7 @@ fun MapsScreen(
         onBoundsChange = viewModel::onBoundChange,
         onCameraPositionChanged = viewModel::onCameraPositionChanged,
         listAddress = state.value.listPlaces,
-        onSearchPlace = viewModel::onSearchPlaces,
+        onSearchPlace = viewModel::onSearchAddress,
         onSelectPlace = viewModel::onSelectedPlace,
         onFocusMyLocation = {viewModel.onFocusMyLocation(context)},
         onClickSave = {
@@ -505,7 +505,7 @@ fun SearchBarAddress(
         if (text.value.isBlank()) return@LaunchedEffect
         // Debounce the search query
         val job = launch {
-            delay(500L)
+            delay(600L)
             onExcSearch(text.value)
         }
 
@@ -534,7 +534,7 @@ fun SearchBarAddress(
                     onSearch = { expanded.value = false },
                     expanded = expanded.value,
                     onExpandedChange = { expanded.value = it },
-                    placeholder = { Text("Search") },
+                    placeholder = { Text("Find your country") },
                     leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
                     trailingIcon = { Icon(Icons.Default.MoreVert, contentDescription = null) },
                     modifier = Modifier
@@ -544,8 +544,8 @@ fun SearchBarAddress(
             expanded = expanded.value,
             onExpandedChange = { expanded.value = it },
         ) {
-            if (listAddress == null || listAddress.isEmpty()) {
-                Text("List empty or null")
+            if (listAddress == null || listAddress.isEmpty() && text.value.isNotEmpty()) {
+                Text("Not found")
                 return@SearchBar
             }
 
