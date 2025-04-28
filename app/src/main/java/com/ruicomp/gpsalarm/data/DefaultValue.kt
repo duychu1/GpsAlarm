@@ -31,5 +31,5 @@ object DefaultValue {
 
     val listRadius = listOf(100, 300, 600, 1000, 2500, 5000)
 
-    val firstRadius = 300
+    const val firstRadius = 300
 }

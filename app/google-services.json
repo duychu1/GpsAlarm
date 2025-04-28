@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1069820930018",
+    "project_id": "gpsalarm-424bb",
+    "storage_bucket": "gpsalarm-424bb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1069820930018:android:b954d769a4f5feb3213bbb",
+        "android_client_info": {
+          "package_name": "com.ruicomp.gpsalarm"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDIZqE9jG-_Z9cKV7UYPFGZcNbq0qCA7xw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
