@@ -66,6 +66,7 @@ import com.ruicomp.gpsalarm.data.fake.GpsAlarmFakeRepo
 import com.ruicomp.gpsalarm.navigation.NavRoutes
 import com.ruicomp.gpsalarm.ui.theme.TemplateTheme
 import com.ruicomp.gpsalarm.utils.RequestPermissions
+import com.ruicomp.onboardmd.OnboardActivity
 
 @Composable
 fun HomeScreen(
@@ -152,6 +153,7 @@ fun HomeScreenContent(
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.fillMaxSize()) {
+        val context  = LocalContext.current
         TopAppBar(
             title = {
                 Text(
@@ -161,7 +163,9 @@ fun HomeScreenContent(
                 )
             },
             navigationIcon = {
-                IconButton(onClick = {}) {
+                IconButton(onClick = {
+                    OnboardActivity.start(context)
+                }) {
                     Icon(Icons.Filled.Menu, contentDescription = "Menu")
                 }
             },

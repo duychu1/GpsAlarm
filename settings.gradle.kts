@@ -22,4 +22,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "GpsAlarm"
 include(":app")
- 
+include(":onboardmd")

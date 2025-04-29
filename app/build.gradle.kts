@@ -85,6 +85,8 @@ dependencies {
 
     implementation(libs.androidx.material.icons.extend)
 
+    implementation(project(":onboardmd"))
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

@@ -1,0 +1,14 @@
+1. Title: Instantly Stamp Location on Every Shot
+Description: Overlay GPS coordinates and street address on your photos in real time.
+Prompt:
+A smartphone held in landscape mode taking a photo of a busy city street. On the phone screen, an overlay displays live GPS coordinates, street address, and timestamp. The real environment should match the phone screen. The background should show a recognizable urban setting with clear skies and modern architecture. Hands are holding the phone naturally.
+
+2. Title: Capture and Remember Every Detail
+Description: Date, time, and exact location added to every image you snap.
+Prompt:
+A smartphone camera capturing a scenic mountain viewpoint. On the phone screen, visible overlays show date, time, and altitude along with GPS coordinates. The phone is held by hands and perfectly aligns with the background view. Include beautiful nature scenery like mountains, sky, and trees to convey memory capturing.
+
+3. Title: Smart Photo Stamps for Travelers
+Description: Perfect for trips — mark every photo with location info automatically.
+Prompt:
+A tourist taking a photo with a smartphone at a famous landmark like the Eiffel Tower or Taj Mahal. On the phone screen, an overlay shows the location name, GPS coordinates, date, and time. The traveler is facing the landmark, and the phone is held in a way that captures the scene. Vibrant and clear travel vibe.
