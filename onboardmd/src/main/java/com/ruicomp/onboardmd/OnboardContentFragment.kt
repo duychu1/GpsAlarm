@@ -75,7 +75,36 @@ class OnboardContentFragment : Fragment() {
             listener?.onButtonClicked(id*2)
         }
 
+//        adjustLayoutConstraints()
     }
+
+//    private fun adjustLayoutConstraints() {
+//        val constraintLayout = binding.root
+//        val constraintSet = ConstraintSet()
+//        constraintSet.clone(constraintLayout)
+//
+//        if (binding.adContainer.visibility == View.GONE) {
+//            // Remove bottom constraint of llOnboardContent with llindicator
+//            constraintSet.clear(R.id.llOnboardContent, ConstraintSet.BOTTOM)
+//            // Set height of llOnboardContent to 60% of the parent
+//            constraintSet.constrainPercentHeight(R.id.llOnboardContent, 0.6f)
+//        } else {
+//            // Restore bottom constraint of llOnboardContent with llindicator
+//            constraintSet.connect(
+//                R.id.llOnboardContent,
+//                ConstraintSet.BOTTOM,
+//                R.id.llindicator,
+//                ConstraintSet.TOP
+//            )
+//            // Remove height percentage constraint
+//            constraintSet.constrainDefaultHeight(
+//                R.id.llOnboardContent,
+//                ConstraintSet.MATCH_CONSTRAINT
+//            )
+//        }
+//
+//        constraintSet.applyTo(constraintLayout)
+//    }
 
     override fun onDestroyView() {
         super.onDestroyView()
