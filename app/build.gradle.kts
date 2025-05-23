@@ -6,7 +6,7 @@ plugins {
     id("template.android.application.compose")
     id("template.android.hilt")
     alias(libs.plugins.kotlin.serialization)
-    id("kotlin-parcelize")
+    alias(libs.plugins.kotlin.parcelize)
     id("template.android.room")
     id("template.android.firebase")
 }
