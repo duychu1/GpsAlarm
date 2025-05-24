@@ -7,4 +7,35 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+
+    <color name="icon_dark">#393939</color>
+    <color name="blue_selected">#4285F4</color>
+    <color name="template_selected">#88DBFF</color>
+    <color name="template_bg">#CC363636</color>
+    <color name="grey">#FF808080</color>
+    <color name="grey_alpha60">#99808080</color>
+    <color name="grey_alpha10">#1A808080</color>
+    <color name="grey_alpha30">#4D808080</color>
+    <color name="grey_unselected">#CCCCCC</color>
+    <color name="aaaaaa">#AAAAAA</color>
+    <color name="ededed">#EDEDED</color>
+    <color name="ad_test">#C7C5C5</color>
+    <color name="transparent">#00FFFFFF</color>
+    <color name="dark_grey">#A9A9A9</color>
+    <color name="blue_navy">#000080</color>
+    <color name="red">#FF0000</color>
+    <color name="fff">#ffffff</color>
+    <color name="indicatorSelected">#033CFA</color>
+    <color name="f0f0f0">#F0F0F0</color>
+    <color name="bg_splash">#FCF5FD</color>
+
+    <color name="gold">#E6B32A</color>
+    <color name="dark_gold">#C69B24</color>
+    <color name="light_gold">#F7D77A</color>
+    <color name="dark_gray">#444444</color>
+    <color name="light_gray">#999999</color>
+
+    <color name="gradient_start_gold">#FBD300</color>
+    <color name="gradient_end_gold">#DF9B01</color>
 </resources>

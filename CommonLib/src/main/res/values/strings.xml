@@ -1,0 +1,21 @@
+<resources>
+
+    <string name="remove_ads">Remove ADS</string>
+    <string name="enjoy_an_ad_free_exprience">Enjoy an ad-free exprience</string>
+    <string name="_100_ad_free">100% Ad Free</string>
+    <string name="buy_now">buy now</string>
+    <string name="why_you_see_ads">Why You See Ads?</string>
+    <string name="pl_grant_permission">Grant permission</string>
+    <string name="pl_grant_permission_desc">We need the Storage Permission to access your file. Please click Go Settings bellow and active Storage under Storage permission</string>
+    <string name="pl_cancel">Cancel</string>
+    <string name="good">Good</string>
+    <string name="we_are_working_hard_for">We are working hard for a better user experience. We’d greatly appreciate if you can rate us</string>
+    <string name="txt_content">Please leave a feedback to help us improve product</string>
+    <string name="rate_now">Rate Now</string>
+    <string name="later">Later</string>
+
+    <string name="rate_dialog_title">Rate Our App</string>
+    <string name="rate_dialog_description">Please take a moment to rate our application.</string>
+
+
+</resources>

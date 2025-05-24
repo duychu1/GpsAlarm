@@ -1,0 +1,73 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+
+android {
+    namespace 'com.common.control'
+
+    compileSdkVersion 35
+
+    defaultConfig {
+        minSdkVersion 24
+        targetSdkVersion 35
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    viewBinding {
+        enabled true
+    }
+    dataBinding {
+        enabled true
+    }
+    buildFeatures {
+        buildConfig true
+    }
+}
+
+dependencies {
+
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation libs.androidx.appcompat
+    implementation libs.androidx.constraintlayout
+    implementation libs.material
+    implementation libs.androidx.recyclerview
+    implementation libs.androidx.cardview
+    implementation libs.google.playservices.ads
+
+    implementation libs.facebook.shimmer
+    implementation libs.androidx.lifecycle.process
+//    implementation libs.androidx.lifecycle.viewmodel.ktx
+    implementation libs.github.androidspinkit
+
+    implementation libs.androidx.multidex // Still include multidex here
+
+    implementation libs.github.ratingbar
+
+    implementation libs.google.gson
+
+    implementation libs.android.billingclient
+
+    implementation(libs.akexorcist.localization)
+
+    implementation libs.adjust.androidsdk
+
+    // Reference the BOM first
+    // For platforms (BOMs), you typically use the platform() function
+    implementation platform(libs.firebase.bom)
+    // Then reference individual Firebase libraries (no version needed)
+    implementation libs.firebase.crashlytics
+    implementation libs.firebase.analytics
+    implementation libs.firebase.config
+    implementation libs.firebase.messaging
+
+    implementation libs.facebook.audiencenetworksdk
+    implementation libs.google.mediationtestsuite
+
+    //SDK solar engine
+    implementation libs.reyun.solarenginecore
+
+}

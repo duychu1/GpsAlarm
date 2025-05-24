@@ -164,7 +164,7 @@ fun HomeScreenContent(
             },
             navigationIcon = {
                 IconButton(onClick = {
-                    OnboardActivity.start(context)
+
                 }) {
                     Icon(Icons.Filled.Menu, contentDescription = "Menu")
                 }

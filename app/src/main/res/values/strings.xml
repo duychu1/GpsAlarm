@@ -9,4 +9,54 @@
     <string name="on_the_way_to_the_destination">On the way to the destination</string>
     <string name="all_destinations_have_been_reached">All destinations have been reached</string>
     <string name="on_the_way_to_number_destinations">On the way to %1$s destinations</string>
+
+    //----------
+    <string name="permissions_title">Permissions</string>
+    <string name="get_started">Get started</string>
+    <string name="permissions_illustration_desc">Permissions illustration</string>
+    <string name="permissions_instruction">To Continue, please provide the following permissions:</string>
+
+    <string name="permission_camera_title">Camera</string>
+    <string name="permission_camera_description">Allow this app to access the camera to take photos and record videos.</string>
+    <string name="camera_permission_denied">Camera permission is required to use this feature. Please grant the permission in settings.</string>
+    <string name="go_to_settings">Go to Settings</string>
+    <string name="permission_location_title">Location Permission</string>
+    <string name="permission_location_description">Allow this app to access your location to provide location-based features.</string>
+
+    <string name="app_icon_description">Application logo</string>
+    <string name="continue_button">Continue</string>
+    <string name="swipe_next">Swipe next</string>
+
+    <string name="onboard_title_1">Instantly Stamp Location</string>
+    <string name="onboard_desc_1">Overlay GPS coordinates and street address on your photos in real time</string>
+    <string name="onboard_title_2">Capture and Remember</string>
+    <string name="onboard_desc_2">Date, time, and exact location added to every image you snap</string>
+    <string name="onboard_title_3">Smart Photo Stamps for Travelers</string>
+    <string name="onboard_desc_3">Perfect for trips — mark every photo with location info automatically</string>
+    <string name="onboarding_image_description">Onboarding illustration</string>
+    <string name="next">Next</string>
+
+    <string name="loading_with_percent">Loading... %1$d%%</string>
+    <string name="loading_complete">Loading complete!</string>
+
+    <string name="close">Close</string>
+    <string name="premium_banner">Premium banner</string>
+    <string name="update_to_premium">Update to Premium!</string>
+    <string name="ad_free">AD-FREE</string>
+    <string name="ad_free_description">Use conveniently and quickly with the ad-free app</string>
+    <string name="ad_free_icon">Ad-free icon</string>
+    <string name="live_location_description">Use satellite maps for quick and convenient location tracking</string>
+    <string name="live_location_icon">Live location icon</string>
+    <string name="map_directions_description">The easiest and most convenient directions for you</string>
+    <string name="map_directions_icon">Map directions icon</string>
+    <string name="buy_premium_forever">Buy Premium Forever %s</string>
+    <string name="watch_video_to_try_premium">Watch the video to try Premium</string>
+    <string name="terms_agreement">By purchasing, you agree to the Term of Use, Restore and Privacy Policy. The subscription is billed immediately and will auto-renew. You can cancel your subscription at any time to avoid charges.</string>
+    <string name="term_of_use">Term of Use</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="restore">Restore</string>
+    <string name="premium_activated">Premium Activated</string>
+
+
+
 </resources>

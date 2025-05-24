@@ -14,4 +14,9 @@ object PreferencesKeys {
     val CAMERA_LATITUDE = doublePreferencesKey("camera_latitude")
     val CAMERA_LONGITUDE = doublePreferencesKey("camera_longitude")
     val CAMERA_ZOOM = floatPreferencesKey("camera_zoom")
+
+
+    val LANGUAGE_STRING = stringPreferencesKey("language_string")
+    val IS_ONBOARD_COMPLETE = booleanPreferencesKey("is_onboard_complete")
+    val IS_PERMISSION_COMPLETE = booleanPreferencesKey("is_permission_complete")
 }
