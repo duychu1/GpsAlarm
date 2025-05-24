@@ -100,7 +100,7 @@ class MapsViewModel @Inject constructor(
         }
 
         //for place auto complete, geocoder replacement
-//        Places.initialize(appContext, BuildConfig.mapk)
+        Places.initialize(appContext, BuildConfig.mapk)
         placesClient = Places.createClient(appContext)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(appContext)
         locationManager = appContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
