@@ -10,6 +10,9 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
     <uses-permission android:name="android.permission.VIBRATE"/>
 
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+
     <application
         android:name=".MyApp"
         android:allowBackup="true"
@@ -38,10 +41,21 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="${mapk}" />
 
+        <meta-data
+            android:name="com.google.android.gms.ads.flag.OPTIMIZE_INITIALIZATION"
+            android:value="true" />
+        <meta-data
+            android:name="com.google.android.gms.ads.flag.OPTIMIZE_AD_LOADING"
+            android:value="true" />
+
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="${APP_ID}"
+            tools:replace="android:value" />
+
         <service
             android:name=".feature.service.LocationService"
             android:foregroundServiceType="location" />
-
 
         <activity android:name=".MainActivity"
             android:exported="false">
