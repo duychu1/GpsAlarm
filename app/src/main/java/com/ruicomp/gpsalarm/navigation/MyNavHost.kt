@@ -68,6 +68,9 @@ fun MyNavHost(
                         ?.savedStateHandle
                         ?.set(Constants.KEY_FROM_MAPS, MapsToDetailResult(alarmId, lat, lng, radius, addressLine))
                     navController.popBackStack()
+                },
+                onFinish = {
+                    navController.popBackStack()
                 }
             )
         }
