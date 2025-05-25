@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="?attr/colorControlHighlight"> <!-- Ripple color, can be a specific color too e.g., #40FFFFFF -->
+
+    <!-- Mask: Optional, defines the bounds of the ripple.
+         If not set, it uses the bounds of the item.
+         For a button, you often want it to match the item's shape. -->
+    <item android:id="@android:id/mask">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/light_gray" /> <!-- Mask color, actual color doesn't matter much -->
+            <!-- If your button has rounded corners, add them here too -->
+            <corners android:radius="@dimen/_100sdp"/>
+        </shape>
+    </item>
+
+    <!-- Content: Your actual gradient drawable -->
+    <item android:drawable="@drawable/gradient_gold" />
+
+</ripple>
