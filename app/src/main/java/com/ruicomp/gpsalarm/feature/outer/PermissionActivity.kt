@@ -111,7 +111,7 @@ class PermissionActivity : BaseActivityNonBinding() {
                         this@PermissionActivity,
                         nativeAd,
                         binding.frNativeAd,
-                        AdmobManager.NativeAdType.MEDIUM
+                        AdmobManager.NativeAdType.BIG
                     )
                     Log.d("Refresh","ShowRefreshHowToUse")
                 }
