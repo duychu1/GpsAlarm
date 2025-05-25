@@ -21,6 +21,7 @@ import com.ruicomp.gpsalarm.feature.outer.OnboardFragment
 import com.ruicomp.gpsalarm.feature.outer.OnboardingPagerAdapter
 import com.ruicomp.gpsalarm.remote_config.RemoteConfigManager
 import com.ruicomp.gpsalarm.utils.dlog
+import com.ruicomp.gpsalarm.utils.hideNavigationBar
 import com.ruicomp.gpsalarm.utils.hideSystemBar
 
 class OnboardActivity() : AppCompatActivity(), OnboardFragment.OnEventClickListener {
@@ -305,6 +306,8 @@ class OnboardActivity() : AppCompatActivity(), OnboardFragment.OnEventClickListe
     override fun onResume() {
         super.onResume()
         window.hideSystemBar()
+        window.statusBarColor = getColor(R.color.blue_selected)
+        window.hideNavigationBar()
     }
 
     private fun setupButton() {

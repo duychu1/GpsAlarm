@@ -155,7 +155,7 @@ dependencies {
 
     implementation(libs.androidx.material.icons.extend)
 
-    implementation(project(":onboardmd"))
+//    implementation(project(":onboardmd"))
     implementation(project(":CommonLib"))
 
     //outer

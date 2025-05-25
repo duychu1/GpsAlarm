@@ -55,6 +55,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -62,11 +63,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ruicomp.gpsalarm.model.GpsAlarm
 import com.ruicomp.gpsalarm.utils.rememberFlowWithLifecycle
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.ruicomp.gpsalarm.R
 import com.ruicomp.gpsalarm.data.fake.GpsAlarmFakeRepo
 import com.ruicomp.gpsalarm.navigation.NavRoutes
 import com.ruicomp.gpsalarm.ui.theme.TemplateTheme
 import com.ruicomp.gpsalarm.utils.RequestPermissions
-import com.ruicomp.onboardmd.OnboardActivity
 
 @Composable
 fun HomeScreen(
@@ -157,7 +158,7 @@ fun HomeScreenContent(
         TopAppBar(
             title = {
                 Text(
-                    text = "All Alarm",
+                    text = stringResource(R.string.app_name),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.SemiBold,
                 )
