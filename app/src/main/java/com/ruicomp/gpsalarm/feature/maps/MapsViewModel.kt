@@ -74,7 +74,19 @@ class MapsViewModel @Inject constructor(
         )
     }
 
+
+
     init {
+
+        viewModelScope.launch {
+            preferencesManager.getAsFlow(PreferencesKeys.IS_MAP_DARK_THEME).collect {
+                _mapUiState.value = _mapUiState.value.copy(
+                    isDarkTheme = it
+                )
+            }
+        }
+
+
         val (id, lat, lng, radius, addressLine) = savedStateHandle.toRoute<NavRoutes.Maps>()
         if (id != null) {
             _mapUiState.value = _mapUiState.value.copy(
@@ -147,6 +159,12 @@ class MapsViewModel @Inject constructor(
             preferencesManager.saveDouble(PreferencesKeys.CAMERA_LATITUDE, latLng.latitude)
             preferencesManager.saveDouble(PreferencesKeys.CAMERA_LONGITUDE, latLng.longitude)
             preferencesManager.saveFloat(PreferencesKeys.CAMERA_ZOOM, zoom)
+        }
+    }
+
+    fun onDarkThemeChanged(isDarkTheme: Boolean) {
+        viewModelScope.launch {
+            preferencesManager.saveBoolean(PreferencesKeys.IS_MAP_DARK_THEME, isDarkTheme)
         }
     }
 
@@ -238,14 +256,14 @@ class MapsViewModel @Inject constructor(
             // For Android 12 (API 31) and above
             LocationRequest.Builder(
                 Priority.PRIORITY_BALANCED_POWER_ACCURACY,
-                2000 // Update interval in milliseconds
-            ).setMinUpdateIntervalMillis(1000) // Fastest interval (5 seconds)
+                5000 // Update interval in milliseconds
+            ).setMinUpdateIntervalMillis(3000) // Fastest interval (5 seconds)
                 .build()
         } else {
             // For older Android versions
             LocationRequest.create().apply {
-                interval = 10000 // Update interval in milliseconds
-                fastestInterval = 5000 // Fastest update interval in milliseconds
+                interval = 5000 // Update interval in milliseconds
+                fastestInterval = 3000 // Fastest update interval in milliseconds
                 priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY // Set priority
             }
         }
@@ -428,5 +446,6 @@ class MapsViewModel @Inject constructor(
         ),
         val isMarkerVisible: Boolean = false,
         val radius: Int = DefaultValue.firstRadius,
+        val isDarkTheme: Boolean? = null,
     )
 }

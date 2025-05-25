@@ -3,13 +3,8 @@ package com.ruicomp.gpsalarm.feature.maps
 import com.ruicomp.gpsalarm.R
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.widget.Toast
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -29,19 +24,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DarkMode
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Nightlight
+import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.WbSunny
+import androidx.compose.material.icons.rounded.LocationOn
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ButtonElevation
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -54,15 +47,15 @@ import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -74,6 +67,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.isTraversalGroup
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.traversalIndex
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -84,6 +78,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.maps.android.compose.Circle
+import com.google.maps.android.compose.DefaultMapUiSettings
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.Marker
@@ -105,6 +100,7 @@ import kotlinx.coroutines.launch
 fun MapsScreen(
     modifier: Modifier = Modifier,
     onBackDetail: (Int?, Double, Double, Int, String?) -> Unit,
+    onFinish: () -> Unit,
     viewModel: MapsViewModel = hiltViewModel(),
 ) {
     val state = viewModel.mapUiState.collectAsStateWithLifecycle()
@@ -155,8 +151,10 @@ fun MapsScreen(
                 state.value.radius,
                 state.value.selectedAddressLine,
             )
-        }
-
+        },
+        onFinish = onFinish,
+        isDarkTheme = state.value.isDarkTheme ?: isSystemInDarkTheme(),
+        onDarkThemeChanged = viewModel::onDarkThemeChanged
     )
 
     RequestPermissions(
@@ -179,6 +177,7 @@ fun MapsScreenContent(
     firstCameraPosition: LatLng,
     zoom: Float,
     onClickSave: () -> Unit,
+    onFinish: () -> Unit,
     firstLatLngBounds: LatLngBounds,
     radius: Int,
     isMarkerVisible: Boolean,
@@ -191,7 +190,8 @@ fun MapsScreenContent(
     onSelectPlace: (PlaceAutoComplete) -> Unit,
     onFocusMyLocation: () -> Unit,
     modifier: Modifier = Modifier,
-    isDarkTheme: Boolean = isSystemInDarkTheme(),
+    isDarkTheme: Boolean,
+    onDarkThemeChanged: (Boolean) -> Unit,
 ) {
     val cameraPositionState = rememberCameraPositionState()
     val isFirstLaunch = rememberSaveable { mutableStateOf(true) }
@@ -216,6 +216,13 @@ fun MapsScreenContent(
             update = CameraUpdateFactory.newLatLngZoom(firstCameraPosition, zoom),
             durationMs = 1000
         )
+    }
+
+    // Select the color scheme for THIS screen
+    val localColorScheme = if (isDarkTheme) {
+        darkColorScheme()
+    } else {
+        lightColorScheme()
     }
 
 //    val window = (LocalContext.current as Activity).window
@@ -244,19 +251,23 @@ fun MapsScreenContent(
 
     val query = remember { mutableStateOf("") }
 
-    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-        GoogleMap(
-            modifier = Modifier.fillMaxSize(),
-            cameraPositionState = cameraPositionState,
-            onMapClick = onMapClicked,
-            properties = mapProperties,
-        ) {
+    MaterialTheme(
+        colorScheme = localColorScheme,
+    ) {
+        BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+            GoogleMap(
+                modifier = Modifier.fillMaxSize(),
+                cameraPositionState = cameraPositionState,
+                onMapClick = onMapClicked,
+                properties = mapProperties,
+                uiSettings = DefaultMapUiSettings.copy(zoomControlsEnabled = false)
+            ) {
 
-            MarkerCircleLocation(selectedLatLng, radius)
+                MarkerCircleLocation(selectedLatLng, radius)
 
 
-            MarkerMyLocation(currentLocation)
-        }
+                MarkerMyLocation(currentLocation)
+            }
 
 //        SearchAddress(
 //            query = query.value,
@@ -267,47 +278,53 @@ fun MapsScreenContent(
 //            modifier = Modifier.statusBarsPadding()
 //        )
 
-        val isMyLocationClick = remember { mutableStateOf(false) }
+            val isMyLocationClick = remember { mutableStateOf(false) }
 
-        LaunchedEffect(isMyLocationClick.value) {
-            if (isMyLocationClick.value) {
-                isMyLocationClick.value = false
-                onFocusMyLocation()
-                CoroutineScope(Dispatchers.Unconfined).launch {
-                    try {
-                        cameraPositionState.animate(
-                            update = CameraUpdateFactory.newLatLngZoom(currentLocation!!, 15f),
-                            durationMs = 1000
-                        )
-                    } catch (e: Exception) {
-                        e.printStackTrace()
+            LaunchedEffect(isMyLocationClick.value) {
+                if (isMyLocationClick.value) {
+                    isMyLocationClick.value = false
+                    onFocusMyLocation()
+                    CoroutineScope(Dispatchers.Unconfined).launch {
+                        try {
+                            cameraPositionState.animate(
+                                update = CameraUpdateFactory.newLatLngZoom(currentLocation!!, 15f),
+                                durationMs = 1000
+                            )
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
                     }
                 }
             }
+
+            MyLocationIcon {
+                isMyLocationClick.value = true
+            }
+
+            CircularButtonWithDropdown(
+                radius = radius,
+                onRadiusChanged = onRadiusChanged,
+                localDarkThemeEnabled = isDarkTheme,
+                onClickChangeTheme = {
+                    onDarkThemeChanged(!isDarkTheme)
+                }
+            )
+
+
+            BottomSaveAndAddress(
+                selectedLatLng = selectedLatLng,
+                selectedAddressLine = selectedAddressLine,
+                onClickSave = onClickSave
+            )
+
+            SearchBarAddress(
+                query = query.value,
+                listAddress = listAddress,
+                onExcSearch = onSearchPlace,
+                onSelectPlace = onSelectPlace,
+                onFinish = onFinish
+            )
         }
-
-        MyLocationIcon {
-            isMyLocationClick.value = true
-        }
-
-        CircularButtonWithDropdown(
-            radius = radius,
-            onRadiusChanged = onRadiusChanged
-        )
-
-
-        BottomSaveAndAddress(
-            selectedLatLng = selectedLatLng,
-            selectedAddressLine = selectedAddressLine,
-            onClickSave = onClickSave
-        )
-
-        SearchBarAddress(
-            query = query.value,
-            listAddress = listAddress,
-            onExcSearch = onSearchPlace,
-            onSelectPlace = onSelectPlace,
-        )
     }
 }
 
@@ -323,7 +340,8 @@ private fun BoxWithConstraintsScope.BottomSaveAndAddress(
             .align(Alignment.BottomCenter)
             .navigationBarsPadding()
             .fillMaxWidth()
-            .padding(horizontal = 60.dp),
+            .padding(horizontal = 32.dp)
+            .padding(bottom = 12.dp),
     ) {
         if (selectedAddressLine != null)
             Text(
@@ -342,15 +360,20 @@ private fun BoxWithConstraintsScope.BottomSaveAndAddress(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(48.dp),
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.onPrimary),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.background.copy(alpha = 0.5f)),
             elevation = ButtonDefaults.buttonElevation(
-                defaultElevation = 5.dp,),
+                defaultElevation = 5.dp,
+            ),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color.White,
-                contentColor = Color.Black
+                containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                contentColor = MaterialTheme.colorScheme.onSurfaceVariant
             )
         ) {
-            Text(text = stringResource(R.string.save), style = MaterialTheme.typography.titleMedium)
+            Text(
+                text = stringResource(R.string.save),
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.SemiBold
+            )
         }
     }
 }
@@ -399,7 +422,9 @@ private fun BoxWithConstraintsScope.MyLocationIcon(
 @Composable
 fun BoxWithConstraintsScope.CircularButtonWithDropdown(
     radius: Int,
-    onRadiusChanged: (Int) -> Unit,
+    onRadiusChanged: (Int) -> Unit = {},
+    localDarkThemeEnabled: Boolean = false,
+    onClickChangeTheme: () -> Unit = {},
 ) {
     val expanded = remember { mutableStateOf(false) }
     val listRadius = DefaultValue.listRadius
@@ -411,22 +436,28 @@ fun BoxWithConstraintsScope.CircularButtonWithDropdown(
             .offset(y = (maxHeight * 0.2f))
     ) {
         //create a circular button to change maps theme
-//        Box (
-//            modifier = Modifier
-//                .size(54.dp)
-//                .border(1.dp, Color.LightGray, CircleShape)
-//                .shadow(elevation = 2.dp, shape = CircleShape)
-//                .background(Color.White)
-//                .clickable {  },
-//            contentAlignment = Alignment.Center
-//        ) {
-//            Icon(
-//                imageVector = Icons.Default.DarkMode,
-//                contentDescription = "Icon Button",
-//                tint = Color.Blue,
-//                modifier = Modifier.size(32.dp)
-//            )
-//        }
+        Box(
+            modifier = Modifier
+                .size(50.dp)
+                .border(1.dp, Color.LightGray, CircleShape)
+                .shadow(elevation = 2.dp, shape = CircleShape)
+                .background(Color.White)
+                .clickable {
+                    onClickChangeTheme()
+                },
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = when(localDarkThemeEnabled) {
+                    true -> Icons.Default.WbSunny // Show LightMode icon if dark is forced
+                    false -> Icons.Default.DarkMode // Show DarkMode icon if light is forced
+                    null -> if (isSystemInDarkTheme()) Icons.Default.LightMode else Icons.Default.DarkMode // Reflect system
+                },
+                contentDescription = "Toggle Theme for this screen",
+                tint = Color.Blue, // Adjust tint as needed
+                modifier = Modifier.size(32.dp)
+            )
+        }
 
         Box(
             contentAlignment = Alignment.Center,
@@ -438,7 +469,12 @@ fun BoxWithConstraintsScope.CircularButtonWithDropdown(
                 .background(Color.White)
                 .clickable { expanded.value = !expanded.value }
         ) {
-            Text(text = "${radius}m", fontSize = 12.sp, color = Color.Blue)
+            Text(
+                text = "${radius}m",
+                fontSize = 12.sp,
+                color = Color.Blue,
+                fontWeight = FontWeight.Medium
+            )
         }
 
         DropdownMenu(
@@ -497,6 +533,7 @@ fun SearchBarAddress(
     onSelectPlace: (PlaceAutoComplete) -> Unit,
     listAddress: List<PlaceAutoComplete>?,
     onExcSearch: (String) -> Unit,
+    onFinish: () -> Unit,
 ) {
     val text = rememberSaveable { mutableStateOf("") }
     val expanded = rememberSaveable { mutableStateOf(false) }
@@ -505,7 +542,7 @@ fun SearchBarAddress(
         if (text.value.isBlank()) return@LaunchedEffect
         // Debounce the search query
         val job = launch {
-            delay(600L)
+            delay(800L)
             onExcSearch(text.value)
         }
 
@@ -527,6 +564,10 @@ fun SearchBarAddress(
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .semantics { traversalIndex = 0f },
+            colors = SearchBarDefaults.colors(
+                MaterialTheme.colorScheme.surfaceVariant,
+
+            ),
             inputField = {
                 SearchBarDefaults.InputField(
                     query = text.value,
@@ -534,29 +575,51 @@ fun SearchBarAddress(
                     onSearch = { expanded.value = false },
                     expanded = expanded.value,
                     onExpandedChange = { expanded.value = it },
-                    placeholder = { Text("Find your country") },
-                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
-                    trailingIcon = { Icon(Icons.Default.MoreVert, contentDescription = null) },
-                    modifier = Modifier
-                        .shadow(elevation = 2.dp, shape = CircleShape)
+                    placeholder = { Text(stringResource(R.string.search_3dot)) },
+                    leadingIcon = {
+                        IconButton(onClick = {
+                            if (expanded.value) {
+                                expanded.value = false
+                            } else {
+                                onFinish()
+                            }
+                        }) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Collapse search bar")
+                        }
+                    },
+                    trailingIcon = {
+                        if (expanded.value) {
+                            if (text.value.isNotEmpty()) {
+                                IconButton(onClick = {
+                                    text.value = "" // Clear the search query
+                                    println("Clear icon clicked")
+                                }) {
+                                    Icon(Icons.Default.Close, contentDescription = "Clear search query")
+                                }
+                            }
+                        }
+                    },
+//                    modifier = Modifier
+//                        .shadow(elevation = 1.dp, shape = CircleShape)
+
                 )
             },
             expanded = expanded.value,
             onExpandedChange = { expanded.value = it },
         ) {
             if (listAddress == null || listAddress.isEmpty() && text.value.isNotEmpty()) {
-                Text("Not found")
+                Text(stringResource(R.string.no_results_for, text.value))
                 return@SearchBar
             }
 
             LazyColumn {
                 items(listAddress) {
                     ListItem(
-                        headlineContent = { Text(it.title) },
-                        supportingContent = { Text(it.detailAddress) },
+                        headlineContent = { Text(it.detailAddress) },
+//                        supportingContent = { Text(it.detailAddress) },
                         leadingContent = {
                             Icon(
-                                Icons.Filled.Star,
+                                Icons.Rounded.LocationOn,
                                 contentDescription = null
                             )
                         },
@@ -584,25 +647,32 @@ fun MarkerMyLocation(position: LatLng?) {
     MarkerComposable(
         state = state,
     ) {
-        Box(
-            modifier = Modifier
-                .size(36.dp)  // Apply the scale animation
-                .shadow(8.dp, CircleShape)
-                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.6f), CircleShape),  // Use the animated alpha
-            contentAlignment = Alignment.Center
-        ) {
-            // Blue dot location indicator
-            Box(
-                modifier = Modifier
-                    .size(24.dp)// Apply the scale animation to inner circle too
-                    .background(Color.Blue, CircleShape)
-                    .border(5.dp, Color.White, CircleShape),
-            )
-        }
-
+        MarkerContent()
 
     }
     dlog("MarkerMyLocation: recompose check")
+}
+
+@Composable
+private fun MarkerContent() {
+    Box(
+        modifier = Modifier
+            .size(38.dp)  // Apply the scale animation
+            .shadow(8.dp, CircleShape)
+            .background(
+                MaterialTheme.colorScheme.primary.copy(alpha = 0.4f),
+                CircleShape
+            ),  // Use the animated alpha
+        contentAlignment = Alignment.Center
+    ) {
+        // Blue dot location indicator
+        Box(
+            modifier = Modifier
+                .size(24.dp)// Apply the scale animation to inner circle too
+                .background(Color.Blue, CircleShape)
+                .border(3.dp, Color.White, CircleShape),
+        )
+    }
 }
 
 @Composable
@@ -612,7 +682,12 @@ fun rememberUpdatedMarkerState(newPosition: LatLng): MarkerState =
 
 
 @SuppressLint("UnusedBoxWithConstraintsScope")
-@Preview
+@Preview(name = "Light Theme Preview", showBackground = true)
+@Preview(
+    name = "Dark Theme Preview",
+    uiMode = UI_MODE_NIGHT_YES, // This enables dark mode for the preview
+    showBackground = true
+)
 @Composable
 private fun preMaps() {
 //    BoxWithConstraints(Modifier.fillMaxSize().background(Color.Cyan)) {
@@ -625,6 +700,24 @@ private fun preMaps() {
                     radius = 500,
                     onRadiusChanged = {}
                 )
+                MyLocationIcon { }
+                BottomSaveAndAddress (
+                    null, null ,{}
+                )
+                SearchBarAddress(
+                    query = "query.value",
+                    listAddress = emptyList(),
+                    onExcSearch = {  },
+                    onSelectPlace = {},
+                    onFinish = {  }
+                )
+
+                Column(
+                    modifier = Modifier
+                        .offset(x = maxWidth*0.5f,y = (maxHeight * 0.5f))
+                ) {
+                    MarkerContent()
+                }
 
             }
         }

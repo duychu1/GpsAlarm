@@ -56,7 +56,8 @@
     <string name="privacy_policy">Privacy Policy</string>
     <string name="restore">Restore</string>
     <string name="premium_activated">Premium Activated</string>
-
+    <string name="search_3dot">Search...</string>
+    <string name="no_results_for">No results for \"%1$s\"</string>
 
 
 </resources>

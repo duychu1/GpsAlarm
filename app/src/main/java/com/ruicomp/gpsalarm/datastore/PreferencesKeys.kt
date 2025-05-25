@@ -16,7 +16,5 @@ object PreferencesKeys {
     val CAMERA_ZOOM = floatPreferencesKey("camera_zoom")
 
 
-    val LANGUAGE_STRING = stringPreferencesKey("language_string")
-    val IS_ONBOARD_COMPLETE = booleanPreferencesKey("is_onboard_complete")
-    val IS_PERMISSION_COMPLETE = booleanPreferencesKey("is_permission_complete")
+    val IS_MAP_DARK_THEME = booleanPreferencesKey("is_map_dark_theme")
 }

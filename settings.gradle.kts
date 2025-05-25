@@ -33,4 +33,3 @@ dependencyResolutionManagement {
 rootProject.name = "GpsAlarm"
 include(":app")
 include(":CommonLib")
-include(":onboardmd")
