@@ -58,7 +58,7 @@ class OnboardActivity() : AppCompatActivity(), OnboardFragment.OnEventClickListe
             addFragment(
                 OnboardFragment(
                     0,
-                    R.drawable.ic_placeholder1,
+                    R.drawable.ic_ob1,
                     R.string.onboard_title_1,
                     R.string.onboard_desc_1
                 )
@@ -66,7 +66,7 @@ class OnboardActivity() : AppCompatActivity(), OnboardFragment.OnEventClickListe
             addFragment(
                 OnboardFragment(
                     1,
-                    R.drawable.ic_placeholder2,
+                    R.drawable.ic_ob2,
                     R.string.onboard_title_2,
                     R.string.onboard_desc_2
                 )
@@ -75,7 +75,7 @@ class OnboardActivity() : AppCompatActivity(), OnboardFragment.OnEventClickListe
             addFragment(
                 OnboardFragment(
                     3,
-                    R.drawable.ic_placeholder3,
+                    R.drawable.ic_ob4,
                     R.string.onboard_title_3,
                     R.string.onboard_desc_3
                 )
