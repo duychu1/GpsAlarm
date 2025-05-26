@@ -133,7 +133,7 @@
                 android:paddingVertical="16dp"
                 tools:text="@string/show_more"
                 android:textColor="@color/light_gray"
-                android:textSize="18sp"
+                android:textSize="14sp"
                 style="?attr/borderlessButtonStyle" />
 
             <TextView

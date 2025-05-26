@@ -93,6 +93,7 @@
     <string name="cannot_find_reminder_try_again">Cannot find reminder, try again</string>
     <string name="these_permissions_are_required_for_the_app_to_function_properly">These permissions are required for the app to function properly.</string>
     <string name="start">Start</string>
+    <string name="add_first_alarm">Add first alarm</string>
 
 
 </resources>

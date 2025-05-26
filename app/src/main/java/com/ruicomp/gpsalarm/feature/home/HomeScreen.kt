@@ -203,7 +203,7 @@ fun HomeScreenContent(
                 ) {
                     item {
                         if (listGpsAlarms.isEmpty()) {
-                            Text(stringResource(R.string.no_data), modifier = Modifier.align(Alignment.Center))
+                            Text(stringResource(R.string.add_first_alarm), modifier = Modifier.fillMaxWidth().align(Alignment.Center))
                         }
                     }
                     itemsIndexed(
