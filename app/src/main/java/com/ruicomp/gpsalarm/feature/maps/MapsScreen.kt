@@ -140,7 +140,7 @@ fun MapsScreen(
         onFocusMyLocation = {viewModel.onFocusMyLocation(context)},
         onClickSave = {
             if (state.value.selectedLatLng == null || state.value.selectedAddressLine == null) {
-                Toast.makeText(context, "Location not selected", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, context.getString(R.string.location_not_selected), Toast.LENGTH_SHORT).show()
                 return@MapsScreenContent
             }
 
@@ -162,7 +162,7 @@ fun MapsScreen(
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION,
         ),
-        permissionNameDisplay = "Location"
+        permissionNameDisplay = stringResource(R.string.location)
     )
 
     GpsCheckAndRequest()
@@ -511,7 +511,7 @@ fun SearchAddress(
         value = query,
         onValueChange = onQueryChange,
         placeholder = {
-            Text(text = "Search")
+            Text(text = stringResource(R.string.search))
         },
         leadingIcon = {
             Icon(

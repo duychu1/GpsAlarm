@@ -61,5 +61,37 @@
     <string name="show_more">Show more (every time)</string>
     <string name="show_less">Show less (1 per day)</string>
 
+    <string name="active">Active</string>
+    <string name="infinity_repeating">Infinity Repeating</string>
+    <string name="edit">Edit</string>
+    <string name="back">Back</string>
+    <string name="name_cannot_be_empty">Name cannot be empty</string>
+    <string name="name">Name</string>
+    <string name="reminder">Reminder</string>
+    <string name="address">Address</string>
+    <string name="radius_meters">Radius (meters): %1$d</string>
+    <string name="alarm_setting">Alarm Setting</string>
+    <string name="volume">Volume</string>
+    <string name="vibrate_level">Vibrate level:</string>
+    <string name="duration_seconds">Duration: %1$ds</string>
+    <string name="duration_seconds_short">%1$ds</string>
+    <string name="fetch_false">Fetch false</string>
+    <string name="undo">Undo</string>
+    <string name="menu">Menu</string>
+    <string name="icon_premium">Premium</string>
+    <string name="no_data">No data</string>
+    <string name="add">Add</string>
+    <string name="duplicate_alarm">Duplicate alarm</string>
+    <string name="delete_alarm">Delete alarm</string>
+    <string name="pin_alarm">Pin alarm</string>
+    <string name="separator">Separator</string>
+    <string name="location_not_selected">Location not selected</string>
+    <string name="location">Location</string>
+    <string name="search">Search</string>
+    <string name="collapse_search_bar">Collapse search bar</string>
+    <string name="clear_search_query">Clear search query</string>
+    <string name="cannot_find_reminder_try_again">Cannot find reminder, try again</string>
+
+
 
 </resources>

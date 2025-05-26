@@ -3,7 +3,6 @@ package com.ruicomp.gpsalarm.feature.detail
 import android.annotation.SuppressLint
 import android.util.Log
 import android.widget.Toast
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -18,7 +17,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -41,7 +39,6 @@ import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -53,7 +50,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
@@ -184,7 +180,7 @@ fun DetailScreenContent(
             )
         } else {
             if (gpsAlarm == null) {
-                Text("Cannot find reminder, try again")
+                Text(stringResource(R.string.cannot_find_reminder_try_again))
                 return@Box
             }
             GpsAlarmItem(
@@ -208,7 +204,7 @@ private fun ActivateAlarm(isActive: MutableState<Boolean>) {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text("Active")
+        Text(stringResource(R.string.active))
         Switch(
             checked = isActive.value,
             onCheckedChange = {
@@ -227,7 +223,7 @@ private fun ActivateAlarm2(isActive: Boolean, onActiveChange: (Boolean) -> Unit)
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text("Active")
+        Text(stringResource(R.string.active))
         Switch(
             checked = isActive,
             onCheckedChange = {
@@ -244,7 +240,7 @@ fun RepeatingAlarm(isRepeating: Boolean, onRepeatingChange: (Boolean) -> Unit) {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text("Infinity Repeating", style = MaterialTheme.typography.titleMedium)
+        Text(stringResource(R.string.infinity_repeating), style = MaterialTheme.typography.titleMedium)
         Switch(
             checked = isRepeating,
             onCheckedChange = onRepeatingChange,
@@ -283,9 +279,11 @@ fun GpsAlarmItem(
         radius.intValue = gpsAlarm.radius
     }
 
+    val localContext = LocalContext.current
+
     Column {
         TopAppBar(
-            title = { Text("Edit GPS Alarm", style = MaterialTheme.typography.titleLarge) },
+            title = { Text(stringResource(R.string.edit), style = MaterialTheme.typography.titleLarge) },
             navigationIcon = {
                 IconButton(
                     onClick = onBack
@@ -299,7 +297,7 @@ fun GpsAlarmItem(
                     shape = MaterialTheme.shapes.large,
                     onClick = {
                         if (name.value.isEmpty()) {
-                            onShowToast("Name cannot be empty")
+                            onShowToast(localContext.getString(R.string.name_cannot_be_empty))
                             return@Button
                         }
                         onSave(
@@ -321,7 +319,7 @@ fun GpsAlarmItem(
                     },
                     modifier = Modifier.padding(end = 8.dp)
                 ) {
-                    Text("Save", style = MaterialTheme.typography.titleMedium)
+                    Text(stringResource(R.string.save), style = MaterialTheme.typography.titleMedium)
                 }
             }
         )
@@ -336,7 +334,7 @@ fun GpsAlarmItem(
             OutlinedTextField(
                 value = name.value,
                 onValueChange = { name.value = it },
-                label = { Text("Name") },
+                label = { Text(stringResource(R.string.name)) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .focusRequester(focusRequester),
@@ -355,14 +353,14 @@ fun GpsAlarmItem(
             OutlinedTextField(
                 value = reminder.value,
                 onValueChange = { reminder.value = it },
-                label = { Text("Reminder") },
+                label = { Text(stringResource(R.string.reminder)) },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp)
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Text("Address", style = MaterialTheme.typography.titleMedium)
+            Text(stringResource(R.string.address), style = MaterialTheme.typography.titleMedium)
             Column(
                 Modifier
                     .fillMaxWidth()
@@ -390,7 +388,7 @@ fun GpsAlarmItem(
 
             // Radius (Slider)
             Text(
-                "Radius (meters): ${radius.intValue}",
+                stringResource(R.string.radius_meters, radius.intValue),
                 style = MaterialTheme.typography.titleMedium
             )
 
@@ -410,9 +408,9 @@ fun GpsAlarmItem(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Text(text = "Alarm Setting", style = MaterialTheme.typography.titleLarge)
+            Text(text = stringResource(R.string.alarm_setting), style = MaterialTheme.typography.titleLarge)
 
-            Text(text = "Volume", style = MaterialTheme.typography.titleMedium)
+            Text(text = stringResource(R.string.volume), style = MaterialTheme.typography.titleMedium)
             CustomSlider(
                 value = alarmVolume.floatValue,
                 maxRange = 1f,
@@ -423,7 +421,7 @@ fun GpsAlarmItem(
                 }
             )
 
-            Text(text = "Vibrate level:", style = MaterialTheme.typography.titleMedium)
+            Text(text = stringResource(R.string.vibrate_level), style = MaterialTheme.typography.titleMedium)
             CustomSlider(
                 value = alarmVibrate.floatValue,
                 maxRange = 1f,
@@ -437,7 +435,7 @@ fun GpsAlarmItem(
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "Duration: ${durationAlarm.intValue}s",
+                text = stringResource(R.string.duration_seconds, durationAlarm.intValue),
                 style = MaterialTheme.typography.titleMedium
             )
             // Duration (TextField)

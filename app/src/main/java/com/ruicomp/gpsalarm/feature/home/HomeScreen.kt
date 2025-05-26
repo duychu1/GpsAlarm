@@ -92,12 +92,12 @@ fun HomeScreen(
 //                    navController.navigate(route = NavRoutes.DetailTest(action.gpsAlarm.id, action.gpsAlarm.location, action.gpsAlarm.activeDays))
                 }
 
-                is HomeEffect.ShowToats -> Toast.makeText(context, "Fetch false", Toast.LENGTH_SHORT).show()
+                is HomeEffect.ShowToats -> Toast.makeText(context, context.getString(R.string.fetch_false), Toast.LENGTH_SHORT).show()
                 is HomeEffect.NavigateToScreen -> TODO()
                 is HomeEffect.ShowSnackbar -> {
                     val result = snackbarHost.showSnackbar(
                         message = action.message,
-                        actionLabel = "Undo",
+                        actionLabel = context.getString(R.string.undo),
                         withDismissAction = true,
                         duration = SnackbarDuration.Short
                     )
@@ -175,14 +175,14 @@ fun HomeScreenContent(
                 IconButton(onClick = {
 
                 }) {
-                    Icon(Icons.Filled.Menu, contentDescription = "Menu")
+                    Icon(Icons.Filled.Menu, contentDescription = stringResource(R.string.menu))
                 }
             },
             windowInsets = WindowInsets(0, 0, 0, 0),
             actions = {
                 Icon(
                     painter = painterResource(R.drawable.ic_premium),
-                    contentDescription = "icon_premium",
+                    contentDescription = stringResource(R.string.icon_premium),
                     modifier = Modifier.size(36.dp).clickable {
                         onNavigateToPremium()
                     },
@@ -203,7 +203,7 @@ fun HomeScreenContent(
                 ) {
                     item {
                         if (listGpsAlarms.isEmpty()) {
-                            Text("No data", modifier = Modifier.align(Alignment.Center))
+                            Text(stringResource(R.string.no_data), modifier = Modifier.align(Alignment.Center))
                         }
                     }
                     itemsIndexed(
@@ -232,7 +232,7 @@ fun HomeScreenContent(
                 contentColor = MaterialTheme.colorScheme.onPrimary,
                 onClick = onNavigateToMaps,
             ) {
-                Icon(Icons.Filled.Add, contentDescription = "Add", modifier = Modifier.size(36.dp))
+                Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.add), modifier = Modifier.size(36.dp))
             }
         }
     }
@@ -272,17 +272,17 @@ fun GpsAlarmItem(
             }
             Row(modifier = Modifier.fillMaxWidth()) {
                 IconButton(onClick = onClickDuplicate) {
-                    Icon(Icons.Default.ContentCopy, contentDescription = "Delete alarm")
+                    Icon(Icons.Default.ContentCopy, contentDescription = stringResource(R.string.duplicate_alarm))
                 }
                 Spacer(modifier = Modifier.width(16.dp))
                 IconButton(onClick = onDelete) {
-                    Icon(Icons.Default.Delete, contentDescription = "Delete alarm")
+                    Icon(Icons.Default.Delete, contentDescription = stringResource(R.string.delete_alarm))
                 }
                 Spacer(modifier = Modifier.width(16.dp))
                 IconButton(onClick = onClickPin) {
                     Icon(
                         Icons.Default.PushPin,
-                        contentDescription = "Delete alarm",
+                        contentDescription = stringResource(R.string.pin_alarm),
                         tint = if (gpsAlarm.isPinned) Color.Green else MaterialTheme.colorScheme.onSurface
                     )
                 }
@@ -301,7 +301,7 @@ fun GpsAlarmItem(
 fun DotSeparator(color: Color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)) {
     Icon(
         imageVector = Icons.Filled.Circle,
-        contentDescription = "Separator",
+        contentDescription = stringResource(R.string.separator),
         tint = color,
         modifier = Modifier
             .padding(horizontal = 8.dp)
