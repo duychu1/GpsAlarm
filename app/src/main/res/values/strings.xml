@@ -91,7 +91,8 @@
     <string name="collapse_search_bar">Collapse search bar</string>
     <string name="clear_search_query">Clear search query</string>
     <string name="cannot_find_reminder_try_again">Cannot find reminder, try again</string>
-
+    <string name="these_permissions_are_required_for_the_app_to_function_properly">These permissions are required for the app to function properly.</string>
+    <string name="start">Start</string>
 
 
 </resources>

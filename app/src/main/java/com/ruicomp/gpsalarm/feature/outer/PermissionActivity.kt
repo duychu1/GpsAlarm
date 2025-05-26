@@ -44,7 +44,7 @@ class PermissionActivity : BaseActivityNonBinding() {
             this,
             AdCache.getInstance().ob5NativePermissionHigh,
             binding.frNativeAd,
-            AdmobManager.NativeAdType.MEDIUM
+            AdmobManager.NativeAdType.BIG
         )
         checkInitialPermissions()
         updateUi()
@@ -86,7 +86,7 @@ class PermissionActivity : BaseActivityNonBinding() {
             this@PermissionActivity,
             arrayOf(*permissions),
             requestPermissionsLauncher,
-            "These permissions are required for the app to function properly.",
+            getString(R.string.these_permissions_are_required_for_the_app_to_function_properly),
             onPermissionsGranted = { updateUi() }
         )
     }
