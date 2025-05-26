@@ -58,6 +58,8 @@
     <string name="premium_activated">Premium Activated</string>
     <string name="search_3dot">Search...</string>
     <string name="no_results_for">No results for \"%1$s\"</string>
+    <string name="show_more">Show more (every time)</string>
+    <string name="show_less">Show less (1 per day)</string>
 
 
 </resources>

@@ -23,19 +23,19 @@
     <color name="ad_test">#C7C5C5</color>
     <color name="transparent">#00FFFFFF</color>
     <color name="dark_grey">#A9A9A9</color>
-    <color name="blue_navy">#000080</color>
+    <color name="blue_navy">#0202C4</color>
     <color name="red">#FF0000</color>
     <color name="fff">#ffffff</color>
     <color name="indicatorSelected">#033CFA</color>
     <color name="f0f0f0">#F0F0F0</color>
     <color name="bg_splash">#FCF5FD</color>
 
-    <color name="gold">#E6B32A</color>
-    <color name="dark_gold">#C69B24</color>
-    <color name="light_gold">#F7D77A</color>
+    <color name="gold">#EDB82C</color>
+    <color name="dark_gold">#C29620</color>
+    <color name="light_gold">#FAD877</color>
     <color name="dark_gray">#444444</color>
     <color name="light_gray">#999999</color>
 
-    <color name="gradient_start_gold">#FBD300</color>
-    <color name="gradient_end_gold">#DF9B01</color>
+    <color name="gradient_start_gold">#F8D307</color>
+    <color name="gradient_end_gold">#E49F03</color>
 </resources>

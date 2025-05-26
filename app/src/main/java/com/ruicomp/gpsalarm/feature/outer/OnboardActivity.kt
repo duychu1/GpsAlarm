@@ -287,8 +287,6 @@ class OnboardActivity() : AppCompatActivity(), OnboardFragment.OnEventClickListe
 
     override fun onButtonClicked(nPage: Int) {
         val currentItem = binding.viewPager.currentItem
-        AppSession.clickNext = true
-        AppSession.posClickNext = currentItem
         dlog("onButtonClicked: click next page: $currentItem")
         if (currentItem < totalPages - 1) {
             binding.viewPager.currentItem = currentItem + 1

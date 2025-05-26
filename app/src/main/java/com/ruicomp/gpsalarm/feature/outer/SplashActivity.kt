@@ -54,6 +54,8 @@ class SplashActivity : BaseActivityNonBinding() {
     private var isPermissionComplete = true
     private var isFirstResume = true
     private var job: Job? = null
+    private var intervalShowPremium = 5*60*1000
+//    private var intervalShowPremium = 24 * 60 * 60 * 1000
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,6 +72,10 @@ class SplashActivity : BaseActivityNonBinding() {
             languageCode = dataStorePreferences.getString(DataStoreKeys.LANGUAGE_STRING)
             isOnboardComplete = dataStorePreferences.getBoolean(DataStoreKeys.IS_ONBOARD_COMPLETE) ?: false
             isPermissionComplete = dataStorePreferences.getBoolean(DataStoreKeys.IS_PERMISSION_COMPLETE) ?: false
+            launch {
+                val lastShowPremium =  dataStorePreferences.getLong(DataStoreKeys.LAST_PREMIUM_SHOWN_AT) ?: 0L
+                AppSession.isDismissPremium = (System.currentTimeMillis() - lastShowPremium) <= (intervalShowPremium)
+            }
 
             val startTime = System.currentTimeMillis()
             while (System.currentTimeMillis() - startTime < totalDurationSplashMillis) {

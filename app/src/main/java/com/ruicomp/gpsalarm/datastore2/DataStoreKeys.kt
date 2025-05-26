@@ -2,6 +2,7 @@ package com.ruicomp.gpsalarm.datastore2
 
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 
 object DataStoreKeys {
@@ -20,5 +21,8 @@ object DataStoreKeys {
     val IS_ONBOARD_COMPLETE = booleanPreferencesKey("is_onboard_complete")
     val IS_PERMISSION_COMPLETE = booleanPreferencesKey("is_permission_complete")
     val TEMPLATE_TYPE_STRING = stringPreferencesKey("template_type_string")
+    val LAST_PREMIUM_SHOWN_AT = longPreferencesKey("interval_show_less_premium")
+
+
 
 }

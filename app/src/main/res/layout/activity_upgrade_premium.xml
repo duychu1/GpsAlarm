@@ -114,6 +114,7 @@
                 android:layout_marginStart="32dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="32dp"
+                android:visibility="gone"
                 android:paddingVertical="16dp"
                 android:text="@string/watch_video_to_try_premium"
                 android:textColor="@color/gold"
@@ -121,6 +122,19 @@
                 app:strokeColor="@color/gold"
                 app:strokeWidth="1dp"
                 style="?attr/materialButtonOutlinedStyle" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnDismiss"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="32dp"
+                android:paddingVertical="16dp"
+                tools:text="@string/show_more"
+                android:textColor="@color/light_gray"
+                android:textSize="18sp"
+                style="?attr/borderlessButtonStyle" />
 
             <TextView
                 android:id="@+id/tvTerms"

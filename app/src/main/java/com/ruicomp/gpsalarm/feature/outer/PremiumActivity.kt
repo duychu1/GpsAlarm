@@ -1,8 +1,6 @@
 package com.ruicomp.gpsalarm.feature.outer
 // PremiumActivity.kt (Simplified relevant parts)
 import android.content.Intent
-import android.graphics.Color
-import android.net.Uri
 import android.os.Bundle
 import android.text.SpannableString
 import android.text.Spanned
@@ -18,8 +16,16 @@ import com.common.control.manager.PurchaseManager
 import com.ruicomp.gpsalarm.MyApp
 import com.ruicomp.gpsalarm.R
 import com.ruicomp.gpsalarm.databinding.ActivityUpgradePremiumBinding
-import androidx.core.net.toUri
+import androidx.lifecycle.lifecycleScope
+import com.ruicomp.gpsalarm.AppSession
+import com.ruicomp.gpsalarm.Constants
 import com.ruicomp.gpsalarm.MainActivity
+import com.ruicomp.gpsalarm.datastore2.DataStoreKeys
+import com.ruicomp.gpsalarm.datastore2.DataStorePreferences
+import com.ruicomp.gpsalarm.utils.dlog
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
 import kotlin.isInitialized
 import kotlin.jvm.java
 import kotlin.text.indexOf
@@ -27,32 +33,64 @@ import kotlin.text.isNullOrEmpty
 
 class PremiumActivity : BaseActivityNonBinding(), PurchaseCallback {
 
+    private val dataStorePreferences: DataStorePreferences by inject()
     private lateinit var binding: ActivityUpgradePremiumBinding
     private lateinit var purchaseManagerInstance: PurchaseManager
     private val premiumProductId = MyApp.PRODUCT_LIFETIME
 
     private var isFromHome = false
+    private var isDismiss = AppSession.isDismissPremium
+    private var isShowLessPremium = isDismiss
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityUpgradePremiumBinding.inflate(layoutInflater)
         setContentView(binding.root)
         window.statusBarColor = getColor(R.color.f0f0f0)
-        isFromHome = intent.getBooleanExtra("key_from_home", false)
+        isFromHome = intent.getBooleanExtra(Constants.KEY_FROM_HOME, false)
         // Assuming your PurchaseManager in CommonLib handles both or you've chosen one.
         purchaseManagerInstance = PurchaseManager.getInstance() // Or PurchaseManagerInApp.getInstance()
         purchaseManagerInstance.setCallback(this) // Register to get purchase results
-        if (!isFromHome && purchaseManagerInstance.isPurchased()) {
-//        if (!isFromHome && true) {
+
+        if (isGotoNext()) {
             startActivity(Intent(this, MainActivity::class.java))
             finish()
+            return
         }
-        setupTermsTextView(binding.tvTerms)
+        setupView()
         setupClickListeners()
-        updatePremiumButtonText() // Set initial price or state
     }
 
+    private fun isGotoNext(): Boolean {
+        if (isFromHome) return false
+        if (purchaseManagerInstance.isPurchased()) return true
+        if (isDismiss) return true
+        return false
+    }
+
+    private fun setupView() {
+        setupTermsTextView(binding.tvTerms)
+        updatePremiumButtonText()
+        lifecycleScope.launch {
+            dataStorePreferences.getLong(DataStoreKeys.LAST_PREMIUM_SHOWN_AT).let {
+                dlog("Collect: Last Premium Shown At: $it")
+                isShowLessPremium = (it ?: 0L) > 0L
+                binding.btnDismiss.text = getString(if (isShowLessPremium) R.string.show_more else R.string.show_less)
+                if (isShowLessPremium && !isFromHome) {
+                    dataStorePreferences.saveLong(DataStoreKeys.LAST_PREMIUM_SHOWN_AT, System.currentTimeMillis())
+                }
+            }
+        }
+    }
+
+
     private fun setupClickListeners() {
+        binding.btnClose.setOnClickListener {
+            if (!isFromHome) {
+                startActivity(Intent(this, MainActivity::class.java))
+            }
+            finish()
+        }
         binding.btnBuyPremium.setOnClickListener {
             // Implement premium purchase logic
             Log.d("PremiumActivity", "btnBuyPremium clicked for product: $premiumProductId")
@@ -60,11 +98,13 @@ class PremiumActivity : BaseActivityNonBinding(), PurchaseCallback {
             // Launch the purchase flow using the instance from PurchaseManager
             purchaseManagerInstance.launchPurchase(this@PremiumActivity, premiumProductId)
         }
-        binding.btnClose.setOnClickListener {
-            if (!isFromHome) {
-                startActivity(Intent(this, MainActivity::class.java))
+        binding.btnDismiss.setOnClickListener {
+            lifecycleScope.launch {
+                isShowLessPremium = !isShowLessPremium
+                binding.btnDismiss.text = getString(if (isShowLessPremium) R.string.show_more else R.string.show_less)
+                val timestamp = if (isShowLessPremium) System.currentTimeMillis() else 0L
+                dataStorePreferences.saveLong(DataStoreKeys.LAST_PREMIUM_SHOWN_AT, timestamp)
             }
-            finish()
         }
     }
 
