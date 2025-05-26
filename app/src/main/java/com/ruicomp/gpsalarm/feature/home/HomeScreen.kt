@@ -2,6 +2,7 @@ package com.ruicomp.gpsalarm.feature.home
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Build
 import android.util.Log
 import android.widget.Toast
@@ -55,6 +56,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -65,7 +67,9 @@ import com.ruicomp.gpsalarm.utils.rememberFlowWithLifecycle
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ruicomp.gpsalarm.R
 import com.ruicomp.gpsalarm.data.fake.GpsAlarmFakeRepo
+import com.ruicomp.gpsalarm.feature.outer.PremiumActivity
 import com.ruicomp.gpsalarm.navigation.NavRoutes
+import com.ruicomp.gpsalarm.ui.theme.Gold
 import com.ruicomp.gpsalarm.ui.theme.TemplateTheme
 import com.ruicomp.gpsalarm.utils.RequestPermissions
 
@@ -128,6 +132,9 @@ fun HomeScreen(
         },
         onClickDuplicate = viewModel::onDuplicateAlarm,
         onClickPin = viewModel::onClickPin,
+        onNavigateToPremium = {
+            context.startActivity(Intent(context, PremiumActivity::class.java))
+        }
     )
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -151,6 +158,7 @@ fun HomeScreenContent(
     onClickDuplicate: (GpsAlarm) -> Unit,
     onClickPin: (GpsAlarm) -> Unit,
     onNavigateToMaps: () -> Unit,
+    onNavigateToPremium: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.fillMaxSize()) {
@@ -172,7 +180,14 @@ fun HomeScreenContent(
             },
             windowInsets = WindowInsets(0, 0, 0, 0),
             actions = {
-                // Additional actions can be added here if needed
+                Icon(
+                    painter = painterResource(R.drawable.ic_premium),
+                    contentDescription = "icon_premium",
+                    modifier = Modifier.size(36.dp).clickable {
+                        onNavigateToPremium()
+                    },
+                    tint = Gold
+                )
             }
         )
         Box(modifier = Modifier.fillMaxSize()) {
@@ -308,6 +323,7 @@ private fun PreviewHomeScreen() {
             onNavigateToMaps = {},
             onClickDuplicate = {},
             onClickPin = {},
+            onNavigateToPremium = {}
         )
     }
 
