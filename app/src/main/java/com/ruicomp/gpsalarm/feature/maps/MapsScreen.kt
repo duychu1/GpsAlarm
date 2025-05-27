@@ -50,8 +50,10 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -73,6 +75,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
@@ -106,19 +111,6 @@ fun MapsScreen(
     val state = viewModel.mapUiState.collectAsStateWithLifecycle()
 //    val effect = rememberFlowWithLifecycle(viewModel.effect)
     val context = LocalContext.current
-
-//    LaunchedEffect(effect) {
-//        effect.collect { action ->
-//            when (action) {
-//                is MapsEffect.ShowToast -> Toast.makeText(context, "Fetch false", Toast.LENGTH_SHORT).show()
-//                is MapsEffect.NavigateToScreen -> TODO()
-//            }
-//        }
-//    }
-
-//    LaunchedEffect(Unit) {
-//        viewModel.initData(gpsAlarm)
-//    }
 
     MapsScreenContent(
         modifier = modifier,
@@ -166,6 +158,7 @@ fun MapsScreen(
     )
 
     GpsCheckAndRequest()
+
 }
 
 @SuppressLint("UnusedBoxWithConstraintsScope")

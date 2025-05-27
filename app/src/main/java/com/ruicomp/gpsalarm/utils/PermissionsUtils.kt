@@ -45,7 +45,8 @@ fun RequestPermissions (
     DisposableEffect(key1 = lifecycleOwner, effect = {
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
-                Lifecycle.Event.ON_START -> {
+                Lifecycle.Event.ON_RESUME -> {
+                    dlog("onResume: RequestPermissions")
                     permissionStates.launchMultiplePermissionRequest()
                 }
                 else -> {

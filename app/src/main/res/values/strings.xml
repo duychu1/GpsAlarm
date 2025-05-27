@@ -94,6 +94,7 @@
     <string name="these_permissions_are_required_for_the_app_to_function_properly">These permissions are required for the app to function properly.</string>
     <string name="start">Start</string>
     <string name="add_first_alarm">Your Alarms Are Empty. Add One!</string>
+    <string name="post_notification">Post Notification</string>
 
 
 </resources>

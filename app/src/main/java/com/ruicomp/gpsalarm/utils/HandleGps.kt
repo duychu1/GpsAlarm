@@ -13,12 +13,17 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
@@ -34,6 +39,8 @@ fun GpsCheckAndRequest(
     var isGpsEnabled by remember { mutableStateOf(isGpsEnabled(context)) }
     var showGpsDialog by remember { mutableStateOf(false) }
     var isGpsEnableRequestLauncher by remember { mutableStateOf(false) }
+    var onResumeTriggerCount by remember { mutableIntStateOf(0) }
+    val lifecycleOwner = LocalLifecycleOwner.current
 
     val launcher = rememberLauncherForActivityResult(
         ActivityResultContracts.StartIntentSenderForResult()
@@ -54,10 +61,29 @@ fun GpsCheckAndRequest(
 
     }
 
-    LaunchedEffect(key1 = isGpsEnabled) {
+    DisposableEffect(key1 = lifecycleOwner, effect = {
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_RESUME -> {
+                    dlog("onResume: GpsCheckAndRequest")
+                    onResumeTriggerCount++
+                }
+                else -> {
+
+                }
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    })
+
+    LaunchedEffect(key1 = isGpsEnabled, key2 = onResumeTriggerCount) {
         if (!isGpsEnabled && !isGpsEnableRequestLauncher) {
-            val request = LocationRequest.Builder(Priority.PRIORITY_BALANCED_POWER_ACCURACY, 2000)
-                .setMinUpdateIntervalMillis(1000).build()
+            val request = LocationRequest.Builder(Priority.PRIORITY_BALANCED_POWER_ACCURACY, 5000)
+                .setMinUpdateIntervalMillis(3000).build()
             val builder = LocationSettingsRequest.Builder().addLocationRequest(request)
             val client = LocationServices.getSettingsClient(context)
             val task = client.checkLocationSettings(builder.build())
