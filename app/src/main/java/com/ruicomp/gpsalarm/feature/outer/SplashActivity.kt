@@ -54,8 +54,8 @@ class SplashActivity : BaseActivityNonBinding() {
     private var isPermissionComplete = true
     private var isFirstResume = true
     private var job: Job? = null
-    private var intervalShowPremium = 5*60*1000
-//    private var intervalShowPremium = 24 * 60 * 60 * 1000
+//    private var intervalShowPremium = 5*60*1000
+    private var intervalShowPremium = 24 * 60 * 60 * 1000
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
