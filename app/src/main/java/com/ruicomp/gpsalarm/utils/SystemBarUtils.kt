@@ -19,21 +19,28 @@ fun Window.hideSystemBar() {
         }
         addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
     } else {
-        decorView.systemUiVisibility = (
-            WindowManager.LayoutParams.FLAG_FULLSCREEN or
-            WindowManager.LayoutParams.FLAG_FULLSCREEN
-        )
+        //need add enableEdgeToEdge() onCreate
+
         // For versions below Android 11 (API 30)
-//        @Suppress("DEPRECATION")
-//        val flags = (View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-//                or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-//                // These flags are often used with HIDE_NAVIGATION for a more seamless experience
-//                or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-//                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-//                or View.SYSTEM_UI_FLAG_FULLSCREEN // Optional: if you want to hide status bar too
-//                )
-//        @Suppress("DEPRECATION")
-//        this.decorView.systemUiVisibility = this.decorView.systemUiVisibility or flags
+        @Suppress("DEPRECATION")
+        val flags = (
+                // Hide the navigation bar
+                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        // Hide the status bar
+                        or View.SYSTEM_UI_FLAG_FULLSCREEN
+                        // Keep the layout stable when system bars hide and show.
+                        // This is important for immersive mode to prevent content resizing.
+                        or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        // Allow content to lay out behind the navigation bar (when it's shown)
+                        or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        // Allow content to lay out behind the status bar (when it's shown)
+                        or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        // Use immersive sticky mode: bars reappear with a swipe from the edge
+                        // where they normally appear, are transient, and automatically hide again.
+                        or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                )
+        // Apply the flags to the decorView
+        this.decorView.systemUiVisibility = flags
     }
 }
 

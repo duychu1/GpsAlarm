@@ -38,4 +38,6 @@
 
     <color name="gradient_start_gold">#F8D307</color>
     <color name="gradient_end_gold">#E49F03</color>
+
+    <color name="status_bar_below30">#99395DDD</color>
 </resources>

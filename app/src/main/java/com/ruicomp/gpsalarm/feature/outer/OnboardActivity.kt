@@ -301,8 +301,7 @@ class OnboardActivity() : AppCompatActivity(), OnboardFragment.OnEventClickListe
     override fun onResume() {
         super.onResume()
         window.hideSystemBar()
-        window.statusBarColor = getColor(R.color.blue_selected)
-        window.hideNavigationBar()
+        window.statusBarColor = getColor(R.color.status_bar_below30)
     }
 
     private fun setupButton() {

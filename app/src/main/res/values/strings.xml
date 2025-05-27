@@ -28,9 +28,9 @@
     <string name="swipe_next">Swipe next</string>
 
     <string name="onboard_title_1">Arrive Smarter</string>
-    <string name="onboard_desc_1">Never miss your stop again. Set alarms that trigger when you reach your destination — no more worrying about falling asleep or getting distracted.</string>
+    <string name="onboard_desc_1">Never miss your stop again. Set alarms that trigger when you reach your destination—no more worrying about falling asleep.</string>
     <string name="onboard_title_2">Set It &amp; Forget It</string>
-    <string name="onboard_desc_2">Simply drop a pin on the map or type in an address. We’ll handle the rest, waking you up when you’re there.</string>
+    <string name="onboard_desc_2">Simply drop a pin on the map or enter address. We’ll handle the rest, waking you up when you’re there.</string>
     <string name="onboard_title_3">We Respect Your Privacy</string>
     <string name="onboard_desc_3">We only use your location to trigger alarms — nothing else. Your data stays on your device.</string>
     <string name="onboarding_image_description">Onboarding illustration</string>
