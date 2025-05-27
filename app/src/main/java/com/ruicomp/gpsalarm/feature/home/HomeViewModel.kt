@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewModelScope
+import com.ruicomp.gpsalarm.Constants
 import com.ruicomp.gpsalarm.base_mvi.BaseViewModel
 import com.ruicomp.gpsalarm.common.result.Result
 import com.ruicomp.gpsalarm.common.result.asResult
@@ -66,10 +67,10 @@ class HomeViewModel @Inject constructor(
             val newAlarm = alarm.copy(isActive = isActive)
             gpsAlarmRepo.update(newAlarm)
             val serviceIntent = Intent(context, LocationService::class.java).apply {
-                action = if (isActive) "ACTION_NEW_TARGET" else "ACTION_REMOVE_TARGET"
+                action = if (isActive) Constants.ACTION_NEW_TARGET else Constants.ACTION_REMOVE_TARGET
             }
 
-            serviceIntent.putExtra("target_location", newAlarm)
+            serviceIntent.putExtra(Constants.KEY_TARGET_LOCATION, newAlarm)
             ContextCompat.startForegroundService(context, serviceIntent)
         }
     }

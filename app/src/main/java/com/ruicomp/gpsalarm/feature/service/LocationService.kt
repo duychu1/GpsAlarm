@@ -27,6 +27,7 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
 import androidx.core.content.ContextCompat
+import com.ruicomp.gpsalarm.Constants
 import com.ruicomp.gpsalarm.R
 import com.ruicomp.gpsalarm.data.repository.GpsAlarmRepository
 import com.ruicomp.gpsalarm.model.GpsAlarm
@@ -108,18 +109,18 @@ class LocationService : Service() {
         locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         createNotificationChannel(this)
         startForegroundService()
-        listenLocationChange(minTimeMs = 1000L, minDistanceM = 3f, locationListener)
+        listenLocationChange(minTimeMs = 3000L, minDistanceM = 3f, locationListener)
         BroadcastUtils.registerReceiver(this, broadcastReceiver, intentFilter)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         dlog("onStartCommand: intent action: ${intent?.action}")
-        val targetAlarm = intent?.getParcelableExtra<GpsAlarm>("target_location")
+        val targetAlarm = intent?.getParcelableExtra<GpsAlarm>(Constants.KEY_TARGET_LOCATION)
 
         targetAlarm?.let {
             when (intent.action) {
-                "ACTION_NEW_TARGET" -> listTargetAlarms.add(it)
-                "ACTION_REMOVE_TARGET" -> {
+                Constants.ACTION_NEW_TARGET -> listTargetAlarms.add(it)
+                Constants.ACTION_REMOVE_TARGET -> {
                     listTargetAlarms.removeAll { alarm -> alarm.id == it.id }
                     if (listTargetAlarms.isEmpty()) {
                         stopSelf()
@@ -151,6 +152,7 @@ class LocationService : Service() {
             }
         }
         unregisterReceiver(broadcastReceiver)
+        soundJob?.cancel()
         super.onDestroy()
     }
 
