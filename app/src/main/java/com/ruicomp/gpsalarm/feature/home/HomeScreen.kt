@@ -45,6 +45,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -203,7 +204,14 @@ fun HomeScreenContent(
                 ) {
                     item {
                         if (listGpsAlarms.isEmpty()) {
-                            Text(stringResource(R.string.add_first_alarm), modifier = Modifier.fillMaxWidth().align(Alignment.Center))
+                            Box(
+                                modifier = Modifier
+                                    .fillParentMaxSize()
+                                    .padding(16.dp), // Optional padding
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(stringResource(R.string.add_first_alarm))
+                            }
                         }
                     }
                     itemsIndexed(
@@ -314,17 +322,19 @@ fun DotSeparator(color: Color = MaterialTheme.colorScheme.onSurface.copy(alpha =
 private fun PreviewHomeScreen() {
     val listGpsAlarms = GpsAlarmFakeRepo.fakeListGpsAlarms()
     TemplateTheme {
-        HomeScreenContent(
-            isLoading = false,
-            listGpsAlarms = listGpsAlarms,
-            onItemClick = {},
-            onActiveChange = { _, _ -> },
-            onDeleteGpsAlarm = { _, _ -> },
-            onNavigateToMaps = {},
-            onClickDuplicate = {},
-            onClickPin = {},
-            onNavigateToPremium = {}
-        )
+        Surface {
+            HomeScreenContent(
+                isLoading = false,
+                listGpsAlarms = listGpsAlarms,
+                onItemClick = {},
+                onActiveChange = { _, _ -> },
+                onDeleteGpsAlarm = { _, _ -> },
+                onNavigateToMaps = {},
+                onClickDuplicate = {},
+                onClickPin = {},
+                onNavigateToPremium = {}
+            )
+        }
     }
 
 }

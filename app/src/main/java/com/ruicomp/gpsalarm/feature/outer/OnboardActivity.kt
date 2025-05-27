@@ -14,11 +14,8 @@ import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.nativead.NativeAd
 import com.ruicomp.gpsalarm.AdCache
 import com.ruicomp.gpsalarm.AdIds
-import com.ruicomp.gpsalarm.AppSession
 import com.ruicomp.gpsalarm.R
 import com.ruicomp.gpsalarm.databinding.ActivityOnboardBinding
-import com.ruicomp.gpsalarm.feature.outer.OnboardFragment
-import com.ruicomp.gpsalarm.feature.outer.OnboardingPagerAdapter
 import com.ruicomp.gpsalarm.remote_config.RemoteConfigManager
 import com.ruicomp.gpsalarm.utils.dlog
 import com.ruicomp.gpsalarm.utils.hideNavigationBar
@@ -58,7 +55,7 @@ class OnboardActivity() : AppCompatActivity(), OnboardFragment.OnEventClickListe
             addFragment(
                 OnboardFragment(
                     0,
-                    R.drawable.ic_ob1,
+                    R.drawable.ic_ob11,
                     R.string.onboard_title_1,
                     R.string.onboard_desc_1
                 )
@@ -66,7 +63,7 @@ class OnboardActivity() : AppCompatActivity(), OnboardFragment.OnEventClickListe
             addFragment(
                 OnboardFragment(
                     1,
-                    R.drawable.ic_ob2,
+                    R.drawable.ic_ob21,
                     R.string.onboard_title_2,
                     R.string.onboard_desc_2
                 )
@@ -75,7 +72,7 @@ class OnboardActivity() : AppCompatActivity(), OnboardFragment.OnEventClickListe
             addFragment(
                 OnboardFragment(
                     3,
-                    R.drawable.ic_ob4,
+                    R.drawable.ic_ob41,
                     R.string.onboard_title_3,
                     R.string.onboard_desc_3
                 )
