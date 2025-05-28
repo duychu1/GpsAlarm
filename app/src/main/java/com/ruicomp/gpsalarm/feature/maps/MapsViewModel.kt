@@ -183,7 +183,7 @@ class MapsViewModel @Inject constructor(
     private fun getLastKnownLocation(context: Context)  {
 
         if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            Toast.makeText(context, "Please enable location services", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Please enable GPS", Toast.LENGTH_SHORT).show()
             return
         }
 

@@ -52,7 +52,10 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -72,7 +75,10 @@ import com.ruicomp.gpsalarm.feature.outer.PremiumActivity
 import com.ruicomp.gpsalarm.navigation.NavRoutes
 import com.ruicomp.gpsalarm.ui.theme.Gold
 import com.ruicomp.gpsalarm.ui.theme.TemplateTheme
+import com.ruicomp.gpsalarm.utils.GpsCheckAndRequest
+import com.ruicomp.gpsalarm.utils.PermissionUtils
 import com.ruicomp.gpsalarm.utils.RequestPermissions
+import com.ruicomp.gpsalarm.utils.isGpsEnabled
 
 @Composable
 fun HomeScreen(
@@ -84,6 +90,7 @@ fun HomeScreen(
     val state = viewModel.state.collectAsStateWithLifecycle()
     val effect = rememberFlowWithLifecycle(viewModel.effect)
     val context = LocalContext.current
+    var isShowPermissionRequest by remember { mutableStateOf(false) }
 
     LaunchedEffect(effect) {
         effect.collect { action ->
@@ -93,7 +100,7 @@ fun HomeScreen(
 //                    navController.navigate(route = NavRoutes.DetailTest(action.gpsAlarm.id, action.gpsAlarm.location, action.gpsAlarm.activeDays))
                 }
 
-                is HomeEffect.ShowToats -> Toast.makeText(context, context.getString(R.string.fetch_false), Toast.LENGTH_SHORT).show()
+                is HomeEffect.ShowToats -> Toast.makeText(context, action.msg, Toast.LENGTH_SHORT).show()
                 is HomeEffect.NavigateToScreen -> TODO()
                 is HomeEffect.ShowSnackbar -> {
                     val result = snackbarHost.showSnackbar(
@@ -125,7 +132,13 @@ fun HomeScreen(
         listGpsAlarms = state.value.gpsAlarms,
         onItemClick = viewModel::onAlarmClick,
         onActiveChange = { alarm, isActive ->
-            viewModel.onAlarmActiveChange(context, alarm, isActive)
+            if (PermissionUtils.hasPermissions(context, Manifest.permission.ACCESS_FINE_LOCATION)
+                && isGpsEnabled(context)
+                ) {
+                viewModel.onAlarmActiveChange(context, alarm, isActive)
+            } else {
+                isShowPermissionRequest = true
+            }
         },
         onDeleteGpsAlarm = viewModel::onClickDeleteAlarm,
         onNavigateToMaps = {
@@ -143,8 +156,21 @@ fun HomeScreen(
             permissions = listOf(
                 Manifest.permission.POST_NOTIFICATIONS,
             ),
-            permissionNameDisplay = "Post Notification"
+            permissionNameDisplay = stringResource(R.string.post_notification)
         )
+    }
+
+    if (isShowPermissionRequest) {
+        RequestPermissions(
+            permissions = listOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+            ),
+            permissionNameDisplay = stringResource(R.string.location)
+        )
+
+        GpsCheckAndRequest(onGpsEnabled = {
+            isShowPermissionRequest = false
+        })
     }
 }
 
@@ -184,9 +210,11 @@ fun HomeScreenContent(
                 Icon(
                     painter = painterResource(R.drawable.ic_premium),
                     contentDescription = stringResource(R.string.icon_premium),
-                    modifier = Modifier.size(36.dp).clickable {
-                        onNavigateToPremium()
-                    },
+                    modifier = Modifier
+                        .size(36.dp)
+                        .clickable {
+                            onNavigateToPremium()
+                        },
                     tint = Gold
                 )
             }
