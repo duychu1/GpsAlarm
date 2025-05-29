@@ -207,7 +207,7 @@ fun HomeScreenContent(
                     painter = painterResource(R.drawable.ic_premium),
                     contentDescription = stringResource(R.string.icon_premium),
                     modifier = Modifier
-                        .size(36.dp)
+                        .size(42.dp)
                         .clickable {
                             onNavigateToPremium()
                         },
