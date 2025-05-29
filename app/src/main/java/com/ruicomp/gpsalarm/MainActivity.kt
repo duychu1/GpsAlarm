@@ -13,6 +13,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.ruicomp.gpsalarm.navigation.MyNavHost
 import com.ruicomp.gpsalarm.ui.theme.TemplateTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -33,6 +34,7 @@ class MainActivity : ComponentActivity() {
                             Snackbar(
                                 snackbarData = it,
                                 shape = MaterialTheme.shapes.small,
+                                modifier = Modifier.padding(bottom = 54.dp),
                             )
                         }
                     },
