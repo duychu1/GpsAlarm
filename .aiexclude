@@ -1,7 +1,9 @@
 # Sensitive Data & Configuration Files
 google-services.json
-*.json # exclude all json files, you may want to comment this if you have other json files that are not secrets
-secrets/*  # Exclude any directory named "secrets"
+# exclude all json files, you may want to comment this if you have other json files that are not secrets
+*.json
+# Exclude any directory named "secrets"
+secrets/*
 
 # Build & IDE Artifacts
 .gradle/
@@ -16,3 +18,6 @@ local.properties
 *.keystore # Exclude any keystore files
 *.p12
 *.pfx
+
+app/build.gradle.kts
+key/
