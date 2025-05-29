@@ -6,7 +6,6 @@ import android.content.Intent
 import android.os.Build
 import android.util.Log
 import android.widget.Toast
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,7 +14,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -23,19 +21,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.List
-import androidx.compose.material.icons.automirrored.filled.MenuBook
-import androidx.compose.material.icons.automirrored.filled.MenuOpen
-import androidx.compose.material.icons.automirrored.filled.More
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Circle
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.PushPin
-import androidx.compose.material3.Button
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -49,7 +41,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -69,8 +60,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ruicomp.gpsalarm.model.GpsAlarm
 import com.ruicomp.gpsalarm.utils.rememberFlowWithLifecycle
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.ruicomp.gpsalarm.BuildConfig
 import com.ruicomp.gpsalarm.R
 import com.ruicomp.gpsalarm.data.fake.GpsAlarmFakeRepo
+import com.ruicomp.gpsalarm.feature.ads.BannerAdvertView
 import com.ruicomp.gpsalarm.feature.outer.PremiumActivity
 import com.ruicomp.gpsalarm.navigation.NavRoutes
 import com.ruicomp.gpsalarm.ui.theme.Gold
@@ -219,7 +212,7 @@ fun HomeScreenContent(
                 )
             }
         )
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.fillMaxWidth().weight(1f)) {
             if (isLoading) {
                 CircularProgressIndicator(
                     modifier = Modifier
@@ -271,6 +264,10 @@ fun HomeScreenContent(
                 Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.add), modifier = Modifier.size(36.dp))
             }
         }
+
+        // In HomeScreenContent or HomeScreen
+        val adIds = remember { listOf(BuildConfig.banner_home_high, BuildConfig.banner_home) }
+        BannerAdvertView(adUnitId = adIds)
     }
 }
 

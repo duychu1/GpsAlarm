@@ -989,6 +989,120 @@ public class AdmobManager {
         return adRequest.build();
     }
 
+    // In AdmobManager.java
+
+// ... (existing imports and code) ...
+
+    public void loadAlternateCollapsibleBanner(
+            final Activity mActivity,
+            List<String> idsInput, // List of Ad Unit IDs
+            final FrameLayout adContainer,
+            final AdListener adListenerCallback // Optional: A callback for the final result
+    ) {
+        List<String> ids = new ArrayList<>(idsInput); // Create a mutable copy
+
+        if (ids.isEmpty()) {
+            log("loadAlternateCollapsibleBanner: All IDs failed or list empty.");
+            if (adContainer != null) {
+                adContainer.removeAllViews();
+                adContainer.setVisibility(View.GONE);
+            }
+            if (adListenerCallback != null) {
+                // You might want to define a more specific error for this case
+                adListenerCallback.onAdFailedToLoad(new LoadAdError(0, "All Ad IDs failed or list was empty.", "com.google.android.gms.ads", null, null));
+            }
+            return;
+        }
+
+        String currentId = ids.get(0);
+        log("loadAlternateCollapsibleBanner: Attempting to load ID: " + currentId);
+
+        AdRequest request = getAdCollapsibleBannerRequest(); // Your existing method for collapsible request
+        if (request == null) {
+            // If the request itself can't be generated (e.g., ads disabled, purchased)
+            // then all subsequent calls will also fail for the same reason.
+            log("loadAlternateCollapsibleBanner: AdRequest is null for ID: " + currentId);
+            if (adContainer != null) {
+                adContainer.removeAllViews();
+                adContainer.setVisibility(View.GONE);
+            }
+            if (adListenerCallback != null) {
+                adListenerCallback.onAdFailedToLoad(errAd); // Use your existing errAd or a new specific one
+            }
+            return;
+        }
+
+        try {
+            final AdView adView = new AdView(mActivity);
+            adView.setAdUnitId(currentId);
+            AdSize adSize = getCollapsibleBannerAdSize(mActivity); // Your existing method
+            adView.setAdSize(adSize);
+            adView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+
+            adView.setAdListener(new AdListener() {
+                @Override
+                public void onAdLoaded() {
+                    super.onAdLoaded();
+                    log("loadAlternateCollapsibleBanner: Ad loaded successfully for ID: " + currentId);
+                    if (adContainer != null) {
+                        adContainer.removeAllViews();
+                        adContainer.setVisibility(View.VISIBLE);
+                        adContainer.addView(adView);
+                    }
+                    // Paid event listener
+                    adView.setOnPaidEventListener(adValue -> {
+                        // Assuming trackRevenueSolar is accessible here
+                        // You might need to adjust how you get the AdmobManager instance or pass trackRevenueSolar
+                        if (trackRevenueSolar != null) { // Add null check if necessary
+                            trackRevenueSolar.trackRevenueBannerSolar(adValue, adView, currentId);
+                        }
+                    });
+
+                    if (adListenerCallback != null) {
+                        adListenerCallback.onAdLoaded(); // Notify success
+                    }
+                }
+
+                @Override
+                public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                    super.onAdFailedToLoad(loadAdError);
+                    log("loadAlternateCollapsibleBanner: Failed to load ID: " + currentId + ". Error: " + loadAdError.getMessage());
+                    ids.remove(0); // Remove the failed ID
+                    // Try the next ID in the list
+                    loadAlternateCollapsibleBanner(mActivity, ids, adContainer, adListenerCallback);
+                }
+
+                // You can also override other AdListener methods if needed (onAdClicked, onAdImpression, etc.)
+                // and forward them to the adListenerCallback if it's designed to handle them.
+                // For example:
+                @Override
+                public void onAdClicked() {
+                    super.onAdClicked();
+                    if (adListenerCallback != null) {
+                        adListenerCallback.onAdClicked();
+                    }
+                }
+
+                @Override
+                public void onAdImpression() {
+                    super.onAdImpression();
+                    if (adListenerCallback != null) {
+                        adListenerCallback.onAdImpression();
+                    }
+                }
+            });
+
+            adView.loadAd(request);
+
+        } catch (Exception e) {
+            log("loadAlternateCollapsibleBanner: Exception during ad setup for ID: " + currentId + ". Error: " + e.getMessage());
+            e.printStackTrace();
+            // If an exception occurs during setup, treat it like a failed ad load for this ID
+            ids.remove(0);
+            loadAlternateCollapsibleBanner(mActivity, ids, adContainer, adListenerCallback);
+        }
+    }
+
     public void loadCollapsibleBanner(final Activity mActivity, String id, final FrameLayout adContainer) {
         log("Request Banner :" + id);
 

@@ -85,12 +85,12 @@ class LocationService : Service() {
         override fun onReceive(context: Context, intent: Intent) {
             dlog("broadcastReceiver: onReceive: ${intent.action}")
             when (intent.action) {
-                "ACTION_STOP_ARRIVED" -> {
+                Constants.ACTION_STOP_ARRIVED -> {
                     notificationManager.cancel(ARRIVED_NOTIFICATION_ID)
                     stopSoundAndVibration()
                 }
 
-                "ACTION_STOP_SERVICE" -> {
+                Constants.ACTION_STOP_SERVICE -> {
                     notificationManager.cancelAll()
                     stopSoundAndVibration()
                     stopSelf()
@@ -100,8 +100,8 @@ class LocationService : Service() {
     }
 
     val intentFilter = IntentFilter().apply {
-        addAction("ACTION_STOP_SERVICE")
-        addAction("ACTION_STOP_ARRIVED")
+        addAction(Constants.ACTION_STOP_SERVICE)
+        addAction(Constants.ACTION_STOP_ARRIVED)
     }
 
     override fun onCreate() {
@@ -161,7 +161,7 @@ class LocationService : Service() {
         stopAllPendingIntent = PendingIntent.getBroadcast(
             this,
             INTENT_STOP_ALL_CODE,
-            Intent("ACTION_STOP_SERVICE"),
+            Intent(Constants.ACTION_STOP_SERVICE),
             PendingIntent.FLAG_IMMUTABLE
         )
 
@@ -277,7 +277,7 @@ class LocationService : Service() {
         stopPendingIntent = PendingIntent.getBroadcast(
             this,
             INTENT_STOP_CODE,
-            Intent("ACTION_STOP_ARRIVED"),
+            Intent(Constants.ACTION_STOP_ARRIVED),
             PendingIntent.FLAG_IMMUTABLE
         )
 
