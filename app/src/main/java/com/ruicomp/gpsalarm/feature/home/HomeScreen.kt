@@ -61,6 +61,7 @@ import com.ruicomp.gpsalarm.model.GpsAlarm
 import com.ruicomp.gpsalarm.utils.rememberFlowWithLifecycle
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ruicomp.gpsalarm.BuildConfig
+import com.ruicomp.gpsalarm.Constants
 import com.ruicomp.gpsalarm.R
 import com.ruicomp.gpsalarm.data.fake.GpsAlarmFakeRepo
 import com.ruicomp.gpsalarm.feature.ads.BannerAdvertView
@@ -140,7 +141,9 @@ fun HomeScreen(
         onClickDuplicate = viewModel::onDuplicateAlarm,
         onClickPin = viewModel::onClickPin,
         onNavigateToPremium = {
-            context.startActivity(Intent(context, PremiumActivity::class.java))
+            context.startActivity(Intent(context, PremiumActivity::class.java).apply {
+                putExtra(Constants.KEY_FROM_HOME, true)
+            })
         }
     )
 
