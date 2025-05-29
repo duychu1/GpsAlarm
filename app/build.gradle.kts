@@ -1,4 +1,7 @@
 import org.jetbrains.kotlin.konan.properties.Properties
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import kotlin.String
 
 plugins {
@@ -21,6 +24,10 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        val formattedDate = SimpleDateFormat("MMM.dd.yyyy.hh.mm.ss", Locale.getDefault()).format(Date())
+        base.archivesName = "${namespace}_v${versionCode}_V${versionName}_${formattedDate}"
+
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -35,7 +42,7 @@ android {
 
     signingConfigs {
         create("release") {
-            storeFile = file("/<folder>/filename.jks") //ex: /signkey/release.jks
+            storeFile = file("<folder>/filename.jks") //ex: signkey/release.jks
             storePassword = "strongpassword"
             keyAlias = "release"
             keyPassword = "strongpassword"
@@ -47,7 +54,8 @@ android {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
+                "crashlytic-rules.pro"
             )
         }
         release {
@@ -154,7 +162,6 @@ dependencies {
 
     implementation(libs.androidx.material.icons.extend)
 
-//    implementation(project(":onboardmd"))
     implementation(project(":CommonLib"))
 
     //outer
