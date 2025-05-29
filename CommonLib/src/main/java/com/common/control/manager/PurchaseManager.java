@@ -216,7 +216,7 @@ public class PurchaseManager {
         return false;
     }
 
-    public void launchPurchase(Activity activity, String productId) {
+    public void launchPurchaseSubs(Activity activity, String productId) {
         ProductDetails productDetails = getProductDetail(productId);
         if (productDetails == null) {
             callback.purchaseFail();
@@ -227,6 +227,28 @@ public class PurchaseManager {
         BillingFlowParams.ProductDetailsParams productDetailsParams = BillingFlowParams.ProductDetailsParams.newBuilder()
                 // retrieve a value for "productDetails" by calling queryProductDetailsAsync()
                 .setProductDetails(productDetails).setOfferToken(productDetails.getSubscriptionOfferDetails().get(0).getOfferToken())
+                // to get an offer token, call ProductDetails.getSubscriptionOfferDetails()
+                // for a list of offers that are available to the user
+                .build();
+        BillingFlowParams billingFlowParams = BillingFlowParams.newBuilder()
+                .setProductDetailsParamsList(Collections.singletonList(productDetailsParams))
+                .build();
+        BillingResult billingResult = billingClient.launchBillingFlow(activity, billingFlowParams);
+        Log.d("android_log", "launchPurchase: " + billingResult.getDebugMessage());
+
+    }
+
+    public void launchPurchaseInApp(Activity activity, String productId) {
+        ProductDetails productDetails = getProductDetail(productId);
+        if (productDetails == null) {
+            callback.purchaseFail();
+            queryPurchase();
+            queryProductDetails();
+            return;
+        }
+        BillingFlowParams.ProductDetailsParams productDetailsParams = BillingFlowParams.ProductDetailsParams.newBuilder()
+                // retrieve a value for "productDetails" by calling queryProductDetailsAsync()
+                .setProductDetails(productDetails)
                 // to get an offer token, call ProductDetails.getSubscriptionOfferDetails()
                 // for a list of offers that are available to the user
                 .build();

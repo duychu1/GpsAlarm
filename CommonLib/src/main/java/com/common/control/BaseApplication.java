@@ -42,8 +42,8 @@ public abstract class BaseApplication extends Application {
         AppUtils.getInstance().setSubject(getSubjectSupport());
         AdmobManager.getInstance().setHasLog(true);
         if (isInitBilling()) {
-            PurchaseManager.getInstance().init(this, getPurchaseList());
-            PurchaseManagerInApp.getInstance().init(this, getPurchaseListInApp());
+//            PurchaseManager.getInstance().init(this, getPurchaseList());
+            PurchaseManager.getInstance().init(this, getPurchaseListInApp());
         }
 
         if (hasAdjust()) {

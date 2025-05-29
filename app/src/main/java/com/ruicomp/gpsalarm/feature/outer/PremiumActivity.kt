@@ -23,10 +23,8 @@ import com.ruicomp.gpsalarm.MainActivity
 import com.ruicomp.gpsalarm.datastore2.DataStoreKeys
 import com.ruicomp.gpsalarm.datastore2.DataStorePreferences
 import com.ruicomp.gpsalarm.utils.dlog
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
-import kotlin.isInitialized
 import kotlin.jvm.java
 import kotlin.text.indexOf
 import kotlin.text.isNullOrEmpty
@@ -35,7 +33,7 @@ class PremiumActivity : BaseActivityNonBinding(), PurchaseCallback {
 
     private val dataStorePreferences: DataStorePreferences by inject()
     private lateinit var binding: ActivityUpgradePremiumBinding
-    private lateinit var purchaseManagerInstance: PurchaseManager
+//    private lateinit var PurchaseManager.getInstance(): PurchaseManager
     private val premiumProductId = MyApp.PRODUCT_LIFETIME
 
     private var isFromHome = false
@@ -49,8 +47,8 @@ class PremiumActivity : BaseActivityNonBinding(), PurchaseCallback {
         window.statusBarColor = getColor(R.color.f0f0f0)
         isFromHome = intent.getBooleanExtra(Constants.KEY_FROM_HOME, false)
         // Assuming your PurchaseManager in CommonLib handles both or you've chosen one.
-        purchaseManagerInstance = PurchaseManager.getInstance() // Or PurchaseManagerInApp.getInstance()
-        purchaseManagerInstance.setCallback(this) // Register to get purchase results
+//        PurchaseManager.getInstance() = PurchaseManager.getInstance() // Or PurchaseManagerInApp.getInstance()
+        PurchaseManager.getInstance().setCallback(this) // Register to get purchase results
 
         if (isGotoNext()) {
             startActivity(Intent(this, MainActivity::class.java))
@@ -63,14 +61,14 @@ class PremiumActivity : BaseActivityNonBinding(), PurchaseCallback {
 
     private fun isGotoNext(): Boolean {
         if (isFromHome) return false
-        if (purchaseManagerInstance.isPurchased()) return true
+        if (PurchaseManager.getInstance().isPurchased()) return true
         if (isDismiss) return true
         return false
     }
 
     private fun setupView() {
         setupTermsTextView(binding.tvTerms)
-        updatePremiumButtonText()
+//        updatePremiumButtonText()
         lifecycleScope.launch {
             dataStorePreferences.getLong(DataStoreKeys.LAST_PREMIUM_SHOWN_AT).let {
                 dlog("Collect: Last Premium Shown At: $it")
@@ -96,7 +94,7 @@ class PremiumActivity : BaseActivityNonBinding(), PurchaseCallback {
             Log.d("PremiumActivity", "btnBuyPremium clicked for product: $premiumProductId")
 
             // Launch the purchase flow using the instance from PurchaseManager
-            purchaseManagerInstance.launchPurchase(this@PremiumActivity, premiumProductId)
+            PurchaseManager.getInstance().launchPurchaseInApp(this@PremiumActivity, premiumProductId)
         }
         binding.btnDismiss.setOnClickListener {
             lifecycleScope.launch {
@@ -112,11 +110,11 @@ class PremiumActivity : BaseActivityNonBinding(), PurchaseCallback {
         // You might want to check if the user is already premium
         // This check would depend on how isPurchased() is implemented in PurchaseManager
         // For instance, if isPurchased() checks a specific product or any premium product.
-        if (purchaseManagerInstance.isPurchased()) { // Or a more specific check
+        if (PurchaseManager.getInstance().isPurchased()) { // Or a more specific check
             binding.btnBuyPremium.text = getString(R.string.premium_activated)
             binding.btnBuyPremium.isEnabled = false
         } else {
-            val price = purchaseManagerInstance.getPriceInApp(premiumProductId) // Or getPriceSub
+            val price = PurchaseManager.getInstance().getPriceInApp(premiumProductId) // Or getPriceSub
             if (!price.isNullOrEmpty()) {
                 binding.btnBuyPremium.text = getString(R.string.buy_premium_forever, price)
             } else {
@@ -129,7 +127,8 @@ class PremiumActivity : BaseActivityNonBinding(), PurchaseCallback {
 
     // --- PurchaseCallback Implementation ---
     override fun purchaseSuccess() {
-        Toast.makeText(this, "Premium Purchase Successful!", Toast.LENGTH_LONG).show()
+        Toast.makeText(this,
+            getString(R.string.premium_purchase_successful_msg), Toast.LENGTH_LONG).show()
         Log.d("PremiumActivity", "Purchase successful!")
         // TODO:
         // 1. Grant premium features to the user.
@@ -140,7 +139,8 @@ class PremiumActivity : BaseActivityNonBinding(), PurchaseCallback {
     }
 
     override fun purchaseFail() {
-        Toast.makeText(this, "Premium Purchase Failed. Please try again.", Toast.LENGTH_LONG).show()
+        Toast.makeText(this,
+            getString(R.string.premium_purchase_failed_msg), Toast.LENGTH_LONG).show()
         Log.e("PremiumActivity", "Purchase failed!")
         // Optionally, provide more specific error information if available from BillingResult
     }
@@ -206,7 +206,7 @@ class PremiumActivity : BaseActivityNonBinding(), PurchaseCallback {
                 override fun onClick(widget: View) {
                     // TODO: Handle Restore click (e.g., call your restore purchases logic)
                     // For example:
-                    // purchaseManagerInstance.restorePurchases() // If you have such a method
+                    // PurchaseManager.getInstance().restorePurchases() // If you have such a method
                      Toast.makeText(this@PremiumActivity, "Restore Clicked", Toast.LENGTH_SHORT).show()
                 }
 
@@ -229,9 +229,7 @@ class PremiumActivity : BaseActivityNonBinding(), PurchaseCallback {
         // It's good practice to ensure the callback is set,
         // and also to refresh purchase status and product details
         // in case they changed while the activity was paused.
-        if (::purchaseManagerInstance.isInitialized) {
-            purchaseManagerInstance.setCallback(this)
             updatePremiumButtonText() // Update UI based on potentially new data
-        }
+
     }
 }
