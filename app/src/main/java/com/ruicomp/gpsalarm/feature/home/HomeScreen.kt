@@ -296,7 +296,13 @@ fun GpsAlarmItem(
             Text(text = gpsAlarm.name, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Medium)
             Text(text = gpsAlarm.reminder, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f))
 //            Text(text = String.format("%.5f, %.5f", gpsAlarm.location.latitude, gpsAlarm.location.longitude), style = MaterialTheme.typography.bodyMedium)
-            Text(text = gpsAlarm.location.addressLine ?: "", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f))
+            Text(
+                text = gpsAlarm.location.addressLine ?: "",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                maxLines = 2,
+                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+            )
             Row(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
