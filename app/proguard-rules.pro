@@ -1,21 +1,32 @@
-# Add project specific ProGuard rules here.
-# You can control the set of applied configuration files using the
-# proguardFiles setting in build.gradle.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+-dontwarn com.google.android.gms.**
+-keep class com.google.android.gms.** { *; }
+-keep class com.google.firebase.** { *; }
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+# Keep Facebook SDK classes (if you are using Facebook Ads or Login)
+# You might need more specific rules depending on your Facebook SDK usage.
+# Often, the Facebook SDK provides its own ProGuard rules.
+-keep class com.facebook.** { *; }
+-keep interface com.facebook.** { *; }
+-keep @com.facebook.infer.annotation.Nullsafe class *
+-keepclassmembers class * {
+    @com.facebook.infer.annotation.Nullsafe *;
+}
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# Keep Facebook Ads SDK annotations
+-keep class com.facebook.infer.annotation.** { *; }
+
+# Keep JSpecify annotations (used by Google Mediation Test Suite)
+-keep class org.jspecify.nullness.** { *; }
+
+# Keep classes related to Facebook Ads
+-keep class com.facebook.ads.** { *; }
+-dontwarn com.facebook.ads.**
+
+# Keep classes related to Google Mobile Ads Mediation Test Suite
+# You might need to be more specific if these are too broad,
+# but start with this and refine if necessary.
+-keep class com.google.android.ads.mediationtestsuite.** { *; }
+-dontwarn com.google.android.ads.mediationtestsuite.**
+
+
